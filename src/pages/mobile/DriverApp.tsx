@@ -91,7 +91,7 @@ export default function DriverApp() {
     <div className="flex-1 flex flex-col bg-[var(--bg-base)] text-[var(--text-primary)] min-h-0 overflow-y-auto select-none">
 
       {/* ── DRIVER TOP TELEMETRY STATUS BAR ── */}
-      <header className="sticky top-0 z-30 bg-slate-950 text-white border-b border-slate-800 px-4 py-3 shrink-0 shadow-lg">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 shrink-0 shadow-xs dark:shadow-lg backdrop-blur-md transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-500/20">
@@ -99,11 +99,11 @@ export default function DriverApp() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black tracking-tight">{vehicle.id}</span>
-                <span className="text-[10px] font-mono text-slate-400 font-bold">{vehicle.plateNo}</span>
+                <span className="text-xs font-black tracking-tight text-slate-900 dark:text-white">{vehicle.id}</span>
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold">{vehicle.plateNo}</span>
               </div>
-              <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
                 {vehicle.driverName} • Active Trip
               </p>
             </div>
@@ -114,10 +114,10 @@ export default function DriverApp() {
             <button
               onClick={toggleOffline}
               className={clsx(
-                'flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer',
+                'flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer',
                 isOffline
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                  ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/40'
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40'
               )}
               title="Toggle Simulated Network / Mountain Gap"
             >
@@ -127,7 +127,7 @@ export default function DriverApp() {
 
             <button
               onClick={logout}
-              className="text-[11px] font-bold text-slate-400 hover:text-white px-2 py-1 rounded-lg bg-white/5 border border-white/10 cursor-pointer"
+              className="text-[11px] font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 cursor-pointer transition-colors"
             >
               Exit
             </button>
@@ -136,7 +136,7 @@ export default function DriverApp() {
 
         {/* Offline Queue Badge Notice */}
         {isOffline && offlineQueue.length > 0 && (
-          <div className="mt-2 py-1 px-2 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-between text-[10px] text-amber-300">
+          <div className="mt-2 py-1 px-2.5 rounded-lg bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 flex items-center justify-between text-[10px] text-amber-800 dark:text-amber-300">
             <span>{offlineQueue.length} telemetry action(s) stored locally</span>
             <button onClick={syncOfflineQueue} className="font-bold underline cursor-pointer">
               Sync Now
@@ -207,51 +207,51 @@ export default function DriverApp() {
         <div className="p-3.5 space-y-3.5 pb-20">
 
           {/* 1. TURN-BY-TURN INSTRUCTION CARD (HUD) */}
-          <section className="bg-slate-900 text-white rounded-2xl p-4 border border-slate-800 shadow-xl relative overflow-hidden">
+          <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-xl relative overflow-hidden transition-colors">
             <div className="flex items-start gap-3.5">
               <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/30">
                 <CornerUpRight size={26} className="stroke-[2.5]" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-400">
+                <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                   <span>IN 3.2 KM</span>
                   <span>•</span>
                   <span>SPEED LIMIT {vehicle.speedLimit} KM/H</span>
                 </div>
-                <h1 className="text-sm sm:text-base font-black text-white leading-snug mt-0.5">
+                <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug mt-0.5">
                   {isDriverRerouted
                     ? 'Follow NH-106 East Bypass towards Ri-Bhoi Corridor'
                     : 'Turn Left onto NH-106 Bypass (Safe Landslide Detour)'}
                 </h1>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   Destination: {shipment.destinationFacility}
                 </p>
               </div>
             </div>
 
             {/* Live Telemetry Gauges */}
-            <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-white/10 text-center">
-              <div className="bg-white/5 p-2 rounded-xl">
-                <div className="text-[9px] text-slate-400 font-semibold">SPEED</div>
-                <div className="text-base font-black text-white font-mono">{speed}</div>
-                <div className="text-[8px] text-slate-400">km/h</div>
+            <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-white/10 text-center">
+              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">SPEED</div>
+                <div className="text-base font-black text-slate-900 dark:text-white font-mono">{speed}</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400">km/h</div>
               </div>
-              <div className="bg-white/5 p-2 rounded-xl">
-                <div className="text-[9px] text-slate-400 font-semibold">ELEVATION</div>
-                <div className="text-base font-black text-white font-mono">{vehicle.currentElevation}</div>
-                <div className="text-[8px] text-slate-400">meters</div>
+              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ELEVATION</div>
+                <div className="text-base font-black text-slate-900 dark:text-white font-mono">{vehicle.currentElevation}</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400">meters</div>
               </div>
-              <div className="bg-white/5 p-2 rounded-xl">
-                <div className="text-[9px] text-slate-400 font-semibold">GRADIENT</div>
-                <div className="text-base font-black text-orange-400 font-mono">{vehicle.slopeGradient}°</div>
-                <div className="text-[8px] text-slate-400">slope</div>
+              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">GRADIENT</div>
+                <div className="text-base font-black text-orange-600 dark:text-orange-400 font-mono">{vehicle.slopeGradient}°</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400">slope</div>
               </div>
-              <div className="bg-white/5 p-2 rounded-xl">
-                <div className="text-[9px] text-slate-400 font-semibold">ROUTE RISK</div>
-                <div className={clsx('text-base font-black font-mono', isDriverRerouted ? 'text-emerald-400' : 'text-red-400')}>
+              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ROUTE RISK</div>
+                <div className={clsx('text-base font-black font-mono', isDriverRerouted ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
                   {isDriverRerouted ? '24%' : '91%'}
                 </div>
-                <div className="text-[8px] text-slate-400">{isDriverRerouted ? 'Low' : 'Critical'}</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400">{isDriverRerouted ? 'Low' : 'Critical'}</div>
               </div>
             </div>
           </section>
@@ -542,7 +542,7 @@ export default function DriverApp() {
       )}
 
       {/* ── DRIVER BOTTOM NAVIGATION BAR ── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-slate-950/95 backdrop-blur-lg border-t border-slate-800 px-3 py-2 flex items-center justify-around select-none text-white">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 px-3 py-2 flex items-center justify-around select-none text-slate-700 dark:text-white transition-colors">
         {[
           { id: 'nav', label: 'Navigation', icon: <Navigation size={18} /> },
           { id: 'reroute', label: 'AI Reroute', icon: <RotateCcw size={18} /> },
@@ -557,8 +557,8 @@ export default function DriverApp() {
               className={clsx(
                 'flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all cursor-pointer',
                 isActive
-                  ? 'text-emerald-400 font-bold scale-105'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-emerald-600 dark:text-emerald-400 font-bold scale-105'
+                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               )}
             >
               {tab.icon}
