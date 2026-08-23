@@ -1,0 +1,10 @@
+{
+  "name": "purvasaarthi-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix routemind",
+    "build": "npm run build --prefix routemind",
+    "lint": "npm run lint --prefix routemind",
+    "preview": "npm run preview --prefix routemind"
+  }
+}
