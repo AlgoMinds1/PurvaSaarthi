@@ -103,6 +103,7 @@ export default function LiveMap() {
   } = useAppStore();
 
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isHudMinimized, setIsHudMinimized] = useState(false);
 
   const [layers, setLayers] = useState<Record<LayerKey, boolean>>({
     roads: true, bridges: true, districts: true,
@@ -363,7 +364,7 @@ export default function LiveMap() {
 
     const currentStage = simStages[cascadeStep] || simStages[0];
 
-    // Smoothly fly map to focus area
+    // Smoothly fly map to focus area (offset slightly to leave right side clear)
     map.flyTo(currentStage.focusCoords, currentStage.zoom, { duration: 1.0 });
 
     // Stage 1: Collapse on NH-27
@@ -483,10 +484,10 @@ export default function LiveMap() {
   return (
     <div className="flex h-full min-h-0 bg-slate-100 dark:bg-[#070c18] transition-colors duration-200">
       
-      {/* Left-side Layer & Fleet Drawer (Hidden during fullscreen live simulation) */}
+      {/* Left-side Layer & Fleet Drawer */}
       <div className={clsx(
         'w-64 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col transition-all duration-300',
-        isSimulatingOnMap && 'hidden md:flex'
+        isSimulatingOnMap && 'hidden lg:flex'
       )}>
         {/* Layer Controls Header */}
         <div className="p-4 border-b border-slate-200 dark:border-white/[0.06]">
@@ -597,124 +598,147 @@ export default function LiveMap() {
           </div>
         )}
 
-        {/* ── REAL-TIME CASCADE SIMULATION FLOATING HUD ── */}
+        {/* ── REAL-TIME CASCADE SIMULATION RIGHT-DOCK PANEL / HUD ── */}
         {isSimulatingOnMap && (
-          <div className="absolute bottom-5 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 z-[1000] max-w-3xl w-full animate-fade-up">
-            <div className="bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 sm:p-5 space-y-3.5 text-slate-900 dark:text-slate-100">
+          <div className={clsx(
+            'absolute top-4 right-4 z-[1000] transition-all duration-300 animate-fade-in',
+            isHudMinimized ? 'w-auto' : 'w-96 max-w-[calc(100vw-2rem)] max-h-[calc(100vh-5rem)] overflow-y-auto'
+          )}>
+            <div className="bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 space-y-3 text-slate-900 dark:text-slate-100">
               
-              {/* Top HUD Controls Bar */}
-              <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-white shadow-xs">
-                    <Zap size={16} className="animate-pulse" />
+              {/* Top Bar with Step Circles, Play/Pause & Minimize/Exit */}
+              <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] pb-2.5 gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-white shadow-xs shrink-0">
+                    <Zap size={14} className="animate-pulse" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                        Live Cascade Failure Simulation
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] font-black uppercase tracking-wide text-slate-900 dark:text-white truncate">
+                        Cascade Simulation
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30">
+                      <span className="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30 shrink-0">
                         {currentStage.badge}
                       </span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                      Simulating real-time domino disruptions on North East GIS corridors
                     </div>
                   </div>
                 </div>
 
-                {/* Step indicator pills */}
-                <div className="flex items-center gap-1.5">
-                  <div className="hidden sm:flex items-center gap-1 mr-2">
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer shadow-2xs"
+                    title={isAutoPlaying ? 'Pause Auto-Play' : 'Play Auto-Play'}
+                  >
+                    {isAutoPlaying ? <Pause size={13} className="text-amber-500" /> : <Play size={13} />}
+                  </button>
+
+                  <button
+                    onClick={() => setIsHudMinimized(!isHudMinimized)}
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] text-slate-600 dark:text-slate-300 transition-colors cursor-pointer shadow-2xs text-[11px] font-bold"
+                    title={isHudMinimized ? 'Expand Detailed Telemetry' : 'Minimize Controller'}
+                  >
+                    {isHudMinimized ? 'Expand' : 'Hide'}
+                  </button>
+
+                  <button
+                    onClick={stopMapSimulation}
+                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-600 dark:bg-white/[0.08] dark:hover:bg-red-500/20 text-slate-500 dark:text-slate-400 transition-colors cursor-pointer shadow-2xs"
+                    title="Exit Live Simulation"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Collapsed Mini Summary View */}
+              {isHudMinimized ? (
+                <div className="flex items-center justify-between gap-3 pt-1 text-xs">
+                  <span className="font-bold text-slate-900 dark:text-white truncate">{currentStage.headline}</span>
+                  <button
+                    onClick={() => setCascadeStep((cascadeStep + 1) % simStages.length)}
+                    className="text-amber-600 dark:text-amber-400 font-bold hover:underline shrink-0 text-xs"
+                  >
+                    Next Stage →
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Step Pills */}
+                  <div className="flex items-center justify-between gap-1 pt-0.5">
                     {simStages.map((s, idx) => (
                       <button
                         key={idx}
                         onClick={() => setCascadeStep(idx)}
                         className={clsx(
-                          'w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all cursor-pointer',
+                          'flex-1 py-1 rounded-lg text-[10px] font-bold flex items-center justify-center transition-all cursor-pointer border',
                           cascadeStep === idx
-                            ? 'bg-amber-500 text-white shadow-xs scale-110'
+                            ? 'bg-amber-500 text-white border-amber-600 shadow-xs'
                             : cascadeStep > idx
-                            ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30'
-                            : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 border border-slate-200 dark:border-white/[0.05]'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
+                            : 'bg-slate-50 dark:bg-white/[0.03] text-slate-400 border-slate-200 dark:border-white/[0.05]'
                         )}
                         title={s.title}
                       >
-                        {cascadeStep > idx ? <Check size={10} /> : idx + 1}
+                        {cascadeStep > idx ? <Check size={11} className="text-emerald-600 dark:text-emerald-400" /> : `Stage ${idx + 1}`}
                       </button>
                     ))}
                   </div>
 
-                  <button
-                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-                    className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer shadow-2xs"
-                    title={isAutoPlaying ? 'Pause Auto Sequence' : 'Play Auto Sequence'}
-                  >
-                    {isAutoPlaying ? <Pause size={14} className="text-amber-500" /> : <Play size={14} />}
-                  </button>
-
-                  <button
-                    onClick={stopMapSimulation}
-                    className="p-2 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-600 dark:bg-white/[0.08] dark:hover:bg-red-500/20 text-slate-500 dark:text-slate-400 transition-colors cursor-pointer shadow-2xs"
-                    title="Exit Live Simulation"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Stage Description & Headline */}
-              <div className="space-y-1.5">
-                <div className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                  <span>{currentStage.headline}</span>
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.03] p-3 rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
-                  {currentStage.desc}
-                </p>
-              </div>
-
-              {/* Real-Time Metrics Row */}
-              <div className="grid grid-cols-3 gap-2.5">
-                {currentStage.metrics.map((m, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] shadow-2xs">
-                    <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{m.l}</div>
-                    <div className={clsx('text-xs sm:text-sm font-bold mt-0.5 truncate', m.c)}>{m.v}</div>
+                  {/* Stage Headline & Live Description */}
+                  <div className="space-y-1.5">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-ping shrink-0" />
+                      <span>{currentStage.headline}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.03] p-2.5 rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
+                      {currentStage.desc}
+                    </p>
                   </div>
-                ))}
-              </div>
 
-              {/* Bottom Nav Action Bar */}
-              <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-white/[0.06]">
-                <button
-                  onClick={() => setCascadeStep(Math.max(0, cascadeStep - 1))}
-                  disabled={cascadeStep === 0}
-                  className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
-                >
-                  Previous Stage
-                </button>
+                  {/* Real-Time Metrics Row */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {currentStage.metrics.map((m, idx) => (
+                      <div key={idx} className="p-2 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] shadow-2xs">
+                        <div className="text-[9px] font-semibold text-slate-500 dark:text-slate-400">{m.l}</div>
+                        <div className={clsx('text-xs font-bold mt-0.5 truncate', m.c)}>{m.v}</div>
+                      </div>
+                    ))}
+                  </div>
 
-                {cascadeStep < simStages.length - 1 ? (
-                  <button
-                    onClick={() => setCascadeStep(cascadeStep + 1)}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
-                  >
-                    <span>Propagate To Stage {cascadeStep + 2}</span>
-                    <ArrowRight size={13} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      stopMapSimulation();
-                      openRerouteModal();
-                    }}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
-                  >
-                    <ShieldAlert size={14} />
-                    <span>Execute Safe Detour Action</span>
-                  </button>
-                )}
-              </div>
+                  {/* Action Nav Bar */}
+                  <div className="flex items-center justify-between pt-1.5 border-t border-slate-200/60 dark:border-white/[0.06]">
+                    <button
+                      onClick={() => setCascadeStep(Math.max(0, cascadeStep - 1))}
+                      disabled={cascadeStep === 0}
+                      className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
+                    >
+                      Prev
+                    </button>
+
+                    {cascadeStep < simStages.length - 1 ? (
+                      <button
+                        onClick={() => setCascadeStep(cascadeStep + 1)}
+                        className="flex items-center gap-1 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                      >
+                        <span>Stage {cascadeStep + 2}</span>
+                        <ArrowRight size={12} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          stopMapSimulation();
+                          openRerouteModal();
+                        }}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
+                      >
+                        <ShieldAlert size={13} />
+                        <span>Apply Reroute</span>
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
 
             </div>
           </div>
@@ -725,3 +749,4 @@ export default function LiveMap() {
     </div>
   );
 }
+
