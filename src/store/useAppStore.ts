@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Alert } from '../types';
+import type { Alert, Shipment, CommodityType, CommodityItem } from '../types';
 import { alerts as initialAlerts, shipments, vehicles, districts } from '../data/mockData';
 
 export type AppView =
@@ -56,8 +56,19 @@ interface AppState {
   clearSelectedVehicle: () => void;
 
   // Consignee / User Delivery Tracking PWA
+  shipmentsList: Shipment[];
   selectedShipmentId: string;
   setSelectedShipmentId: (id: string) => void;
+  placeUserOrder: (order: {
+    commodity: CommodityType;
+    commodityLabel: string;
+    destinationFacility: string;
+    destinationDistrictId?: string;
+    priority: number;
+    items: CommodityItem[];
+    consigneeName?: string;
+    consigneePhone?: string;
+  }) => Shipment;
 
   // Driver Navigation & Rerouting PWA
   isDriverRerouted: boolean;
@@ -181,8 +192,122 @@ export const useAppStore = create<AppState>((set) => ({
   clearSelectedVehicle: () => set({ selectedVehicleId: null }),
 
   // User delivery tracking
+  shipmentsList: [...shipments],
   selectedShipmentId: 'SHIP-104',
   setSelectedShipmentId: (id) => set({ selectedShipmentId: id }),
+  placeUserOrder: (orderData) => {
+    const newId = `SHIP-${Math.floor(120 + Math.random() * 800)}`;
+    const trackNum = `PS-${orderData.commodity.toUpperCase().slice(0, 3)}-${Math.floor(1000 + Math.random() * 9000)}-NER`;
+    const now = new Date();
+    const dispatchTimeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const etaDate = new Date(now.getTime() + 4 * 60 * 60 * 1000);
+    const etaTimeStr = etaDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newShipment: Shipment = {
+      id: newId,
+      trackingNumber: trackNum,
+      vehicleId: 'TRK-204',
+      commodity: orderData.commodity,
+      commodityLabel: orderData.commodityLabel,
+      priority: orderData.priority,
+      origin: 'Guwahati Central Depot',
+      originHub: 'Guwahati Medical & Essential Supplies Hub #1',
+      destinationDistrictId: orderData.destinationDistrictId || 'dist-x',
+      destinationFacility: orderData.destinationFacility,
+      status: 'ON_TIME',
+      routeRisk: 18,
+      predictedDelay: 0,
+      dispatchedDate: 'Today',
+      dispatchedTime: dispatchTimeStr,
+      expectedDeliveryDate: 'Today',
+      expectedDeliveryTime: etaTimeStr,
+      originalEtaTime: etaTimeStr,
+      eta: etaTimeStr,
+      stockDaysRemaining: 3.5,
+      supplyShortageRisk: 'LOW',
+      alternativeRoute: 'NH-106 Direct Corridor',
+      currentRoadName: 'NH-27 Lifeline Corridor (Guwahati Outskirts)',
+      currentRoadCondition: 'Clear flow, terrain resilience monitored',
+      weatherRiskSummary: 'Clear skies, no critical mudslide warnings',
+      rainfallMm: 12,
+      consigneeName: orderData.consigneeName || 'Dr. Anamika Das (Chief Medical Officer)',
+      consigneeRole: 'District Facility Supply Officer',
+      consigneePhone: orderData.consigneePhone || '+91 94350 44912',
+      milestones: [
+        {
+          id: `m-1-${newId}`,
+          title: 'Order Placed & Requisition Verified',
+          description: 'Emergency requisition logged with PurvaSaarthi resilience dispatch engine.',
+          timestamp: dispatchTimeStr,
+          status: 'completed',
+          location: 'Guwahati Central Depot',
+        },
+        {
+          id: `m-2-${newId}`,
+          title: 'Cargo Loaded & Dispatched',
+          description: 'Lifeline transport TRK-204 departed loading dock. Corridor telemetry active.',
+          timestamp: 'Just now',
+          status: 'current',
+          location: 'Guwahati Departure Gate',
+        },
+        {
+          id: `m-3-${newId}`,
+          title: 'Hill Corridor Transit',
+          description: 'Monitored transit via automated landslide risk evasion path.',
+          timestamp: `ETA ${etaTimeStr}`,
+          status: 'upcoming',
+          location: 'Ri-Bhoi Hill Section',
+        },
+        {
+          id: `m-4-${newId}`,
+          title: 'Arrival & Consignee Handover',
+          description: `Delivery to ${orderData.destinationFacility} with digital QR verification.`,
+          timestamp: `ETA ${etaTimeStr}`,
+          status: 'upcoming',
+          location: orderData.destinationFacility,
+        },
+      ],
+      items: orderData.items.length > 0 ? orderData.items : [
+        {
+          id: `item-${Date.now()}`,
+          name: orderData.commodityLabel,
+          quantity: '1 Full Batch (Requisitioned)',
+          category: orderData.commodity,
+          batchNumber: `BAT-${Math.floor(1000 + Math.random() * 9000)}`,
+        }
+      ],
+    };
+
+    const newAlert: Alert = {
+      id: `ALT-ORD-${Date.now()}`,
+      severity: 'INFO',
+      title: {
+        en: `New Requisition Placed: ${orderData.commodityLabel} (${newId})`,
+        hi: `नया आदेश दिया गया: ${orderData.commodityLabel} (${newId})`,
+        as: `নতুন অৰ্ডাৰ দিয়া হ'ল: ${orderData.commodityLabel} (${newId})`,
+        bn: `নতুন অর্ডার দেওয়া হয়েছে: ${orderData.commodityLabel} (${newId})`,
+      },
+      body: {
+        en: `Order #${newId} dispatched for ${orderData.destinationFacility}. Tracking is live on corridor map.`,
+        hi: `${orderData.destinationFacility} के लिए आदेश #${newId} भेजा गया।`,
+        as: `${orderData.destinationFacility} ৰ বাবে অৰ্ডাৰ #${newId} প্ৰেৰণ কৰা হৈছে।`,
+        bn: `${orderData.destinationFacility} এর জন্য অর্ডার #${newId} পাঠানো হয়েছে।`,
+      },
+      timestamp: 'Just now',
+      shipmentId: newId,
+      read: false,
+      actionRequired: false,
+    };
+
+    set((s) => ({
+      shipmentsList: [newShipment, ...s.shipmentsList],
+      selectedShipmentId: newId,
+      alerts: [newAlert, ...s.alerts],
+      unreadCount: s.unreadCount + 1,
+    }));
+
+    return newShipment;
+  },
 
   // Driver navigation state
   isDriverRerouted: false,
