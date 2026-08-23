@@ -172,7 +172,7 @@ export const useAppStore = create<AppState>((set) => ({
   activeView: 'command',
   setView: (v) => set({ activeView: v }),
 
-  sidebarCollapsed: false,
+  sidebarCollapsed: true,
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
 
