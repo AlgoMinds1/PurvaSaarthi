@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import {
-  ArrowRight, GitBranch, Route, Truck, Package, Building2,
-  AlertTriangle, AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map, Activity
+  ArrowRight, Route, Truck, Package, Building2,
+  AlertTriangle, AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map,
+  Activity, Sliders, ShieldAlert
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
@@ -20,19 +21,19 @@ function KpiCard({
     <button
       onClick={onClick}
       className={clsx(
-        'glass-card p-4.5 text-left flex items-start gap-3.5 hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-all duration-200 group cursor-pointer border border-slate-200 dark:border-white/[0.07]',
+        'glass-card p-4 text-left flex items-start gap-3 hover:bg-slate-50 dark:hover:bg-white/[0.05] transition-all duration-200 group cursor-pointer border border-slate-200 dark:border-white/[0.07]',
         critical && 'border-orange-300 dark:border-orange-500/20 bg-orange-50/60 dark:bg-orange-500/[0.04]'
       )}
     >
       <div className={clsx(
-        'w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-xs',
+        'w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-xs',
         critical ? 'bg-orange-100 dark:bg-orange-500/15' : 'bg-slate-100 dark:bg-white/[0.06]'
       )}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <div className={clsx(
-          'text-2xl font-black leading-none mb-1.5',
+          'text-2xl font-black leading-none mb-1',
           critical ? 'gradient-text-orange' : 'text-slate-900 dark:text-white'
         )}>
           {value}
@@ -41,100 +42,13 @@ function KpiCard({
       </div>
       {trend && (
         <div className={clsx(
-          'text-xs font-bold px-2 py-0.5 rounded-md shrink-0 border',
+          'text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 border',
           trendUp ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-transparent' : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-500/10 dark:text-slate-400 dark:border-transparent'
         )}>
           {trend}
         </div>
       )}
     </button>
-  );
-}
-
-// ── INTEL CARD ───────────────────────────────────────────────────────────────
-function IntelCard({
-  severity, title, children, time, onAction, actionLabel
-}: {
-  severity: 'EMERGENCY' | 'CRITICAL' | 'HIGH';
-  title: string; children: React.ReactNode;
-  time: string; onAction?: () => void; actionLabel?: string;
-}) {
-  const colors = {
-    EMERGENCY: 'border-red-200 bg-red-50/80 dark:border-red-500/25 dark:bg-red-500/[0.05]',
-    CRITICAL: 'border-orange-200 bg-orange-50/80 dark:border-orange-500/25 dark:bg-orange-500/[0.05]',
-    HIGH: 'border-yellow-200 bg-yellow-50/80 dark:border-yellow-500/20 dark:bg-yellow-500/[0.04]',
-  };
-  const badgeColors = {
-    EMERGENCY: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30',
-    CRITICAL: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-400 dark:border-orange-500/30',
-    HIGH: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-500/15 dark:text-yellow-400 dark:border-yellow-500/20',
-  };
-  return (
-    <div className={clsx('rounded-xl border p-4 animate-fade-up shadow-xs', colors[severity])}>
-      <div className="flex items-start justify-between gap-2 mb-2.5">
-        <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded border', badgeColors[severity])}>
-          {severity}
-        </span>
-        <span className="text-slate-500 dark:text-slate-400 text-[11px] font-mono font-medium">{time}</span>
-      </div>
-      <div className="text-slate-900 dark:text-white text-sm font-bold mb-3 leading-snug">{title}</div>
-      <div className="space-y-1.5 mb-3">{children}</div>
-      {onAction && (
-        <button
-          onClick={onAction}
-          className="text-xs font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors cursor-pointer"
-        >
-          {actionLabel ?? 'View Details'} <ArrowRight size={12} />
-        </button>
-      )}
-    </div>
-  );
-}
-
-function IntelRow({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (
-    <div className="flex items-center justify-between text-xs">
-      <span className="text-slate-600 dark:text-slate-400 font-medium">{label}</span>
-      <span className={clsx('font-bold', color ?? 'text-slate-900 dark:text-slate-200')}>{value}</span>
-    </div>
-  );
-}
-
-// ── CASCADE CHAIN ─────────────────────────────────────────────────────────────
-function CascadeChain() {
-  const steps = [
-    { label: 'Road A', sub: 'HIGH RISK', danger: true },
-    { label: 'Truck #204', sub: 'AFFECTED', danger: true },
-    { label: 'Shipment #104', sub: 'DELAYED', danger: true },
-    { label: 'District X', sub: '1.7 DAYS', danger: true, critical: true },
-  ];
-  return (
-    <div className="glass-card p-4 rounded-xl border border-slate-200 dark:border-white/[0.07]">
-      <div className="flex items-center gap-2 mb-3">
-        <GitBranch size={14} className="text-orange-600 dark:text-orange-400" />
-        <span className="text-xs font-bold text-slate-900 dark:text-slate-300 tracking-wide">CASCADE IMPACT CHAIN</span>
-      </div>
-      <div className="flex items-center gap-1.5 flex-wrap">
-        {steps.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-1.5">
-            <div className={clsx(
-              'px-2.5 py-1.5 rounded-lg border text-center shadow-xs',
-              s.critical
-                ? 'bg-red-50 border-red-200 text-red-800 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400'
-                : 'bg-orange-50 border-orange-200 text-orange-800 dark:bg-orange-500/10 dark:border-orange-500/20 dark:text-orange-300'
-            )}>
-              <div className={clsx('text-[11px] font-bold', s.critical ? 'text-red-800 dark:text-red-400' : 'text-orange-800 dark:text-orange-300')}>
-                {s.label}
-              </div>
-              <div className="text-[9px] text-slate-600 dark:text-slate-400 mt-0.5 font-medium">{s.sub}</div>
-            </div>
-            {i < steps.length - 1 && (
-              <span className="text-orange-600 dark:text-orange-400 text-xs font-bold">→</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -146,12 +60,12 @@ function MiniMap() {
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
     const map = L.map(mapRef.current, {
-      center: [25.9, 92.0],
+      center: [25.9, 92.2],
       zoom: 7,
-      zoomControl: false,
+      zoomControl: true,
       attributionControl: true,
-      dragging: false,
-      scrollWheelZoom: false,
+      dragging: true,
+      scrollWheelZoom: true,
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
@@ -181,141 +95,190 @@ function MiniMap() {
     mapInstance.current = map;
   }, []);
 
-  return <div ref={mapRef} className="w-full h-full rounded-b-xl" />;
+  return <div ref={mapRef} className="w-full h-full min-h-[460px] rounded-b-xl" />;
 }
 
-// ── STATS STRIP ───────────────────────────────────────────────────────────────
-function StatsStrip() {
-  const stats = [
-    { icon: <CloudRain size={18} className="text-blue-500" />, val: '87mm', lbl: 'Forecast Rainfall' },
-    { icon: <Mountain size={18} className="text-amber-500" />, val: 'HIGH', lbl: 'Terrain Risk' },
-    { icon: <Radio size={18} className="text-emerald-500" />, val: '24', lbl: 'Roads Monitored' },
-    { icon: <Landmark size={18} className="text-cyan-500" />, val: '8', lbl: 'Bridges Active' },
-    { icon: <Package size={18} className="text-orange-500" />, val: '23', lbl: 'Active Shipments' },
-    { icon: <Users size={18} className="text-purple-500" />, val: '7', lbl: 'Field Officers' },
-  ];
+// ── PARAMETER ROW ─────────────────────────────────────────────────────────────
+function ParamItem({
+  icon, label, value, sub, status
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  sub?: string;
+  status?: 'warning' | 'alert' | 'success' | 'normal';
+}) {
+  const statusColors = {
+    warning: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20',
+    alert: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20',
+    success: 'text-emerald-600 dark:text-green-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20',
+    normal: 'text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-white/[0.03] border-slate-200/80 dark:border-white/[0.05]'
+  };
+
   return (
-    <div className="grid grid-cols-6 gap-3">
-      {stats.map((s) => (
-        <div key={s.lbl} className="glass-card px-4 py-3 flex items-center gap-3 border border-slate-200 dark:border-white/[0.07]">
-          <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
-            {s.icon}
-          </div>
-          <div>
-            <div className="text-slate-900 dark:text-white font-bold text-sm">{s.val}</div>
-            <div className="text-slate-600 dark:text-slate-400 text-[10px] font-medium">{s.lbl}</div>
-          </div>
+    <div className={clsx('p-2.5 rounded-xl border flex items-center justify-between transition-all', statusColors[status ?? 'normal'])}>
+      <div className="flex items-center gap-2.5 min-w-0">
+        <div className="w-8 h-8 rounded-lg bg-white dark:bg-white/[0.08] shadow-2xs flex items-center justify-center shrink-0">
+          {icon}
         </div>
-      ))}
+        <div className="min-w-0">
+          <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 truncate">{label}</div>
+          {sub && <div className="text-[9px] text-slate-400 dark:text-slate-500 truncate">{sub}</div>}
+        </div>
+      </div>
+      <div className="text-right pl-2 shrink-0">
+        <div className="text-xs font-bold text-slate-900 dark:text-white">{value}</div>
+      </div>
     </div>
   );
 }
 
 // ── MAIN COMMAND CENTER ────────────────────────────────────────────────────────
 export default function CommandCenter() {
-  const { setView, openRerouteModal } = useAppStore();
-
+  const { setView } = useAppStore();
   const unreadCritical = shipments.filter(s => s.status === 'AT_RISK').length;
 
   return (
-    <div className="flex flex-col gap-5 h-full overflow-y-auto p-6 transition-colors duration-200">
+    <div className="flex flex-col gap-4 h-full overflow-y-auto p-6 transition-colors duration-200">
 
-      {/* KPI Grid */}
+      {/* Top KPI Grid */}
       <div className="grid grid-cols-6 gap-3">
-        <KpiCard label="Roads at Risk" value={7} icon={<Route size={20} className="text-orange-500" />} trend="↑ 2" trendUp onClick={() => setView('roads')} />
-        <KpiCard label="Active Vehicles" value={18} icon={<Truck size={20} className="text-blue-500" />} trend="→ 0" onClick={() => setView('vehicles')} />
-        <KpiCard label="Supplies at Risk" value={4} icon={<Package size={20} className="text-amber-500" />} trend="↑ 1" trendUp critical onClick={() => setView('supply')} />
-        <KpiCard label="Districts at Risk" value={3} icon={<Building2 size={20} className="text-purple-500" />} trend="↑ 1" trendUp onClick={() => setView('districts')} />
-        <KpiCard label="Peak Isolation Risk" value="87%" icon={<AlertTriangle size={20} className="text-red-500" />} trend="↑ 12%" trendUp critical onClick={() => setView('districts')} />
-        <KpiCard label="Critical Alerts" value={unreadCritical} icon={<AlertOctagon size={20} className="text-red-500" />} trend="NEW" trendUp critical onClick={() => setView('alerts')} />
+        <KpiCard label="Roads at Risk" value={7} icon={<Route size={18} className="text-orange-500" />} trend="↑ 2" trendUp onClick={() => setView('roads')} />
+        <KpiCard label="Active Vehicles" value={18} icon={<Truck size={18} className="text-blue-500" />} trend="→ 0" onClick={() => setView('vehicles')} />
+        <KpiCard label="Supplies at Risk" value={4} icon={<Package size={18} className="text-amber-500" />} trend="↑ 1" trendUp critical onClick={() => setView('supply')} />
+        <KpiCard label="Districts at Risk" value={3} icon={<Building2 size={18} className="text-purple-500" />} trend="↑ 1" trendUp onClick={() => setView('districts')} />
+        <KpiCard label="Peak Isolation Risk" value="87%" icon={<AlertTriangle size={18} className="text-red-500" />} trend="↑ 12%" trendUp critical onClick={() => setView('districts')} />
+        <KpiCard label="Critical Alerts" value={unreadCritical} icon={<AlertOctagon size={18} className="text-red-500" />} trend="NEW" trendUp critical onClick={() => setView('alerts')} />
       </div>
 
-      {/* Main body: Map + Intel Panel */}
-      <div className="grid grid-cols-[1fr_380px] gap-5 flex-1 min-h-0" style={{ minHeight: '420px' }}>
+      {/* Main Expanded Map View + Telemetry Parameters Rail */}
+      <div className="grid grid-cols-[1fr_290px] gap-4 flex-1 min-h-[500px]">
 
-        {/* Mini Map */}
-        <div className="glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07]">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
+        {/* Expanded Regional Map */}
+        <div className="glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
             <div className="flex items-center gap-2">
               <Map size={16} className="text-orange-500" />
-              <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Status Map</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Operations GIS Map</span>
             </div>
-            <button
-              onClick={() => setView('map')}
-              className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
-            >
-              Full Map <ArrowRight size={12} />
-            </button>
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/20">
+                <span className="pulse-dot green" /> LIVE GIS
+              </span>
+              <button
+                onClick={() => setView('map')}
+                className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
+              >
+                Full GIS View <ArrowRight size={12} />
+              </button>
+            </div>
           </div>
-          <div className="flex-1 min-h-0">
+
+          <div className="flex-1 min-h-0 relative">
             <MiniMap />
           </div>
-          {/* Legend */}
-          <div className="flex items-center gap-4 px-4 py-2 border-t border-slate-200 dark:border-white/[0.05] text-[10px] text-slate-700 dark:text-slate-400 bg-slate-50/70 dark:bg-transparent font-medium">
-            {[['#22c55e', 'Open'], ['#eab308', 'Degraded'], ['#f97316', 'High Risk'], ['#ef4444', 'Blocked'], ['#6b7280', 'Unknown']].map(([c, l]) => (
-              <span key={l} className="flex items-center gap-1">
-                <span className="inline-block w-6 h-1.5 rounded-full" style={{ background: c }} />
-                {l}
-              </span>
-            ))}
-          </div>
-        </div>
 
-        {/* Critical Intelligence */}
-        <div className="flex flex-col gap-3 overflow-y-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Activity size={16} className="text-orange-500" />
-              <span className="text-sm font-bold text-slate-900 dark:text-white">Critical Intelligence</span>
+          {/* Map Legend */}
+          <div className="flex items-center justify-between px-4 py-2 border-t border-slate-200 dark:border-white/[0.05] text-[11px] text-slate-700 dark:text-slate-400 bg-slate-50/70 dark:bg-white/[0.02] font-medium">
+            <div className="flex items-center gap-4">
+              {[['#22c55e', 'Open'], ['#eab308', 'Degraded'], ['#f97316', 'High Risk'], ['#ef4444', 'Blocked'], ['#6b7280', 'Unknown']].map(([c, l]) => (
+                <span key={l} className="flex items-center gap-1.5">
+                  <span className="inline-block w-4 h-1.5 rounded-full" style={{ background: c }} />
+                  {l}
+                </span>
+              ))}
             </div>
-            <span className="flex items-center gap-1.5 text-[10px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-transparent px-2 py-0.5 rounded-full border border-emerald-200 dark:border-transparent">
-              <span className="pulse-dot green" /> LIVE
-            </span>
+            <div className="text-[10px] text-slate-400">
+              Interactive Zoom & Pan Enabled
+            </div>
+          </div>
+        </div>
+
+        {/* Necessary Parameters Panel (Right Side) */}
+        <div className="glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] flex flex-col justify-between gap-3 overflow-y-auto">
+          
+          <div>
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.06] mb-3">
+              <div className="flex items-center gap-2">
+                <Sliders size={15} className="text-orange-500" />
+                <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">REGIONAL PARAMETERS</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">NER OPS</span>
+            </div>
+
+            {/* Environmental Parameters */}
+            <div className="space-y-2 mb-3">
+              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Environmental Telemetry</div>
+              <ParamItem
+                icon={<CloudRain size={15} className="text-blue-500" />}
+                label="Forecast Rainfall"
+                sub="Next 24 Hours"
+                value="87 mm"
+                status="warning"
+              />
+              <ParamItem
+                icon={<Mountain size={15} className="text-amber-500" />}
+                label="Terrain Gradient"
+                sub="Landslide Probability"
+                value="HIGH (32°)"
+                status="alert"
+              />
+            </div>
+
+            {/* Network & Infrastructure */}
+            <div className="space-y-2 mb-3">
+              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Network Telemetry</div>
+              <ParamItem
+                icon={<Radio size={15} className="text-emerald-500" />}
+                label="Roads Monitored"
+                sub="National Highways"
+                value="24 Corridors"
+                status="success"
+              />
+              <ParamItem
+                icon={<Landmark size={15} className="text-cyan-500" />}
+                label="Active Bridges"
+                sub="Key River Crossings"
+                value="8 Bridges"
+                status="normal"
+              />
+              <ParamItem
+                icon={<Users size={15} className="text-purple-500" />}
+                label="Field Response"
+                sub="On-ground Personnel"
+                value="7 Officers"
+                status="normal"
+              />
+            </div>
+
+            {/* Resilience Index */}
+            <div className="space-y-2">
+              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Cascade Vulnerability</div>
+              <ParamItem
+                icon={<ShieldAlert size={15} className="text-red-500" />}
+                label="Peak Disruption Corridor"
+                sub="Single Point of Failure"
+                value="NH-06 (91%)"
+                status="alert"
+              />
+            </div>
           </div>
 
-          <IntelCard
-            severity="CRITICAL"
-            title="Medicine Shipment #104 at Risk"
-            time="14:32"
-            onAction={openRerouteModal}
-            actionLabel="Reroute Now"
-          >
-            <IntelRow label="Route Risk" value="91%" color="text-red-600 dark:text-red-400" />
-            <IntelRow label="Current Stock" value="1.7 days" />
-            <IntelRow label="Predicted Delay" value="+11 hours" color="text-orange-600 dark:text-orange-400" />
-            <IntelRow label="Last Safe Action" value="Before 4:30 PM" color="text-yellow-700 dark:text-yellow-400" />
-          </IntelCard>
+          {/* Quick Action */}
+          <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06]">
+            <button
+              onClick={() => setView('roads')}
+              className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+            >
+              <Activity size={13} />
+              <span>Inspect All Corridors</span>
+            </button>
+          </div>
 
-          <IntelCard
-            severity="HIGH"
-            title="District X — Isolation Risk 87%"
-            time="14:28"
-            onAction={() => setView('districts')}
-            actionLabel="View District"
-          >
-            <IntelRow label="Connectivity" value="72%" color="text-orange-600 dark:text-orange-400" />
-            <IntelRow label="Alt. Routes" value="2 available" />
-            <IntelRow label="Supply Coverage" value="2.8 days" />
-          </IntelCard>
-
-          <IntelCard
-            severity="HIGH"
-            title="Road A — 91% Disruption Probability"
-            time="14:19"
-            onAction={() => setView('roads')}
-            actionLabel="Road Details"
-          >
-            <IntelRow label="Rainfall" value="87mm forecast" />
-            <IntelRow label="Terrain Slope" value="32°" color="text-orange-600 dark:text-orange-400" />
-            <IntelRow label="Confidence" value="89%" color="text-emerald-700 dark:text-green-400" />
-          </IntelCard>
-
-          <CascadeChain />
         </div>
-      </div>
 
-      {/* Stats Strip */}
-      <StatsStrip />
+      </div>
 
     </div>
   );
