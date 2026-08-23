@@ -238,35 +238,6 @@ export default function UserDeliveryTracker() {
           </div>
         </div>
 
-        {/* Horizontal Order Quick Selector Chips */}
-        <div className="flex items-center gap-1.5 mt-2.5 overflow-x-auto no-scrollbar pb-0.5">
-          {shipmentsList.map((s) => {
-            const isSelected = s.id === currentShipment.id;
-            const icon = COMMODITY_ICONS[s.commodity] || '📦';
-            return (
-              <button
-                key={s.id}
-                onClick={() => {
-                  setSelectedShipmentId(s.id);
-                  if (activeTab !== 'track') setActiveTab('track');
-                }}
-                className={clsx(
-                  'px-2.5 py-1 rounded-xl text-[10px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer flex items-center gap-1.5 border',
-                  isSelected
-                    ? 'bg-slate-900 text-white border-slate-900 dark:bg-orange-500 dark:border-orange-500 shadow-sm'
-                    : 'bg-slate-100/90 text-slate-600 border-slate-200/70 dark:bg-white/[0.04] dark:text-slate-300 dark:border-white/[0.08] hover:bg-slate-200'
-                )}
-              >
-                <span>{icon}</span>
-                <span>{s.id}</span>
-                <span className={clsx(
-                  'w-1.5 h-1.5 rounded-full',
-                  s.status === 'ON_TIME' ? 'bg-emerald-400' : s.status === 'AT_RISK' ? 'bg-amber-400' : 'bg-red-400'
-                )} />
-              </button>
-            );
-          })}
-        </div>
       </header>
 
       {/* ── TAB 1: LIVE TRACKING (CLEAN, MINIMAL, SVG-FIRST) ── */}
@@ -380,6 +351,36 @@ export default function UserDeliveryTracker() {
                 <Share2 size={13} />
               </button>
             </div>
+          </div>
+
+          {/* Horizontal Order Quick Selector Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {shipmentsList.map((s) => {
+              const isSelected = s.id === currentShipment.id;
+              const icon = COMMODITY_ICONS[s.commodity] || '📦';
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    setSelectedShipmentId(s.id);
+                    if (activeTab !== 'track') setActiveTab('track');
+                  }}
+                  className={clsx(
+                    'px-2.5 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer flex items-center gap-1.5 border shadow-2xs',
+                    isSelected
+                      ? 'bg-slate-900 text-white border-slate-900 dark:bg-orange-500 dark:border-orange-500 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200/80 dark:bg-[#0b1322] dark:text-slate-300 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.05]'
+                  )}
+                >
+                  <span>{icon}</span>
+                  <span>{s.id}</span>
+                  <span className={clsx(
+                    'w-1.5 h-1.5 rounded-full',
+                    s.status === 'ON_TIME' ? 'bg-emerald-400' : s.status === 'AT_RISK' ? 'bg-amber-400' : 'bg-red-400'
+                  )} />
+                </button>
+              );
+            })}
           </div>
 
           {/* 2. LIVE CORRIDOR MAP (CLEAN EMBED) */}
