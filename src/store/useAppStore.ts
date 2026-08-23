@@ -28,9 +28,12 @@ interface AppState {
   login: (role: string) => void;
   logout: () => void;
 
-  // Navigation
+  // Navigation & Layout
   activeView: AppView;
   setView: (v: AppView) => void;
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  setSidebarCollapsed: (c: boolean) => void;
 
   // Emergency mode
   emergencyMode: boolean;
@@ -168,6 +171,10 @@ export const useAppStore = create<AppState>((set) => ({
 
   activeView: 'command',
   setView: (v) => set({ activeView: v }),
+
+  sidebarCollapsed: false,
+  toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+  setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
 
   emergencyMode: false,
   toggleEmergency: () => set((s) => ({ emergencyMode: !s.emergencyMode })),
