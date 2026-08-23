@@ -63,41 +63,120 @@ function RoadDetail({ road }: { road: Road }) {
       </div>
 
       {/* Risk Score */}
-      <div className="glass-card p-4 rounded-xl mb-4 border border-slate-200/80 dark:border-white/[0.07]">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-slate-600 dark:text-slate-400 text-xs font-medium">Disruption Probability</span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Confidence: <span className="text-emerald-600 dark:text-green-400 font-semibold">{road.confidence}%</span></span>
+      <div className="bg-white dark:bg-[#0c1424] p-5 rounded-2xl mb-5 border border-slate-200/90 dark:border-white/10 shadow-xs">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <span className="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wider uppercase">
+              Disruption Probability
+            </span>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Live AI predictive blockage score
+            </p>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-1 rounded-xl">
+            <span className="text-xs text-emerald-700 dark:text-emerald-300 font-bold">
+              Confidence: {road.confidence}%
+            </span>
           </div>
         </div>
-        <div className="flex items-end gap-3 mb-2">
-          <span className="text-3xl font-black" style={{ color }}>{road.disruptionProbability}%</span>
-          <span className="text-sm font-bold mb-1" style={{ color }}>{riskLvl}</span>
+        <div className="flex items-baseline gap-3 mb-3">
+          <span className="text-4xl font-black tracking-tight" style={{ color }}>{road.disruptionProbability}%</span>
+          <span className="text-sm font-black px-2.5 py-0.5 rounded-lg border uppercase" style={{ color, borderColor: `${color}40`, backgroundColor: `${color}15` }}>
+            {riskLvl}
+          </span>
         </div>
         <RiskBar score={road.disruptionProbability} />
-        <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-          Data freshness: <span className="text-emerald-600 dark:text-green-400">{road.lastVerified}</span>
+        <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 font-medium flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>Data freshness verified: <strong className="text-slate-700 dark:text-slate-300">{road.lastVerified}</strong></span>
         </div>
       </div>
 
       {/* Current conditions */}
-      <div className="glass-card p-4 rounded-xl mb-4 border border-slate-200/80 dark:border-white/[0.07]">
-        <div className="text-xs font-bold text-slate-800 dark:text-slate-300 mb-3 tracking-wide">CURRENT CONDITIONS</div>
-        <div className="grid grid-cols-2 gap-3">
+      <div className="bg-white dark:bg-[#0c1424] p-5 rounded-2xl mb-5 border border-slate-200/90 dark:border-white/10 shadow-xs">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+            <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wider uppercase">
+              Current Corridor Environmental &amp; Route Telemetry
+            </h4>
+          </div>
+          <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            5 Critical Parameters Analyzed
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
           {[
-            { label: 'Rainfall Forecast', val: `${road.rainfallForecast}mm`, icon: <CloudRain size={13} className="text-blue-500" />, warn: road.rainfallForecast > 70 },
-            { label: 'Terrain Slope', val: `${road.terrainSlope}°`, icon: <Mountain size={13} className="text-amber-500" />, warn: road.terrainSlope > 25 },
-            { label: 'Historical Landslides', val: road.historicalLandslides.toString(), icon: <AlertTriangle size={13} className="text-red-500" />, warn: road.historicalLandslides > 0 },
-            { label: 'Traffic Level', val: road.trafficLevel, icon: <Gauge size={13} className="text-purple-500" />, warn: road.trafficLevel === 'HEAVY' || road.trafficLevel === 'CONGESTED' },
-            { label: 'Bridge Dependency', val: road.bridgeDependency, icon: <Landmark size={13} className="text-cyan-500" />, warn: road.bridgeDependency === 'HIGH' || road.bridgeDependency === 'CRITICAL' },
+            { 
+              label: 'Rainfall Forecast', 
+              val: `${road.rainfallForecast}mm`, 
+              subtitle: road.rainfallForecast > 70 ? 'High Precipitation' : 'Optimal Weather',
+              icon: <CloudRain size={18} />, 
+              theme: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20',
+              warn: road.rainfallForecast > 70 
+            },
+            { 
+              label: 'Terrain Slope', 
+              val: `${road.terrainSlope}°`, 
+              subtitle: road.terrainSlope > 25 ? 'Steep Mountain Incline' : 'Moderate Incline',
+              icon: <Mountain size={18} />, 
+              theme: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20',
+              warn: road.terrainSlope > 25 
+            },
+            { 
+              label: 'Historical Landslides', 
+              val: `${road.historicalLandslides} Events`, 
+              subtitle: road.historicalLandslides > 0 ? 'High Slip Vulnerability' : 'Stable Sector',
+              icon: <AlertTriangle size={18} />, 
+              theme: 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20',
+              warn: road.historicalLandslides > 0 
+            },
+            { 
+              label: 'Traffic Density', 
+              val: road.trafficLevel, 
+              subtitle: (road.trafficLevel === 'HEAVY' || road.trafficLevel === 'CONGESTED') ? 'Slow Corridor Speed' : 'Normal Traffic Flow',
+              icon: <Gauge size={18} />, 
+              theme: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20',
+              warn: road.trafficLevel === 'HEAVY' || road.trafficLevel === 'CONGESTED' 
+            },
+            { 
+              label: 'Bridge Dependency', 
+              val: road.bridgeDependency, 
+              subtitle: (road.bridgeDependency === 'HIGH' || road.bridgeDependency === 'CRITICAL') ? 'Single Route SPOF' : 'Redundant Crossings',
+              icon: <Landmark size={18} />, 
+              theme: 'text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-500/10 border-cyan-200 dark:border-cyan-500/20',
+              warn: road.bridgeDependency === 'HIGH' || road.bridgeDependency === 'CRITICAL' 
+            },
           ].map((c) => (
-            <div key={c.label} className="bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent rounded-lg px-3 py-2.5">
-              <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[10px] mb-1">
-                {c.icon}
-                <span>{c.label}</span>
+            <div 
+              key={c.label} 
+              className={clsx(
+                'group relative p-4 rounded-2xl border transition-all duration-200 hover:shadow-md flex flex-col justify-between bg-slate-50/60 dark:bg-white/[0.02]',
+                c.warn 
+                  ? 'border-orange-200/90 dark:border-orange-500/20 bg-orange-50/20 dark:bg-orange-500/[0.03]' 
+                  : 'border-slate-200/80 dark:border-white/[0.06]'
+              )}
+            >
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {c.label}
+                </span>
+                <div className={clsx('w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border', c.theme)}>
+                  {c.icon}
+                </div>
               </div>
-              <div className={clsx('text-sm font-bold', c.warn ? 'text-orange-600 dark:text-orange-400' : 'text-slate-900 dark:text-white')}>
-                {c.val}
+
+              <div>
+                <div className={clsx(
+                  'text-2xl font-black tracking-tight',
+                  c.warn ? 'text-orange-600 dark:text-orange-400' : 'text-slate-900 dark:text-white'
+                )}>
+                  {c.val}
+                </div>
+                <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1 truncate">
+                  {c.subtitle}
+                </div>
               </div>
             </div>
           ))}
@@ -105,38 +184,44 @@ function RoadDetail({ road }: { road: Road }) {
       </div>
 
       {/* WHY section */}
-      <div className="glass-card p-4 rounded-xl mb-4 border border-slate-200/80 dark:border-white/[0.07]">
-        <div className="flex items-center gap-2 mb-3">
-          <Info size={14} className="text-orange-500 dark:text-orange-400" />
-          <span className="text-xs font-bold text-slate-800 dark:text-slate-300 tracking-wide">WHY IS THIS ROAD {riskLvl}?</span>
+      <div className="bg-white dark:bg-[#0c1424] p-5 rounded-2xl mb-5 border border-slate-200/90 dark:border-white/10 shadow-xs">
+        <div className="flex items-center gap-2 mb-3.5">
+          <div className="w-7 h-7 rounded-lg bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-500 flex items-center justify-center">
+            <Info size={15} />
+          </div>
+          <span className="text-xs font-black text-slate-800 dark:text-slate-200 tracking-wider uppercase">
+            WHY IS THIS ROAD CLASSIFIED AS {riskLvl}?
+          </span>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {road.reasons.map((r, i) => (
-            <div key={i} className="flex items-start gap-2 text-xs">
-              <Check size={12} className="text-orange-500 dark:text-orange-400 font-bold shrink-0 mt-0.5" />
-              <span className="text-slate-700 dark:text-slate-300 font-medium">{r}</span>
+            <div key={i} className="flex items-start gap-2.5 text-xs bg-slate-50 dark:bg-white/[0.02] p-2.5 rounded-xl border border-slate-200/60 dark:border-white/[0.04]">
+              <Check size={14} className="text-orange-500 font-bold shrink-0 mt-0.5" />
+              <span className="text-slate-700 dark:text-slate-300 font-medium leading-relaxed">{r}</span>
             </div>
           ))}
         </div>
-        <div className="mt-3 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-[10px] text-slate-500 dark:text-slate-400">
-          AI Confidence: <span className="text-emerald-600 dark:text-green-400 font-semibold">{road.confidence}%</span>
-          &nbsp;·&nbsp; Updated: {road.lastVerified}
-          &nbsp;·&nbsp; Source: {road.source}
+        <div className="mt-4 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-2">
+          <span>AI Model Confidence: <strong className="text-emerald-600 dark:text-emerald-400">{road.confidence}%</strong></span>
+          <span>·</span>
+          <span>Verified: <strong className="text-slate-700 dark:text-slate-300">{road.lastVerified}</strong></span>
+          <span>·</span>
+          <span>Primary Data Source: <strong className="text-slate-700 dark:text-slate-300">{road.source}</strong></span>
         </div>
       </div>
 
       {/* SPOF warning */}
       {road.isSPOF && road.affectedDistricts && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4">
-          <div className="text-red-700 dark:text-red-400 font-bold text-xs mb-2 flex items-center gap-1.5">
-            <AlertTriangle size={13} /> SINGLE POINT OF FAILURE DETECTED
+        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl p-5 shadow-xs">
+          <div className="text-red-700 dark:text-red-400 font-black text-xs mb-2 flex items-center gap-2">
+            <AlertTriangle size={15} /> SINGLE POINT OF FAILURE DETECTED
           </div>
-          <p className="text-slate-700 dark:text-slate-300 text-xs mb-2">
-            Failure of this road/corridor would disconnect the following downstream regions:
+          <p className="text-slate-700 dark:text-slate-300 text-xs mb-3 font-medium">
+            Structural failure of this road/corridor would disconnect the following downstream regions:
           </p>
           <div className="flex flex-wrap gap-2">
             {road.affectedDistricts.map((d) => (
-              <span key={d} className="bg-red-100 text-red-800 border border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-transparent text-[10px] font-semibold px-2 py-1 rounded">
+              <span key={d} className="bg-red-100 text-red-800 border border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30 text-xs font-bold px-2.5 py-1 rounded-xl">
                 {d}
               </span>
             ))}
