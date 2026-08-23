@@ -3,7 +3,7 @@ import {
   Package, Clock, ShieldCheck, Phone,
   ChevronRight, RefreshCw, Layers, Sparkles, CheckCircle2,
   Search, AlertOctagon, Share2, Plus, QrCode, X,
-  Compass, Zap, ThermometerSnowflake, ChevronDown, Check, AlertTriangle
+  Compass, Zap, ThermometerSnowflake, ChevronDown, Check, AlertTriangle, Globe
 } from 'lucide-react';
 import clsx from 'clsx';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
@@ -185,55 +185,55 @@ export default function UserDeliveryTracker() {
         </div>
       )}
 
-      {/* ── TOP CLEAN APP HEADER ── */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.08] px-4 py-2.5 shrink-0 transition-colors">
-        <div className="flex items-center justify-between gap-2">
+      {/* ── TOP CLEAN APP HEADER (ParvaRoute Operator) ── */}
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.08] px-3 sm:px-4 py-2 sm:py-2.5 shrink-0 transition-colors">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2">
           
-          {/* Logo & Consignee Badge */}
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center text-white shadow-md shadow-orange-500/20 shrink-0">
-              <Package size={17} />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black tracking-tight text-slate-900 dark:text-white">PurvaSaarthi</span>
-                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300">
-                  Consignee
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate max-w-[140px] sm:max-w-[180px]">
-                {currentShipment.destinationFacility}
-              </p>
-            </div>
+          {/* Logo & Brand Name */}
+          <div className="flex items-center gap-2 min-w-0 shrink">
+            <img
+              src="/logo.svg"
+              alt="PurvaSaarthi Logo"
+              className="w-8 h-8 sm:w-9 sm:h-9 object-contain shrink-0"
+            />
+            <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white shrink-0">
+              PurvaSaarthi
+            </span>
           </div>
 
-          {/* Quick Actions: + New Order & User Controls */}
-          <div className="flex items-center gap-1.5 shrink-0">
+          {/* Quick Actions: + Create, Language & RM Profile Avatar */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             <button
               onClick={() => setShowOrderModal(true)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-[11px] font-bold shadow-sm shadow-orange-500/25 active:scale-95 transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#ff6200] hover:bg-orange-600 active:scale-95 text-white text-[11px] sm:text-xs font-semibold shadow-xs shadow-orange-500/20 transition-all cursor-pointer shrink-0"
             >
-              <Plus size={13} strokeWidth={3} />
-              <span>Order</span>
+              <Plus size={13} strokeWidth={2.5} />
+              <span>Create</span>
             </button>
 
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as any)}
-              className="text-[10px] font-bold bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] rounded-xl px-1.5 py-1.5 text-slate-700 dark:text-slate-200 outline-none cursor-pointer"
-            >
-              <option value="en">EN</option>
-              <option value="hi">हि</option>
-              <option value="as">অ</option>
-              <option value="bn">বা</option>
-            </select>
+            <div className="relative flex items-center gap-0.5 sm:gap-1 px-2 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all cursor-pointer shrink-0">
+              <Globe size={13} className="text-slate-600 dark:text-slate-400 shrink-0" />
+              <span className="font-semibold text-[11px] sm:text-xs text-slate-800 dark:text-slate-200 uppercase">{language}</span>
+              <ChevronDown size={12} className="text-slate-500 dark:text-slate-400 shrink-0" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                title="Select language"
+              >
+                <option value="en">EN</option>
+                <option value="hi">HI</option>
+                <option value="as">AS</option>
+                <option value="bn">BN</option>
+              </select>
+            </div>
 
             <button
               onClick={logout}
-              className="text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 p-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.08] cursor-pointer"
-              title="Sign Out"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-[11px] sm:text-xs flex items-center justify-center border border-slate-200/80 dark:border-slate-700/80 transition-all cursor-pointer shrink-0"
+              title="Operator Profile (Click to Exit)"
             >
-              Exit
+              RM
             </button>
           </div>
         </div>
