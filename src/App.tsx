@@ -13,6 +13,9 @@ import DistrictIntelligence from './pages/DistrictIntelligence';
 import AlertCenter from './pages/AlertCenter';
 import VehicleTracking from './pages/VehicleTracking';
 import { RerouteModal } from './components/ui/RerouteModal';
+import { MobileFrame } from './components/mobile/MobileFrame';
+import UserDeliveryTracker from './pages/mobile/UserDeliveryTracker';
+import DriverApp from './pages/mobile/DriverApp';
 
 function AppShell() {
   const { activeView, theme } = useAppStore();
@@ -52,7 +55,7 @@ function AppShell() {
 }
 
 export default function App() {
-  const { isLoggedIn, authFlowState, theme } = useAppStore();
+  const { isLoggedIn, userRole, authFlowState, theme } = useAppStore();
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -65,6 +68,22 @@ export default function App() {
   }, [theme]);
 
   if (isLoggedIn) {
+    if (userRole === 'User') {
+      return (
+        <MobileFrame roleName="User">
+          <UserDeliveryTracker />
+        </MobileFrame>
+      );
+    }
+
+    if (userRole === 'Truck Driver') {
+      return (
+        <MobileFrame roleName="Truck Driver">
+          <DriverApp />
+        </MobileFrame>
+      );
+    }
+
     return <AppShell />;
   }
 
@@ -74,3 +93,4 @@ export default function App() {
 
   return <LandingPage />;
 }
+

@@ -290,10 +290,10 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-105 transition-transform">
                 <User size={22} />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">2. User / Citizen Portal</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Public highway advisory, live corridor status, weather warning alerts & district accessibility.</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">2. User / Consignee PWA</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Live mobile delivery tracker, dispatch timestamps, arrival countdowns, milestones, and corridor condition radar.</div>
               <span className="text-xs font-bold text-blue-600 dark:text-blue-400 inline-flex items-center gap-1">
-                Enter as User <ArrowRight size={12} />
+                Open User PWA <ArrowRight size={12} />
               </span>
             </div>
 
@@ -304,10 +304,10 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-105 transition-transform">
                 <Truck size={22} />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">3. Truck Driver Portal</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Assigned vehicle telemetry (TRK-204), turn-by-turn detour guidance & safe layby turnaround points.</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">3. Truck Driver Navigation PWA</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Turn-by-turn road tracking, gradient HUD, proactive hazard warnings & 1-click alternative route acceptance.</div>
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
-                Enter as Truck Driver <ArrowRight size={12} />
+                Open Driver PWA <ArrowRight size={12} />
               </span>
             </div>
 

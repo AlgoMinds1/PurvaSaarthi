@@ -6,24 +6,24 @@ import { useAppStore } from '../store/useAppStore';
 const roles = [
   {
     id: 'Admin',
-    name: 'Admin',
+    name: 'Admin / Command Authority',
     email: 'admin@purvasaarthi.gov.in',
     icon: <Shield size={18} className="text-orange-500" />,
-    desc: 'Full command, AI cascade models & reroute approvals',
+    desc: 'Command dashboard, GIS layers, cascade models & regional coordination',
   },
   {
     id: 'User',
-    name: 'User',
-    email: 'user@purvasaarthi.gov.in',
+    name: 'User / Consignee PWA',
+    email: 'consignee.hospital@purvasaarthi.gov.in',
     icon: <User size={18} className="text-blue-500" />,
-    desc: 'Public corridor advisories, road status & district alerts',
+    desc: 'Track delivery dispatches, arrival countdowns, milestones & highway conditions',
   },
   {
     id: 'Truck Driver',
-    name: 'Truck Driver',
+    name: 'Truck Driver Navigation PWA',
     email: 'driver.trk204@logistics.in',
     icon: <Truck size={18} className="text-emerald-500" />,
-    desc: 'Turn-by-turn navigation, TRK-204 telemetry & safe laybys',
+    desc: 'Turn-by-turn road tracking, hazard alerts, AI detours & safe layby shelters',
   },
 ];
 

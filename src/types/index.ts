@@ -55,10 +55,49 @@ export interface District {
   criticalRoadId?: string;     // Road whose failure triggers isolation
 }
 
+export interface DeliveryMilestone {
+  id: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  status: 'completed' | 'current' | 'upcoming';
+  location?: string;
+  note?: string;
+}
+
+export interface CommodityItem {
+  id: string;
+  name: string;
+  quantity: string;
+  category: string;
+  tempControlled?: boolean;
+  tempRange?: string;
+  batchNumber?: string;
+}
+
+export interface DriverWaypoint {
+  id: string;
+  instruction: string;
+  distanceRemaining: string;
+  roadName: string;
+  hazard?: string;
+  isReroutedSegment?: boolean;
+}
+
+export interface SafeLayby {
+  id: string;
+  name: string;
+  distanceKm: number;
+  capacityTrucks: number;
+  amenities: string[];
+  latlng: [number, number];
+}
+
 export interface Vehicle {
   id: string;
   plateNo: string;
   driverName: string;
+  driverPhone?: string;
   status: VehicleStatus;
   shipmentId: string;
   currentLocation: [number, number];
@@ -72,24 +111,48 @@ export interface Vehicle {
   telemetryFresh: boolean;
   latlngs: [number, number][];  // route path for animation
   progress: number;             // 0–1
+  currentSpeed?: number;        // km/h
+  speedLimit?: number;          // km/h
+  currentElevation?: number;    // meters
+  slopeGradient?: number;       // degrees
+  nextTurn?: string;
+  distanceToNextTurn?: string;
+  isRerouted?: boolean;
 }
 
 export interface Shipment {
   id: string;
+  trackingNumber: string;
   vehicleId: string;
   commodity: CommodityType;
   commodityLabel: string;
   priority: number;            // 0–100
   origin: string;
+  originHub: string;
   destinationDistrictId: string;
+  destinationFacility: string;
   status: 'ON_TIME' | 'AT_RISK' | 'DELAYED' | 'DELIVERED';
   routeRisk: number;
   predictedDelay: number;      // hours
+  dispatchedDate: string;      // e.g. "23 Aug 2026"
+  dispatchedTime: string;      // e.g. "08:30 AM"
+  expectedDeliveryDate: string; // e.g. "23 Aug 2026"
+  expectedDeliveryTime: string; // e.g. "06:15 PM"
+  originalEtaTime: string;      // e.g. "04:10 PM"
   eta: string;
   stockDaysRemaining: number;
   supplyShortageRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   lastSafeAction?: string;
   alternativeRoute?: string;
+  currentRoadName?: string;
+  currentRoadCondition?: string;
+  weatherRiskSummary?: string;
+  rainfallMm?: number;
+  consigneeName?: string;
+  consigneeRole?: string;
+  consigneePhone?: string;
+  milestones: DeliveryMilestone[];
+  items: CommodityItem[];
 }
 
 export interface Alert {
@@ -125,3 +188,4 @@ export interface SupplyInventory {
   stockDays: number;
   risk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 }
+

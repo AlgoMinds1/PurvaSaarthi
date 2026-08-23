@@ -31,6 +31,7 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 pb-1">Command Modules</div>
         {navItems.map((item) => {
           const isActive = activeView === item.id;
           return (
@@ -38,7 +39,7 @@ export function Sidebar() {
               key={item.id}
               onClick={() => setView(item.id)}
               className={clsx(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 relative text-left',
+                'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 relative text-left cursor-pointer',
                 isActive
                   ? 'bg-orange-50 text-orange-600 dark:bg-white/[0.08] dark:text-white font-semibold'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-slate-200'
@@ -57,6 +58,24 @@ export function Sidebar() {
             </button>
           );
         })}
+
+        <div className="pt-3 pb-1">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 pb-1">Mobile PWA Portals</div>
+          <button
+            onClick={() => useAppStore.getState().login('User')}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors cursor-pointer text-left"
+          >
+            <User size={16} />
+            <span>User / Consignee PWA</span>
+          </button>
+          <button
+            onClick={() => useAppStore.getState().login('Truck Driver')}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors cursor-pointer text-left"
+          >
+            <Truck size={16} />
+            <span>Driver Navigation PWA</span>
+          </button>
+        </div>
       </nav>
 
       {/* Emergency Toggle */}

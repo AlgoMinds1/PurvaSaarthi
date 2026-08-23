@@ -54,6 +54,27 @@ interface AppState {
   selectedVehicleId: string | null;
   trackVehicleOnMap: (id: string) => void;
   clearSelectedVehicle: () => void;
+
+  // Consignee / User Delivery Tracking PWA
+  selectedShipmentId: string;
+  setSelectedShipmentId: (id: string) => void;
+
+  // Driver Navigation & Rerouting PWA
+  isDriverRerouted: boolean;
+  driverTripStatus: 'IN_TRANSIT' | 'REROUTED' | 'ARRIVED' | 'DELIVERED';
+  acceptDriverReroute: () => void;
+  setDriverTripStatus: (st: 'IN_TRANSIT' | 'REROUTED' | 'ARRIVED' | 'DELIVERED') => void;
+
+  // Mobile Simulator / Viewport Mode for Desktop
+  mobilePreviewMode: 'phone' | 'fullscreen';
+  toggleMobilePreviewMode: () => void;
+
+  // Offline Simulation for Field/Driver PWA
+  isOffline: boolean;
+  toggleOffline: () => void;
+  offlineQueue: { id: string; timestamp: string; title: string }[];
+  addOfflineAction: (title: string) => void;
+  syncOfflineQueue: () => void;
 }
 
 const getInitialTheme = (): ThemeMode => {
@@ -142,4 +163,62 @@ export const useAppStore = create<AppState>((set) => ({
   selectedVehicleId: null,
   trackVehicleOnMap: (id) => set({ selectedVehicleId: id, activeView: 'map' }),
   clearSelectedVehicle: () => set({ selectedVehicleId: null }),
+
+  // User delivery tracking
+  selectedShipmentId: 'SHIP-104',
+  setSelectedShipmentId: (id) => set({ selectedShipmentId: id }),
+
+  // Driver navigation state
+  isDriverRerouted: false,
+  driverTripStatus: 'IN_TRANSIT',
+  acceptDriverReroute: () =>
+    set((s) => {
+      const newAlert: Alert = {
+        id: `ALT-REROUTE-${Date.now()}`,
+        severity: 'INFO',
+        title: {
+          en: 'Driver TRK-204 Accepted Safe Detour via NH-106',
+          hi: 'चालक TRK-204 ने NH-106 से सुरक्षित मार्ग स्वीकार किया',
+          as: 'চালক TRK-204 এ NH-106 ৰে সুৰক্ষিত পথ গ্ৰহণ কৰিলে',
+          bn: 'চালক TRK-204 NH-106 দিয়ে নিরাপদ পথ গ্রহণ করেছে',
+        },
+        body: {
+          en: 'Vehicle TRK-204 (Shipment #104 - Critical Medicines) has transitioned to NH-106 Bypass. Disruption risk reduced from 91% to 24%. Destination ETA adjusted to 6:15 PM.',
+          hi: 'वाहन TRK-204 ने NH-106 बाईपास का रुख किया है। जोखिम 91% से घटकर 24% हो गया।',
+          as: 'যানবাহন TRK-204 NH-106 বাইপাছলৈ স্থানান্তৰিত হৈছে।',
+          bn: 'যানবাহন TRK-204 NH-106 বাইপাসে স্থানান্তরিত হয়েছে।',
+        },
+        timestamp: 'Just now',
+        districtId: 'dist-x',
+        shipmentId: 'SHIP-104',
+        read: false,
+        actionRequired: false,
+      };
+      return {
+        isDriverRerouted: true,
+        driverTripStatus: 'REROUTED',
+        alerts: [newAlert, ...s.alerts],
+        unreadCount: s.unreadCount + 1,
+      };
+    }),
+  setDriverTripStatus: (driverTripStatus) => set({ driverTripStatus }),
+
+  // Mobile preview mode for desktop users
+  mobilePreviewMode: 'phone',
+  toggleMobilePreviewMode: () =>
+    set((s) => ({ mobilePreviewMode: s.mobilePreviewMode === 'phone' ? 'fullscreen' : 'phone' })),
+
+  // Offline simulation
+  isOffline: false,
+  toggleOffline: () => set((s) => ({ isOffline: !s.isOffline })),
+  offlineQueue: [],
+  addOfflineAction: (title) =>
+    set((s) => ({
+      offlineQueue: [
+        ...s.offlineQueue,
+        { id: `OFF-${Date.now()}`, timestamp: new Date().toLocaleTimeString(), title },
+      ],
+    })),
+  syncOfflineQueue: () => set({ offlineQueue: [] }),
 }));
+

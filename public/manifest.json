@@ -1,0 +1,16 @@
+{
+  "name": "PurvaSaarthi - NER Logistics Resilience",
+  "short_name": "PurvaSaarthi",
+  "description": "Smart AI-Powered Logistics & Accessibility Intelligence Platform for North Eastern Region",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090f1c",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
