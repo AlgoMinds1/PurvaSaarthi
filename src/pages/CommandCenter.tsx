@@ -144,7 +144,7 @@ export default function CommandCenter() {
 
       {/* Full-Width & Full-Height Regional Map */}
       <div className="flex-1 min-w-0 glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
-        <div className="relative z-30 flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
+        <div className="relative z-50 flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
           <div className="flex items-center gap-2">
             <Map size={16} className="text-orange-500" />
             <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Operations GIS Map</span>
@@ -188,10 +188,10 @@ export default function CommandCenter() {
               {showMetricsDropdown && (
                 <>
                   <div
-                    className="fixed inset-0 z-[1000]"
+                    className="fixed inset-0 z-40"
                     onClick={() => setShowMetricsDropdown(false)}
                   />
-                  <div className="absolute right-0 top-full mt-2 w-80 max-h-[calc(100vh-12rem)] overflow-y-auto bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 z-[1001] animate-fade-in space-y-3.5">
+                  <div className="absolute right-0 top-full mt-2 w-84 max-h-[calc(100vh-14rem)] overflow-y-auto bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 z-50 animate-fade-in space-y-3.5">
                     {/* Header */}
                     <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/[0.08]">
                       <div className="flex items-center gap-2">
@@ -318,7 +318,7 @@ export default function CommandCenter() {
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 relative">
+        <div className="flex-1 min-h-0 relative z-0 isolate">
           <MiniMap />
         </div>
 
