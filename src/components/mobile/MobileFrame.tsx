@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import {
-  Wifi, Battery, Smartphone, Maximize2, Minimize2,
+  Smartphone, Maximize2,
   Sun, Moon, Shield, Truck, User, ArrowLeft
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -13,17 +12,6 @@ interface MobileFrameProps {
 
 export function MobileFrame({ children, roleName }: MobileFrameProps) {
   const { theme, toggleTheme, mobilePreviewMode, toggleMobilePreviewMode, login, goToLanding } = useAppStore();
-  const [currentTime, setCurrentTime] = useState('17:15');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 30000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center relative overflow-x-hidden p-0 sm:p-4 md:p-6 transition-colors duration-300">
@@ -134,25 +122,7 @@ export function MobileFrame({ children, roleName }: MobileFrameProps) {
             : 'sm:rounded-2xl sm:border sm:border-slate-700/80'
         )}>
 
-          {/* Smartphone Hardware Notch / Dynamic Island */}
-          <div className="w-full bg-[var(--bg-base)] px-6 pt-3 pb-1 flex items-center justify-between select-none z-30 shrink-0 text-xs font-semibold text-[var(--text-primary)]">
-            <span className="font-mono text-xs font-bold tracking-tight">{currentTime}</span>
 
-            {/* Dynamic Island Pill */}
-            <div className="w-28 h-4.5 bg-slate-950 rounded-full flex items-center justify-center gap-2 px-2 shadow-inner border border-white/5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-[9px] text-slate-300 font-mono tracking-wider uppercase font-semibold">PWA Live</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-              <span className="text-[10px] font-mono font-bold text-orange-500">5G</span>
-              <Wifi size={13} className="text-[var(--text-primary)]" />
-              <div className="flex items-center gap-0.5">
-                <span className="text-[10px] font-mono font-bold">94%</span>
-                <Battery size={14} className="text-emerald-500" />
-              </div>
-            </div>
-          </div>
 
           {/* Actual Screen Content */}
           <div className="flex-1 min-h-0 overflow-y-auto flex flex-col relative bg-[var(--bg-main)]">
