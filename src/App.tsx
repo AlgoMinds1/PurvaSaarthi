@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import './index.css';
 import { useAppStore } from './store/useAppStore';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import { Sidebar } from './components/layout/Sidebar';
 import { Topbar } from './components/layout/Topbar';
@@ -51,7 +52,7 @@ function AppShell() {
 }
 
 export default function App() {
-  const { isLoggedIn, theme } = useAppStore();
+  const { isLoggedIn, authFlowState, theme } = useAppStore();
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -63,5 +64,13 @@ export default function App() {
     }
   }, [theme]);
 
-  return isLoggedIn ? <AppShell /> : <LoginPage />;
+  if (isLoggedIn) {
+    return <AppShell />;
+  }
+
+  if (authFlowState === 'login') {
+    return <LoginPage />;
+  }
+
+  return <LandingPage />;
 }

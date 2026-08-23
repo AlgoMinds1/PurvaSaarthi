@@ -22,6 +22,9 @@ interface AppState {
   // Auth
   isLoggedIn: boolean;
   userRole: string;
+  authFlowState: 'landing' | 'login';
+  goToLogin: () => void;
+  goToLanding: () => void;
   login: (role: string) => void;
   logout: () => void;
 
@@ -94,8 +97,11 @@ export const useAppStore = create<AppState>((set) => ({
 
   isLoggedIn: false,
   userRole: 'Admin',
+  authFlowState: 'landing',
+  goToLogin: () => set({ authFlowState: 'login' }),
+  goToLanding: () => set({ authFlowState: 'landing' }),
   login: (role) => set({ isLoggedIn: true, userRole: role }),
-  logout: () => set({ isLoggedIn: false, userRole: 'Admin' }),
+  logout: () => set({ isLoggedIn: false, authFlowState: 'landing', userRole: 'Admin' }),
 
   activeView: 'command',
   setView: (v) => set({ activeView: v }),

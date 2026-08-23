@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, Truck, Building2, AlertTriangle, ArrowRight, Sun, Moon } from 'lucide-react';
+import { Shield, Truck, Building2, AlertTriangle, ArrowRight, ArrowLeft, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
 import { Logo } from '../components/ui/Logo';
@@ -12,7 +12,7 @@ const roles = [
 ];
 
 export default function LoginPage() {
-  const { login, theme, toggleTheme } = useAppStore();
+  const { login, goToLanding, theme, toggleTheme } = useAppStore();
   const [selectedRole, setSelectedRole] = useState('Admin');
   const [loading, setLoading] = useState(false);
 
@@ -27,11 +27,19 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex items-center justify-center relative overflow-hidden transition-colors duration-300">
 
-      {/* Top right theme toggle */}
-      <div className="absolute top-6 right-6 z-20">
+      {/* Top Navigation Bar in Login */}
+      <div className="absolute top-6 left-6 right-6 z-20 flex items-center justify-between pointer-events-none">
+        <button
+          onClick={goToLanding}
+          className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-md hover:scale-105 transition-all cursor-pointer"
+        >
+          <ArrowLeft size={14} />
+          <span>Back to Overview</span>
+        </button>
+
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-md hover:scale-105 transition-all"
+          className="pointer-events-auto flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-md hover:scale-105 transition-all cursor-pointer"
         >
           {theme === 'dark' ? (
             <>
