@@ -3,7 +3,7 @@ import {
   Package, Clock, ShieldCheck, Phone,
   ChevronRight, RefreshCw, Layers, Sparkles, CheckCircle2,
   Search, AlertOctagon, Share2, Plus, QrCode, X,
-  Compass, Zap, ThermometerSnowflake, ChevronDown, Check, AlertTriangle, Globe
+  Compass, Zap, ThermometerSnowflake, ChevronDown, Check, AlertTriangle, Globe, LogOut
 } from 'lucide-react';
 import clsx from 'clsx';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
@@ -232,10 +232,11 @@ export default function UserDeliveryTracker() {
 
             <button
               onClick={logout}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-[11px] sm:text-xs flex items-center justify-center border border-slate-200/80 dark:border-slate-700/80 transition-all cursor-pointer shrink-0"
-              title="Operator Profile (Click to Exit)"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold text-[11px] sm:text-xs border border-red-200 dark:border-red-500/25 transition-all cursor-pointer shrink-0 shadow-2xs"
+              title="Log Out & Return to Login"
             >
-              RM
+              <LogOut size={12} />
+              <span>Log Out</span>
             </button>
           </div>
         </div>

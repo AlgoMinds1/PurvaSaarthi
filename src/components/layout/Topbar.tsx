@@ -1,9 +1,9 @@
-import { Bell, Sun, Moon } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../../store/useAppStore';
 
 export function Topbar() {
-  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme } = useAppStore();
+  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme, logout } = useAppStore();
 
   const titles: Record<string, { title: string; subtitle: string }> = {
     command:   { title: 'Command Center',       subtitle: 'Regional Logistics Operations Overview' },
@@ -70,6 +70,16 @@ export function Topbar() {
               {unreadCount}
             </span>
           )}
+        </button>
+
+        {/* Log Out Button */}
+        <button
+          onClick={logout}
+          className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 border border-red-200 dark:border-red-500/20 px-3 py-1.5 rounded-full text-red-600 dark:text-red-400 text-xs font-bold transition-all cursor-pointer shadow-2xs"
+          title="Log Out of PurvaSaarthi"
+        >
+          <LogOut size={13} />
+          <span>Log Out</span>
         </button>
       </div>
 
