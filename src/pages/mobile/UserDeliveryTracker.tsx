@@ -245,22 +245,22 @@ export default function UserDeliveryTracker() {
         <div className="p-3.5 space-y-3.5 pb-24">
 
           {/* 1. HERO ORDER STATUS CARD */}
-          <div className="rounded-2xl p-4 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 text-white border border-slate-800 shadow-lg relative overflow-hidden">
+          <div className="rounded-2xl p-4 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-lg relative overflow-hidden transition-colors">
             {/* Background ambient lighting */}
-            <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
 
             {/* Header: Commodity title + Status badge */}
             <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
               <div className="min-w-0">
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mb-1">
+                <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-1">
                   <span>#{currentShipment.trackingNumber}</span>
                   <span>•</span>
-                  <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                     LIVE
                   </span>
                 </div>
-                <h2 className="text-sm font-extrabold text-white leading-tight truncate">
+                <h2 className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight truncate">
                   {currentShipment.commodityLabel}
                 </h2>
               </div>
@@ -268,7 +268,7 @@ export default function UserDeliveryTracker() {
               {/* Waybill QR button */}
               <button
                 onClick={() => setShowWaybillModal(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold border border-white/10 shrink-0 cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white text-[10px] font-bold border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer transition-colors"
                 title="View Waybill & Pass"
               >
                 <QrCode size={12} />
@@ -278,60 +278,60 @@ export default function UserDeliveryTracker() {
 
             {/* Route Progress Visual Bar */}
             <div className="mb-3.5 relative z-10">
-              <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold mb-1.5">
+              <div className="flex items-center justify-between text-[10px] text-slate-600 dark:text-slate-400 font-semibold mb-1.5">
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-400" />
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
                   {currentShipment.origin.replace(' Central Depot', '')}
                 </span>
-                <span className="flex items-center gap-1 text-emerald-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                   {currentShipment.destinationFacility.split('&')[0]}
                 </span>
               </div>
-              <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden p-0.5">
+              <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-transparent">
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-orange-500 to-emerald-400 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-blue-500 via-orange-500 to-emerald-500 rounded-full transition-all duration-500"
                   style={{ width: currentShipment.status === 'ON_TIME' ? '72%' : '56%' }}
                 />
               </div>
             </div>
 
             {/* 3 Core Metric SVGs Grid */}
-            <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-white/[0.05] border border-white/[0.08] text-center relative z-10">
+            <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/[0.08] text-center relative z-10">
               <div>
-                <div className="flex items-center justify-center gap-1 text-slate-400 text-[9px] font-bold mb-0.5">
-                  <Clock size={11} className="text-emerald-400" />
+                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                  <Clock size={11} className="text-emerald-600 dark:text-emerald-400" />
                   <span>ETA</span>
                 </div>
-                <div className="text-xs font-black text-emerald-400">{currentShipment.expectedDeliveryTime}</div>
-                <div className="text-[8px] text-slate-400 font-mono">Today</div>
+                <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">{currentShipment.expectedDeliveryTime}</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400 font-mono">Today</div>
               </div>
 
-              <div className="border-x border-white/10 px-1">
-                <div className="flex items-center justify-center gap-1 text-slate-400 text-[9px] font-bold mb-0.5">
-                  <ShieldCheck size={11} className="text-orange-400" />
+              <div className="border-x border-slate-200 dark:border-white/10 px-1">
+                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                  <ShieldCheck size={11} className="text-orange-600 dark:text-orange-400" />
                   <span>CORRIDOR</span>
                 </div>
-                <div className="text-xs font-black text-white truncate">
+                <div className="text-xs font-black text-slate-900 dark:text-white truncate">
                   {isDriverRerouted || currentShipment.routeRisk < 30 ? 'NH-106 (Safe)' : 'NH-27'}
                 </div>
-                <div className="text-[8px] text-orange-300 font-bold">
+                <div className="text-[8px] text-orange-600 dark:text-orange-300 font-bold">
                   {isDriverRerouted || currentShipment.routeRisk < 30 ? 'Detour Active' : 'Monitored'}
                 </div>
               </div>
 
               <div>
-                <div className="flex items-center justify-center gap-1 text-slate-400 text-[9px] font-bold mb-0.5">
-                  <Zap size={11} className="text-amber-400" />
+                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                  <Zap size={11} className="text-amber-600 dark:text-amber-400" />
                   <span>PRIORITY</span>
                 </div>
-                <div className="text-xs font-black text-amber-300">{currentShipment.priority}/100</div>
-                <div className="text-[8px] text-slate-400">Stock {currentShipment.stockDaysRemaining}d</div>
+                <div className="text-xs font-black text-amber-600 dark:text-amber-300">{currentShipment.priority}/100</div>
+                <div className="text-[8px] text-slate-500 dark:text-slate-400">Stock {currentShipment.stockDaysRemaining}d</div>
               </div>
             </div>
 
             {/* Quick Actions Row */}
-            <div className="flex items-center gap-2 mt-3 relative z-10 pt-2 border-t border-white/10">
+            <div className="flex items-center gap-2 mt-3 relative z-10 pt-2 border-t border-slate-100 dark:border-white/10">
               <a
                 href={`tel:${currentVehicle?.driverPhone || '+919845211094'}`}
                 className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
@@ -345,7 +345,7 @@ export default function UserDeliveryTracker() {
                   navigator.clipboard?.writeText?.(window.location.href);
                   showToast('🔗 Live Tracking link copied!');
                 }}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold transition-all shrink-0 cursor-pointer"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent text-[11px] font-bold transition-all shrink-0 cursor-pointer"
                 title="Share Tracking"
               >
                 <Share2 size={13} />
@@ -368,15 +368,15 @@ export default function UserDeliveryTracker() {
                   className={clsx(
                     'px-2.5 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer flex items-center gap-1.5 border shadow-2xs',
                     isSelected
-                      ? 'bg-slate-900 text-white border-slate-900 dark:bg-orange-500 dark:border-orange-500 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200/80 dark:bg-[#0b1322] dark:text-slate-300 dark:border-white/[0.08] hover:bg-slate-100 dark:hover:bg-white/[0.05]'
+                      ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-[#0b1322] dark:text-slate-300 dark:border-white/[0.08] dark:hover:bg-white/[0.05]'
                   )}
                 >
                   <span>{icon}</span>
                   <span>{s.id}</span>
                   <span className={clsx(
                     'w-1.5 h-1.5 rounded-full',
-                    s.status === 'ON_TIME' ? 'bg-emerald-400' : s.status === 'AT_RISK' ? 'bg-amber-400' : 'bg-red-400'
+                    isSelected ? 'bg-white' : s.status === 'ON_TIME' ? 'bg-emerald-500' : s.status === 'AT_RISK' ? 'bg-amber-500' : 'bg-red-500'
                   )} />
                 </button>
               );
