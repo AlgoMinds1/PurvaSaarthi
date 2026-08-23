@@ -89,7 +89,7 @@ export default function DriverApp() {
 
   return (
     <div className="flex-1 flex flex-col bg-[var(--bg-base)] text-[var(--text-primary)] min-h-0 overflow-y-auto select-none">
-      
+
       {/* ── DRIVER TOP TELEMETRY STATUS BAR ── */}
       <header className="sticky top-0 z-30 bg-slate-950 text-white border-b border-slate-800 px-4 py-3 shrink-0 shadow-lg">
         <div className="flex items-center justify-between gap-2">
@@ -404,7 +404,7 @@ export default function DriverApp() {
 
           {/* Current vs Alternative Route Cards */}
           <div className="space-y-3">
-            
+
             {/* Route A Card */}
             <div className={clsx(
               'p-4 rounded-2xl border transition-all',

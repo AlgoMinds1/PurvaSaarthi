@@ -27,7 +27,7 @@ export function MobileFrame({ children, roleName }: MobileFrameProps) {
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col items-center justify-center relative overflow-x-hidden p-0 sm:p-4 md:p-6 transition-colors duration-300">
-      
+
       {/* Background Ambience on Desktop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-orange-600/10 rounded-full blur-[140px]" />
