@@ -97,10 +97,11 @@ export default function LoginPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
 
           {/* Left Column: Big Logo, Brand Name & Tagline */}
-          <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+          {/* Left Column: Big Logo, Brand Name & Tagline */}
+          <div className="lg:col-span-6 flex flex-col items-center text-center">
             
             {/* Big Emblem Logo */}
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white dark:bg-white/[0.04] p-4 shadow-xl border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md flex items-center justify-center mb-6">
+            <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-3xl bg-white dark:bg-white/[0.04] p-3.5 shadow-xl border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md flex items-center justify-center mb-6 mx-auto">
               <img
                 src="/logo.svg"
                 alt="PurvaSaarthi Logo"
@@ -114,8 +115,8 @@ export default function LoginPage() {
             </h1>
 
             {/* Tagline */}
-            <p className="text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400 mb-3 tracking-wide">
-              NER Logistics Resilience & Cascade Intelligence Platform
+            <p className="text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400 mb-3 tracking-wide max-w-lg">
+              NER Logistics Resilience &amp; Cascade Intelligence Platform
             </p>
 
             {/* Mission Statement */}
@@ -124,10 +125,10 @@ export default function LoginPage() {
             </p>
 
             {/* Value Pillars List */}
-            <div className="space-y-2.5 w-full max-w-md hidden sm:block">
+            <div className="space-y-2.5 w-full max-w-md hidden sm:block mx-auto text-left">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
-                <span>Multi-Hazard Landslide & Weather Disruption AI</span>
+                <span>Multi-Hazard Landslide &amp; Weather Disruption AI</span>
               </div>
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0" />
@@ -135,7 +136,7 @@ export default function LoginPage() {
               </div>
               <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
-                <span>Proactive Turnaround & pgRouting Detour Engine</span>
+                <span>Proactive Turnaround &amp; pgRouting Detour Engine</span>
               </div>
             </div>
 
