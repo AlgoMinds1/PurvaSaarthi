@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Shield, Truck, Building2, AlertTriangle, ArrowRight, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
+import { Logo } from '../components/ui/Logo';
 
 const roles = [
   { id: 'Admin',                icon: <Shield size={16} />,       desc: 'Full platform access' },
@@ -61,20 +62,7 @@ export default function LoginPage() {
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-            <svg viewBox="0 0 40 40" fill="none" className="w-full h-full drop-shadow-xl">
-              <path d="M20 4L34 12V28L20 36L6 28V12L20 4Z"
-                fill="url(#loginGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-              <path d="M20 10L28 14.5V23.5L20 28L12 23.5V14.5L20 10Z" fill="rgba(255,255,255,0.15)"/>
-              <circle cx="20" cy="19" r="4" fill="white" fillOpacity="0.95"/>
-              <defs>
-                <linearGradient id="loginGrad" x1="6" y1="4" x2="34" y2="36">
-                  <stop offset="0%" stopColor="#f97316"/>
-                  <stop offset="100%" stopColor="#ef4444"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
+          <Logo size="lg" className="justify-center mb-3" />
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">PurvaSaarthi</h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1.5 leading-relaxed font-medium">
             NER Logistics Resilience & Cascade Intelligence

@@ -1,14 +1,15 @@
 import {
-  Zap, Map, Route, Package, Building2, Bell, Truck,
-  Shield, LogOut, AlertTriangle
+  Map, Route, Package, Building2, Bell, Truck,
+  Shield, LogOut, AlertTriangle, LayoutDashboard
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore, type AppView } from '../../store/useAppStore';
+import { Logo } from '../ui/Logo';
 
 interface NavItem { id: AppView; label: string; icon: React.ReactNode }
 
 const navItems: NavItem[] = [
-  { id: 'command',   label: 'Command Center',      icon: <Zap size={18} /> },
+  { id: 'command',   label: 'Command Center',      icon: <LayoutDashboard size={18} /> },
   { id: 'map',       label: 'Live GIS Map',         icon: <Map size={18} /> },
   { id: 'roads',     label: 'Road Intelligence',    icon: <Route size={18} /> },
   { id: 'supply',    label: 'Supply at Risk',       icon: <Package size={18} /> },
@@ -24,24 +25,8 @@ export function Sidebar() {
     <aside className="flex flex-col w-60 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] h-full transition-colors duration-200">
 
       {/* Brand */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-200 dark:border-white/[0.06]">
-        <div className="relative w-9 h-9 shrink-0">
-          <svg viewBox="0 0 40 40" fill="none" className="w-full h-full">
-            <path d="M20 4L34 12V28L20 36L6 28V12L20 4Z"
-              fill="url(#sg1)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-            <circle cx="20" cy="19" r="4" fill="white" fillOpacity="0.95"/>
-            <defs>
-              <linearGradient id="sg1" x1="6" y1="4" x2="34" y2="36">
-                <stop offset="0%" stopColor="#f97316"/>
-                <stop offset="100%" stopColor="#ef4444"/>
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div>
-          <div className="text-slate-900 dark:text-white font-bold text-[15px] leading-tight tracking-wide">PurvaSaarthi</div>
-          <div className="text-slate-500 dark:text-slate-400 text-[10px] leading-tight mt-0.5 font-medium">NER Logistics Intelligence</div>
-        </div>
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-white/[0.06]">
+        <Logo size="sm" withText />
       </div>
 
       {/* Navigation */}
