@@ -332,58 +332,88 @@ export default function SupplyAtRisk() {
         
         {/* Top Summary Intelligence Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex items-center justify-between">
-            <div>
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Critical Stockouts</div>
-              <div className="text-2xl font-black text-red-600 dark:text-red-500 mt-0.5">{criticalCount} Consignments</div>
-              <div className="text-[10px] text-red-600 dark:text-red-400 font-semibold mt-1 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping" />
-                <span>Reserve depleted &lt; 48 hours</span>
+          
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Critical Stockouts
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-500 flex items-center justify-center shrink-0">
+                <Flame size={16} />
               </div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-500 flex items-center justify-center">
-              <Flame size={20} />
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-red-600 dark:text-red-500 leading-none">{criticalCount}</span>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Consignments</span>
+              </div>
+              <div className="text-[10px] text-red-600 dark:text-red-400 font-semibold mt-1.5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0" />
+                <span className="truncate">Reserve depleted &lt; 48 hours</span>
+              </div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex items-center justify-between">
-            <div>
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">High-Risk Corridors</div>
-              <div className="text-2xl font-black text-orange-600 dark:text-orange-500 mt-0.5">{highRiskCount} Routes</div>
-              <div className="text-[10px] text-orange-600 dark:text-orange-400 font-semibold mt-1">
-                NH-27 Lifeline segment compromised
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                High-Risk Corridors
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-500 flex items-center justify-center shrink-0">
+                <AlertTriangle size={16} />
               </div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 text-orange-500 flex items-center justify-center">
-              <AlertTriangle size={20} />
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-orange-600 dark:text-orange-500 leading-none">{highRiskCount}</span>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Routes</span>
+              </div>
+              <div className="text-[10px] text-orange-600 dark:text-orange-400 font-semibold mt-1.5 truncate">
+                NH-27 Lifeline Segment
+              </div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex items-center justify-between">
-            <div>
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Affected Population</div>
-              <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">1.28M Citizens</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1">
-                Across 4 isolated district centers
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Affected Population
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-purple-500 flex items-center justify-center shrink-0">
+                <Users size={16} />
               </div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-purple-500 flex items-center justify-center">
-              <Users size={20} />
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-slate-900 dark:text-white leading-none">1.28M</span>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Citizens</span>
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold mt-1.5 truncate">
+                Across 4 Isolated Hubs
+              </div>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex items-center justify-between">
-            <div>
-              <div className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Decision Window</div>
-              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">&lt; 1h 22m</div>
-              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
-                NH-106 Bypass Detour Available
+          <div className="p-4 rounded-2xl bg-white dark:bg-[#0c1424] border border-slate-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Decision Window
+              </span>
+              <div className="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0">
+                <ShieldAlert size={16} />
               </div>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-500 flex items-center justify-center">
-              <ShieldAlert size={20} />
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 leading-none">&lt; 1h 22m</span>
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Remaining</span>
+              </div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1.5 truncate">
+                NH-106 Bypass Detour Ready
+              </div>
             </div>
           </div>
+
         </div>
 
         {/* Filter Controls Bar */}
