@@ -15,7 +15,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { roads, districts, shipments } from '../../data/mockData';
 
 export const CascadeSimulator: React.FC = () => {
-  const { cascadeModalOpen, closeCascadeModal, openRerouteModal } = useAppStore();
+  const { cascadeModalOpen, closeCascadeModal, openRerouteModal, startMapSimulation } = useAppStore();
   const [selectedRoadId, setSelectedRoadId] = useState<string>('road-a');
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
@@ -167,12 +167,11 @@ export const CascadeSimulator: React.FC = () => {
 
             <div className="flex items-end gap-2">
               <button
-                onClick={handleRunFullSimulation}
-                disabled={isSimulating}
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-red-700 transition-all disabled:opacity-50 cursor-pointer"
+                onClick={() => startMapSimulation(selectedRoadId)}
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-red-700 transition-all cursor-pointer"
               >
                 <Zap className="h-4 w-4" />
-                {isSimulating ? 'Simulating...' : 'Run Auto Sequence'}
+                <span>Simulate Live On GIS Map</span>
               </button>
 
               <button

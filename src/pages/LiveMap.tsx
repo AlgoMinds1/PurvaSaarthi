@@ -1,20 +1,108 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import clsx from 'clsx';
-import { Route, Landmark, Building2, Truck, AlertTriangle, CloudRain, Check, Navigation, X, Crosshair } from 'lucide-react';
+import { 
+  Route, Landmark, Building2, Truck, AlertTriangle, CloudRain, Check, 
+  Navigation, X, Crosshair, Zap, Play, Pause, ArrowRight, ShieldAlert,
+  RotateCcw, CheckCircle2
+} from 'lucide-react';
 import { roads, bridges, vehicles, districts } from '../data/mockData';
 import { useAppStore } from '../store/useAppStore';
 import { statusColor } from '../lib/utils';
 
 type LayerKey = 'roads' | 'bridges' | 'districts' | 'vehicles' | 'incidents' | 'weather';
 
+const simStages = [
+  {
+    step: 0,
+    title: 'Stage 1: Infrastructure Disruption',
+    badge: 'STAGE 1 / 5',
+    headline: 'Corridor Structural Collapse',
+    desc: 'Primary corridor NH-27 suffers structural landslide collapse due to 87mm precipitation & 32° slope gradient. Corridor status shifts to BLOCKED (94% Disruption Risk).',
+    metrics: [
+      { l: 'Corridor Status', v: 'BLOCKED (94%)', c: 'text-red-600 dark:text-red-400' },
+      { l: 'Precipitation', v: '87 mm Critical', c: 'text-red-600 dark:text-red-400' },
+      { l: 'SPOF Bottleneck', v: 'Bridge B-17', c: 'text-amber-600 dark:text-amber-400' },
+    ],
+    focusCoords: [25.8, 92.0] as [number, number],
+    zoom: 9,
+  },
+  {
+    step: 1,
+    title: 'Stage 2: Secondary Traffic Surge',
+    badge: 'STAGE 2 / 5',
+    headline: 'NH-106 Bypass Congestion Spike',
+    desc: 'Freight volume diverts onto NH-106 Shillong Bypass. Traffic load spikes by +340%, elevating secondary corridor disruption risk from 24% to 89%.',
+    metrics: [
+      { l: 'Bypass Traffic', v: '+340% Surge', c: 'text-amber-600 dark:text-amber-400' },
+      { l: 'Secondary Risk', v: '89% HIGH', c: 'text-orange-600 dark:text-orange-400' },
+      { l: 'Transit Delay', v: '+2h 45m', c: 'text-red-600 dark:text-red-400' },
+    ],
+    focusCoords: [25.85, 92.1] as [number, number],
+    zoom: 9,
+  },
+  {
+    step: 2,
+    title: 'Stage 3: District Isolation Risk',
+    badge: 'STAGE 3 / 5',
+    headline: 'District X Transit Severed',
+    desc: 'District X (Silchar / Barak Valley) primary transit link is severed. District isolation vulnerability index spikes from 24% to 87%.',
+    metrics: [
+      { l: 'Connectivity', v: '41% (Severed)', c: 'text-red-600 dark:text-red-400' },
+      { l: 'Isolation Risk', v: '87% CRITICAL', c: 'text-red-600 dark:text-red-500' },
+      { l: 'Alt Passages', v: '1 Remaining', c: 'text-amber-600 dark:text-amber-400' },
+    ],
+    focusCoords: [24.83, 92.78] as [number, number],
+    zoom: 8.5,
+  },
+  {
+    step: 3,
+    title: 'Stage 4: Essential Commodity Depletion',
+    badge: 'STAGE 4 / 5',
+    headline: 'Critical Medicine Stockout Threat',
+    desc: 'Shipment #104 (Life-Saving Vaccines & IV Fluids) on vehicle TRK-204 is stranded. Destination hospital local inventory depleted to 1.7 days buffer.',
+    metrics: [
+      { l: 'Consignment', v: 'Medicines (#104)', c: 'text-purple-600 dark:text-purple-400' },
+      { l: 'Local Reserve', v: '1.7 Days Left', c: 'text-red-600 dark:text-red-500' },
+      { l: 'Stockout Alarm', v: 'CRITICAL', c: 'text-red-600 dark:text-red-500' },
+    ],
+    focusCoords: [25.9, 91.85] as [number, number],
+    zoom: 9.5,
+  },
+  {
+    step: 4,
+    title: 'Stage 5: Autonomous Dispatch & Safe Window',
+    badge: 'STAGE 5 / 5',
+    headline: 'AI Safe Detour Trajectory Calculated',
+    desc: 'PurvaSaarthi Decision Engine calculates optimal bypass trajectory. Last safe dispatch window is BEFORE 16:30 hrs prior to flash flood crest.',
+    metrics: [
+      { l: 'Safe Window', v: 'Before 4:30 PM', c: 'text-emerald-600 dark:text-emerald-400' },
+      { l: 'Time Remaining', v: '1h 22m', c: 'text-cyan-600 dark:text-cyan-400' },
+      { l: 'Action', v: 'Reroute Ready', c: 'text-emerald-600 dark:text-emerald-400' },
+    ],
+    focusCoords: [25.8, 92.2] as [number, number],
+    zoom: 8.5,
+  },
+];
+
 export default function LiveMap() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<L.Map | null>(null);
   const layerGroups = useRef<Record<LayerKey, L.LayerGroup>>({} as Record<LayerKey, L.LayerGroup>);
+  const simLayerGroup = useRef<L.LayerGroup | null>(null);
   const vehicleMarkers = useRef<Record<string, L.Marker>>({});
 
-  const { selectedVehicleId, clearSelectedVehicle } = useAppStore();
+  const { 
+    selectedVehicleId, 
+    clearSelectedVehicle,
+    isSimulatingOnMap,
+    cascadeStep,
+    setCascadeStep,
+    stopMapSimulation,
+    openRerouteModal,
+  } = useAppStore();
+
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   const [layers, setLayers] = useState<Record<LayerKey, boolean>>({
     roads: true, bridges: true, districts: true,
@@ -39,6 +127,7 @@ export default function LiveMap() {
     }, 700);
   }, []);
 
+  // Initialize Map
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
@@ -143,14 +232,14 @@ export default function LiveMap() {
       L.marker(d.latlng, { icon: distIcon })
         .bindPopup(
           `<div style="min-width:210px">
-            <div style="font-weight:700;font-size:13px;margin-bottom:8px">${d.name}</div>
-            <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Connectivity</span><span style="font-weight:600">${d.connectivity}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Isolation Risk</span><span style="font-weight:600;color:${riskColor}">${d.isolationRisk}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Alt. Routes</span><span>${d.alternativeRoutes}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Supply (days)</span><span>${d.supplyDays}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Weather Risk</span><span style="color:#f97316;font-weight:600">${d.weatherRisk}</span></div>
-              <button onclick="window.openExplainDrawer('district', '${d.id}')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Isolation Risk</button>
+            <div style="font-weight:700;font-size:14px;margin-bottom:4px">${d.name}</div>
+            <div style="font-size:11px;opacity:0.7;margin-bottom:8px">Population: ${d.population.toLocaleString()}</div>
+            <div style="display:grid;gap:4px;font-size:12px">
+              <div style="display:flex;justify-content:space-between"><span>Isolation Risk</span><span style="font-weight:700;color:${riskColor}">${d.isolationRisk}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Supply Days</span><span style="font-weight:600;color:${d.supplyDays < 3 ? '#ef4444' : '#22c55e'}">${d.supplyDays} days</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Alt Routes</span><span>${d.alternativeRoutes}</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Weather Risk</span><span>${d.weatherRisk}</span></div>
+              <button onclick="window.openExplainDrawer('district', '${d.id}')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Risk Weights</button>
             </div>
           </div>`
         ).addTo(districtsGroup);
@@ -159,37 +248,44 @@ export default function LiveMap() {
     // ── VEHICLES LAYER ──
     const vehiclesGroup = L.layerGroup().addTo(map);
     vehicles.forEach((v) => {
-      const riskC = v.routeRisk > 80 ? '#ef4444' : v.routeRisk > 60 ? '#f97316' : '#22c55e';
+      const isSelected = v.id === selectedVehicleId;
       const truckIcon = L.divIcon({
         className: 'truck-icon-custom',
-        html: `<div style="position:relative;cursor:pointer">
-          <div style="width:28px;height:28px;background:#0284c7;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.35)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="7" cy="18.5" r="2.5"/></svg></div>
-          <div style="
-            position:absolute;top:-6px;right:-6px;
-            background:${riskC};color:white;
-            border-radius:50%;width:16px;height:16px;
-            font-size:8px;font-weight:800;
-            display:flex;align-items:center;justify-content:center;
-            border:1.5px solid #ffffff;
-            box-shadow:0 1px 3px rgba(0,0,0,0.3);
-          ">${Math.round(v.routeRisk)}</div>
+        html: `<div style="
+          width:${isSelected ? 32 : 24}px;
+          height:${isSelected ? 32 : 24}px;
+          background:${isSelected ? '#f97316' : '#0284c7'};
+          border:2px solid white;
+          border-radius:50%;
+          display:flex;align-items:center;justify-content:center;
+          color:white;
+          box-shadow:0 2px 6px rgba(0,0,0,0.4);
+          cursor:pointer;
+          transition:all 0.2s;
+        ">
+          <svg width="${isSelected ? 16 : 12}" height="${isSelected ? 16 : 12}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+            <path d="M15 18H9"/>
+            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+            <circle cx="17" cy="18.5" r="2.5"/>
+            <circle cx="7" cy="18.5" r="2.5"/>
+          </svg>
         </div>`,
-        iconSize: [32, 32], iconAnchor: [16, 16],
+        iconSize: [isSelected ? 32 : 24, isSelected ? 32 : 24],
+        iconAnchor: [isSelected ? 16 : 12, isSelected ? 16 : 12],
       });
       const marker = L.marker(v.currentLocation, { icon: truckIcon })
         .bindPopup(
-          `<div style="min-width:210px">
-            <div style="font-weight:700;font-size:13px;margin-bottom:8px">Vehicle ${v.id} (${v.plateNo})</div>
-            <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Driver</span><span style="font-weight:500">${v.driverName}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Destination</span><span style="font-weight:500">${v.destination}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Route Risk</span><span style="font-weight:700;color:${riskC}">${v.routeRisk}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">ETA</span><span style="font-weight:500">${v.eta}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Delay</span><span style="color:#f97316;font-weight:600">${v.delayMinutes > 0 ? '+' + v.delayMinutes + ' min' : 'On time'}</span></div>
-              <div style="display:flex;justify-content:space-between">
-                <span style="opacity:0.7">GPS Status</span>
-                <span style="color:${v.telemetryFresh ? '#16a34a' : '#f97316'};font-weight:600">${v.telemetryFresh ? '● Fresh — ' + v.lastPingAt : 'TELEMETRY UNAVAILABLE'}</span>
-              </div>
+          `<div style="min-width:200px">
+            <div style="font-weight:700;font-size:13px;margin-bottom:2px">${v.id} — ${v.plateNo}</div>
+            <div style="font-size:11px;opacity:0.7;margin-bottom:8px">Driver: ${v.driverName}</div>
+            <div style="display:grid;gap:4px;font-size:12px">
+              <div style="display:flex;justify-content:space-between"><span>Destination</span><span>${v.destination}</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Status</span><span style="font-weight:600;color:#22c55e">${v.status.replace('_',' ')}</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Route Risk</span><span style="font-weight:600;color:${v.routeRisk > 70 ? '#ef4444' : '#22c55e'}">${v.routeRisk}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span>ETA</span><span>${v.eta}</span></div>
+              <div style="display:flex;justify-content:space-between"><span>Telemetry</span><span style="color:${v.telemetryFresh ? '#22c55e' : '#f97316'};font-weight:600">${v.telemetryFresh ? 'Live GPS (3s)' : 'Stale'}</span></div>
+              <button onclick="window.openExplainDrawer('shipment', 'SHIP-104')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Risk Weights</button>
             </div>
           </div>`
         ).addTo(vehiclesGroup);
@@ -198,48 +294,37 @@ export default function LiveMap() {
 
     // ── INCIDENTS LAYER ──
     const incidentsGroup = L.layerGroup().addTo(map);
-    const incidentData = [
-      { latlng: [25.75, 92.52] as [number, number], title: 'Sonapur Landslide Blockage', type: 'Landslide', severity: 'CRITICAL', reporter: 'Field Officer #42', confidence: '92%' },
-      { latlng: [25.40, 92.65] as [number, number], title: 'Jatinga Slope Mudslide', type: 'Slope Erosion', severity: 'HIGH', reporter: 'Border Roads Patrol', confidence: '88%' },
+    const incidentZones = [
+      { center: [25.75, 92.52] as [number, number], radius: 18000, label: 'Dima Hasao Heavy Precip Zone (87mm)' },
+      { center: [25.40, 92.65] as [number, number], radius: 14000, label: 'Haflong Monsoon Risk Belt' },
     ];
-    incidentData.forEach((inc) => {
-      const hazardIcon = L.divIcon({
-        className: 'truck-icon-custom',
-        html: `<div style="width:28px;height:28px;background:#dc2626;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 0 0 4px rgba(220,38,38,0.3);cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>`,
-        iconSize: [28, 28], iconAnchor: [14, 14],
-      });
-      L.marker(inc.latlng, { icon: hazardIcon })
-        .bindPopup(
-          `<div style="min-width:200px">
-            <div style="background:#ef444420;color:#dc2626;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:6px">FIELD INCIDENT · ${inc.severity}</div>
-            <div style="font-weight:700;font-size:13px;margin-bottom:6px">${inc.title}</div>
-            <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Reported By</span><span>${inc.reporter}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Confidence</span><span style="color:#16a34a;font-weight:700">${inc.confidence}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">GPS Verification</span><span style="color:#0284c7;font-weight:600">Geo-tagged</span></div>
-            </div>
-          </div>`
-        ).addTo(incidentsGroup);
+    incidentZones.forEach((z) => {
+      L.circle(z.center, {
+        radius: z.radius,
+        color: '#ef4444',
+        fillColor: '#ef4444',
+        fillOpacity: 0.15,
+        weight: 2,
+        dashArray: '5,5',
+      }).bindPopup(`<div style="font-size:12px;font-weight:700;color:#ef4444">${z.label}</div>`).addTo(incidentsGroup);
     });
 
     // ── WEATHER LAYER ──
     const weatherGroup = L.layerGroup();
-    const weatherHazardZones = [
-      { center: [25.75, 92.52] as [number, number], radius: 18000, label: 'Dima Hasao Heavy Precip Zone (87mm)' },
-      { center: [25.40, 92.65] as [number, number], radius: 14000, label: 'Haflong Monsoon Risk Belt' },
-    ];
-    weatherHazardZones.forEach((w) => {
-      L.circle(w.center, {
-        radius: w.radius,
-        color: '#0284c7',
-        fillColor: '#38bdf8',
-        fillOpacity: 0.25,
-        weight: 1.5,
-        dashArray: '6,4',
-      }).bindPopup(`<div style="font-size:12px"><b>Severe Weather Alert</b><br/>${w.label}</div>`).addTo(weatherGroup);
+    incidentZones.forEach((z) => {
+      L.circle(z.center, {
+        radius: z.radius * 1.5,
+        color: '#3b82f6',
+        fillColor: '#3b82f6',
+        fillOpacity: 0.1,
+        weight: 1,
+      }).bindPopup(`<div style="font-size:12px;color:#3b82f6">Rainfall: 87mm forecast next 24h</div>`).addTo(weatherGroup);
     });
 
-    // Store layer groups
+    // ── SIMULATION LAYER ──
+    const simGroup = L.layerGroup().addTo(map);
+    simLayerGroup.current = simGroup;
+
     layerGroups.current = {
       roads: roadsGroup,
       bridges: bridgesGroup,
@@ -252,88 +337,183 @@ export default function LiveMap() {
     mapInstance.current = map;
   }, []);
 
-  // Handle redirect & focus on vehicle
-  useEffect(() => {
-    if (selectedVehicleId) {
-      // Allow map initialization to complete
-      const timer = setTimeout(() => {
-        focusVehicle(selectedVehicleId);
-      }, 200);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedVehicleId, focusVehicle]);
-
-  const toggleLayer = (layer: LayerKey) => {
+  // Handle layer toggles
+  const toggleLayer = (k: LayerKey) => {
     const map = mapInstance.current;
-    const group = layerGroups.current[layer];
-    if (!map || !group) return;
-    if (map.hasLayer(group)) { map.removeLayer(group); }
-    else { map.addLayer(group); }
-    setLayers((prev) => ({ ...prev, [layer]: !prev[layer] }));
+    if (!map) return;
+    const group = layerGroups.current[k];
+    if (!group) return;
+    if (layers[k]) {
+      map.removeLayer(group);
+    } else {
+      map.addLayer(group);
+    }
+    setLayers((prev) => ({ ...prev, [k]: !prev[k] }));
   };
 
-  const layerDefs: { id: LayerKey; label: string; icon: React.ReactNode }[] = [
-    { id: 'roads', label: 'Roads', icon: <Route size={14} className="text-orange-500" /> },
-    { id: 'bridges', label: 'Bridges', icon: <Landmark size={14} className="text-blue-500" /> },
-    { id: 'districts', label: 'Districts', icon: <Building2 size={14} className="text-purple-500" /> },
-    { id: 'vehicles', label: 'Vehicles', icon: <Truck size={14} className="text-sky-500" /> },
-    { id: 'incidents', label: 'Incidents', icon: <AlertTriangle size={14} className="text-red-500" /> },
-    { id: 'weather', label: 'Weather Risk', icon: <CloudRain size={14} className="text-cyan-500" /> },
-  ];
+  // Real-time Map Cascade Simulation Updates
+  useEffect(() => {
+    const map = mapInstance.current;
+    const simGroup = simLayerGroup.current;
+    if (!map || !simGroup) return;
 
-  const trackedVehicle = selectedVehicleId ? vehicles.find((v) => v.id === selectedVehicleId) : null;
+    simGroup.clearLayers();
+
+    if (!isSimulatingOnMap) return;
+
+    const currentStage = simStages[cascadeStep] || simStages[0];
+
+    // Smoothly fly map to focus area
+    map.flyTo(currentStage.focusCoords, currentStage.zoom, { duration: 1.0 });
+
+    // Stage 1: Collapse on NH-27
+    const nh27 = roads[0];
+    if (nh27) {
+      L.polyline(nh27.latlngs, {
+        color: '#ef4444',
+        weight: 6,
+        opacity: 1,
+      }).addTo(simGroup);
+
+      const alertIcon = L.divIcon({
+        className: 'truck-icon-custom',
+        html: `<div style="background:#ef4444;border:3px solid white;color:white;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px #ef4444;animation:ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 16],
+      });
+      L.marker([25.8, 91.9], { icon: alertIcon })
+        .bindPopup(`<div style="font-weight:bold;color:#ef4444;font-size:12px">🚨 NH-27 COLLAPSE ZONE<br/><span style="color:#0f172a;font-weight:normal">Landslide 87mm Rain · BLOCKED</span></div>`)
+        .addTo(simGroup)
+        .openPopup();
+    }
+
+    // Stage 2: Secondary Congestion on NH-106
+    if (cascadeStep >= 1) {
+      const nh106 = roads[1];
+      if (nh106) {
+        L.polyline(nh106.latlngs, {
+          color: '#f97316',
+          weight: 5,
+          opacity: 0.9,
+          dashArray: '8,6',
+        }).addTo(simGroup);
+
+        const surgeIcon = L.divIcon({
+          className: 'truck-icon-custom',
+          html: `<div style="background:#f97316;border:2px solid white;color:white;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.3);white-space:nowrap">+340% TRAFFIC SURGE (89% Risk)</div>`,
+          iconSize: [120, 24],
+          iconAnchor: [60, 12],
+        });
+        L.marker([26.01, 92.11], { icon: surgeIcon }).addTo(simGroup);
+      }
+    }
+
+    // Stage 3: District X Isolation Zone
+    if (cascadeStep >= 2) {
+      L.circle([24.83, 92.78], {
+        radius: 26000,
+        color: '#dc2626',
+        fillColor: '#ef4444',
+        fillOpacity: 0.25,
+        weight: 3,
+        dashArray: '6,6',
+      }).addTo(simGroup);
+
+      const distAlertIcon = L.divIcon({
+        className: 'truck-icon-custom',
+        html: `<div style="background:#b91c1c;border:2px solid white;color:white;padding:4px 10px;border-radius:14px;font-size:11px;font-weight:bold;box-shadow:0 0 12px #ef4444;white-space:nowrap">🚨 DISTRICT X ISOLATION RISK: 87%</div>`,
+        iconSize: [180, 26],
+        iconAnchor: [90, 13],
+      });
+      L.marker([24.83, 92.78], { icon: distAlertIcon }).addTo(simGroup);
+    }
+
+    // Stage 4: Stressed Medicine Convoy
+    if (cascadeStep >= 3) {
+      const medIcon = L.divIcon({
+        className: 'truck-icon-custom',
+        html: `<div style="background:#7c3aed;border:2px solid white;color:white;padding:4px 10px;border-radius:14px;font-size:10px;font-weight:bold;box-shadow:0 0 14px #7c3aed;white-space:nowrap">⚠️ TRK-204 (Vaccines) · Stockout in 1.7 Days</div>`,
+        iconSize: [190, 26],
+        iconAnchor: [95, 13],
+      });
+      L.marker([25.9, 91.85], { icon: medIcon }).addTo(simGroup);
+    }
+
+    // Stage 5: Recommended AI Safe Detour
+    if (cascadeStep >= 4) {
+      const safePath = [
+        [26.14, 91.74],
+        [26.01, 92.11],
+        [25.57, 91.88],
+        [25.3, 92.2],
+        [24.83, 92.78],
+      ] as [number, number][];
+
+      L.polyline(safePath, {
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.95,
+      }).addTo(simGroup);
+
+      const safeBeacon = L.divIcon({
+        className: 'truck-icon-custom',
+        html: `<div style="background:#059669;border:2px solid white;color:white;padding:4px 12px;border-radius:16px;font-size:11px;font-weight:bold;box-shadow:0 0 16px #10b981;white-space:nowrap">✅ SAFE DETOUR WINDOW: Before 4:30 PM</div>`,
+        iconSize: [210, 28],
+        iconAnchor: [105, 14],
+      });
+      L.marker([25.57, 91.88], { icon: safeBeacon }).addTo(simGroup);
+    }
+
+  }, [isSimulatingOnMap, cascadeStep]);
+
+  // Auto-play simulation timer
+  useEffect(() => {
+    if (!isSimulatingOnMap || !isAutoPlaying) return;
+
+    const timer = setInterval(() => {
+      setCascadeStep((cascadeStep + 1) % simStages.length);
+    }, 3800);
+
+    return () => clearInterval(timer);
+  }, [isSimulatingOnMap, isAutoPlaying, cascadeStep, setCascadeStep]);
+
+  const currentStage = simStages[cascadeStep] || simStages[0];
+  const trackedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
 
   return (
-    <div className="flex h-full min-h-0 relative transition-colors duration-200">
-      {/* Controls */}
-      <div className="w-56 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col overflow-y-auto">
-        <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
-          <h3 className="text-slate-900 dark:text-white text-sm font-semibold">Map Layers</h3>
-        </div>
-        <div className="p-4 space-y-2.5">
-          {layerDefs.map((l) => (
-            <label key={l.id} className="flex items-center gap-3 cursor-pointer group">
-              <input
-                type="checkbox"
-                checked={layers[l.id]}
-                onChange={() => toggleLayer(l.id)}
-                className="sr-only"
-              />
-              <div className={clsx(
-                'w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all',
-                layers[l.id] ? 'bg-orange-500 border-orange-500' : 'border-slate-300 dark:border-white/20 bg-transparent'
-              )}>
-                {layers[l.id] && <Check size={10} strokeWidth={3} className="text-white" />}
-              </div>
-              <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors font-medium">
-                {l.icon}
-                <span>{l.label}</span>
-              </div>
-            </label>
-          ))}
-        </div>
-
-        {/* Legend */}
-        <div className="px-4 py-3 border-t border-slate-200 dark:border-white/[0.06]">
-          <div className="text-xs font-semibold text-slate-700 dark:text-slate-400 mb-3">Road Status</div>
-          {[
-            { color: '#22c55e', label: 'Open' },
-            { color: '#eab308', label: 'Degraded' },
-            { color: '#f97316', label: 'High Risk' },
-            { color: '#ef4444', label: 'Blocked' },
-            { color: '#6b7280', label: 'Unknown / Stale' },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-2 mb-1.5">
-              <div className="w-7 h-1.5 rounded-full" style={{ background: item.color }} />
-              <span className="text-xs text-slate-600 dark:text-slate-400">{item.label}</span>
-            </div>
-          ))}
+    <div className="flex h-full min-h-0 bg-slate-100 dark:bg-[#070c18] transition-colors duration-200">
+      
+      {/* Left-side Layer & Fleet Drawer (Hidden during fullscreen live simulation) */}
+      <div className={clsx(
+        'w-64 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col transition-all duration-300',
+        isSimulatingOnMap && 'hidden md:flex'
+      )}>
+        {/* Layer Controls Header */}
+        <div className="p-4 border-b border-slate-200 dark:border-white/[0.06]">
+          <div className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">Map Layers</div>
+          <div className="grid grid-cols-2 gap-2">
+            {(['roads', 'bridges', 'districts', 'vehicles', 'incidents', 'weather'] as LayerKey[]).map((k) => (
+              <button
+                key={k}
+                onClick={() => toggleLayer(k)}
+                className={clsx(
+                  'flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize cursor-pointer border',
+                  layers[k]
+                    ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-white/[0.08] dark:text-white dark:border-white/10'
+                    : 'bg-slate-50 text-slate-400 border-slate-200 dark:bg-white/[0.02] dark:text-slate-500 dark:border-white/[0.04]'
+                )}
+              >
+                <span>{k}</span>
+                {layers[k] && <Check size={12} className="text-orange-500" />}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Active vehicles list */}
-        <div className="px-4 py-3 border-t border-slate-200 dark:border-white/[0.06] flex-1">
-          <div className="text-xs font-semibold text-slate-700 dark:text-slate-400 mb-3">Active Vehicles</div>
-          <div className="space-y-2">
+        {/* Active Fleet List */}
+        <div className="flex-1 min-h-0 flex flex-col p-4 overflow-y-auto">
+          <div className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Active Fleet ({vehicles.length})</div>
+          <div className="space-y-1.5 flex-1 min-h-0">
             {vehicles.map((v) => {
               const isSelected = v.id === selectedVehicleId;
               return (
@@ -341,10 +521,10 @@ export default function LiveMap() {
                   key={v.id}
                   onClick={() => focusVehicle(v.id)}
                   className={clsx(
-                    'w-full text-left text-xs p-2 rounded-lg transition-all cursor-pointer border',
+                    'w-full p-2.5 rounded-xl border text-left transition-all cursor-pointer text-xs',
                     isSelected
-                      ? 'bg-orange-50 border-orange-300 dark:bg-orange-500/15 dark:border-orange-500/30'
-                      : 'bg-slate-50 dark:bg-white/[0.03] border-slate-200/60 dark:border-transparent hover:border-slate-300 dark:hover:border-white/10'
+                      ? 'bg-orange-50 text-orange-950 border-orange-300 dark:bg-orange-500/10 dark:text-white dark:border-orange-500/30 ring-1 ring-orange-500/30'
+                      : 'bg-slate-50 hover:bg-slate-100 border-slate-200 dark:bg-white/[0.03] dark:hover:bg-white/[0.06] dark:border-white/[0.05]'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -370,35 +550,36 @@ export default function LiveMap() {
 
       {/* Map Container */}
       <div className="flex-1 min-h-0 relative">
-        {/* Real-Time Tracking Floating Header HUD */}
-        {trackedVehicle && (
+        
+        {/* Real-Time Tracking Floating Header HUD (Normal Mode) */}
+        {!isSimulatingOnMap && trackedVehicle && (
           <div className="absolute top-4 left-4 right-4 z-[1000] animate-fade-up pointer-events-none">
-            <div className="bg-slate-900/90 dark:bg-slate-950/95 backdrop-blur-md text-white rounded-xl p-3 px-4 shadow-xl border border-white/10 flex items-center justify-between pointer-events-auto max-w-2xl mx-auto">
+            <div className="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md text-slate-900 dark:text-white rounded-xl p-3 px-4 shadow-xl border border-slate-200 dark:border-white/10 flex items-center justify-between pointer-events-auto max-w-2xl mx-auto">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-orange-500 flex items-center justify-center text-white shrink-0">
                   <Navigation size={18} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-white">{trackedVehicle.id} — {trackedVehicle.plateNo}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="font-bold text-sm text-slate-900 dark:text-white">{trackedVehicle.id} — {trackedVehicle.plateNo}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                       LIVE GPS
                     </span>
                   </div>
-                  <div className="text-xs text-slate-300 mt-0.5 flex items-center gap-2">
+                  <div className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 flex items-center gap-2">
                     <span>Driver: <b>{trackedVehicle.driverName}</b></span>
                     <span>·</span>
                     <span>Dest: <b>{trackedVehicle.destination}</b></span>
                     <span>·</span>
-                    <span className="text-orange-400 font-semibold">Route Risk: {trackedVehicle.routeRisk}%</span>
+                    <span className="text-orange-600 dark:text-orange-400 font-semibold">Route Risk: {trackedVehicle.routeRisk}%</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => focusVehicle(trackedVehicle.id)}
-                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                   title="Center map on vehicle"
                 >
                   <Crosshair size={13} />
@@ -406,12 +587,135 @@ export default function LiveMap() {
                 </button>
                 <button
                   onClick={clearSelectedVehicle}
-                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-500 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white transition-colors cursor-pointer"
                   title="Close vehicle focus"
                 >
                   <X size={14} />
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── REAL-TIME CASCADE SIMULATION FLOATING HUD ── */}
+        {isSimulatingOnMap && (
+          <div className="absolute bottom-5 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 z-[1000] max-w-3xl w-full animate-fade-up">
+            <div className="bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 sm:p-5 space-y-3.5 text-slate-900 dark:text-slate-100">
+              
+              {/* Top HUD Controls Bar */}
+              <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-white/[0.08] pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-white shadow-xs">
+                    <Zap size={16} className="animate-pulse" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                        Live Cascade Failure Simulation
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30">
+                        {currentStage.badge}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                      Simulating real-time domino disruptions on North East GIS corridors
+                    </div>
+                  </div>
+                </div>
+
+                {/* Step indicator pills */}
+                <div className="flex items-center gap-1.5">
+                  <div className="hidden sm:flex items-center gap-1 mr-2">
+                    {simStages.map((s, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCascadeStep(idx)}
+                        className={clsx(
+                          'w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center transition-all cursor-pointer',
+                          cascadeStep === idx
+                            ? 'bg-amber-500 text-white shadow-xs scale-110'
+                            : cascadeStep > idx
+                            ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30'
+                            : 'bg-slate-100 dark:bg-white/[0.05] text-slate-400 border border-slate-200 dark:border-white/[0.05]'
+                        )}
+                        title={s.title}
+                      >
+                        {cascadeStep > idx ? <Check size={10} /> : idx + 1}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                    className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.08] dark:hover:bg-white/[0.12] text-slate-700 dark:text-slate-300 transition-colors cursor-pointer shadow-2xs"
+                    title={isAutoPlaying ? 'Pause Auto Sequence' : 'Play Auto Sequence'}
+                  >
+                    {isAutoPlaying ? <Pause size={14} className="text-amber-500" /> : <Play size={14} />}
+                  </button>
+
+                  <button
+                    onClick={stopMapSimulation}
+                    className="p-2 rounded-lg bg-slate-100 hover:bg-red-50 hover:text-red-600 dark:bg-white/[0.08] dark:hover:bg-red-500/20 text-slate-500 dark:text-slate-400 transition-colors cursor-pointer shadow-2xs"
+                    title="Exit Live Simulation"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Stage Description & Headline */}
+              <div className="space-y-1.5">
+                <div className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                  <span>{currentStage.headline}</span>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium bg-slate-50 dark:bg-white/[0.03] p-3 rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
+                  {currentStage.desc}
+                </p>
+              </div>
+
+              {/* Real-Time Metrics Row */}
+              <div className="grid grid-cols-3 gap-2.5">
+                {currentStage.metrics.map((m, idx) => (
+                  <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200/80 dark:border-white/[0.06] shadow-2xs">
+                    <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">{m.l}</div>
+                    <div className={clsx('text-xs sm:text-sm font-bold mt-0.5 truncate', m.c)}>{m.v}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Nav Action Bar */}
+              <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-white/[0.06]">
+                <button
+                  onClick={() => setCascadeStep(Math.max(0, cascadeStep - 1))}
+                  disabled={cascadeStep === 0}
+                  className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors disabled:opacity-40 cursor-pointer shadow-2xs"
+                >
+                  Previous Stage
+                </button>
+
+                {cascadeStep < simStages.length - 1 ? (
+                  <button
+                    onClick={() => setCascadeStep(cascadeStep + 1)}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    <span>Propagate To Stage {cascadeStep + 2}</span>
+                    <ArrowRight size={13} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      stopMapSimulation();
+                      openRerouteModal();
+                    }}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
+                  >
+                    <ShieldAlert size={14} />
+                    <span>Execute Safe Detour Action</span>
+                  </button>
+                )}
+              </div>
+
             </div>
           </div>
         )}

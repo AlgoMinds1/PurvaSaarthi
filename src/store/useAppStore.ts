@@ -94,11 +94,14 @@ interface AppState {
   cascadeModalOpen: boolean;
   simulatedRoadId: string | null;
   cascadeStep: number;
+  isSimulatingOnMap: boolean;
   openCascadeModal: () => void;
   closeCascadeModal: () => void;
   setSimulatedRoadId: (id: string | null) => void;
   setCascadeStep: (step: number) => void;
   resetCascadeSimulation: () => void;
+  startMapSimulation: (roadId?: string) => void;
+  stopMapSimulation: () => void;
 
   // AI Explainability & Data Trust Drawer
   explainabilityDrawerOpen: boolean;
@@ -396,13 +399,23 @@ export const useAppStore = create<AppState>((set) => ({
 
   // Cascade simulation state
   cascadeModalOpen: false,
-  simulatedRoadId: 'road-nh27',
+  simulatedRoadId: 'road-a',
   cascadeStep: 0,
+  isSimulatingOnMap: false,
   openCascadeModal: () => set({ cascadeModalOpen: true }),
   closeCascadeModal: () => set({ cascadeModalOpen: false }),
   setSimulatedRoadId: (id) => set({ simulatedRoadId: id }),
   setCascadeStep: (step) => set({ cascadeStep: step }),
-  resetCascadeSimulation: () => set({ cascadeStep: 0, simulatedRoadId: 'road-nh27' }),
+  resetCascadeSimulation: () => set({ cascadeStep: 0, simulatedRoadId: 'road-a' }),
+  startMapSimulation: (roadId) =>
+    set((s) => ({
+      cascadeModalOpen: false,
+      activeView: 'map',
+      isSimulatingOnMap: true,
+      simulatedRoadId: roadId || s.simulatedRoadId || 'road-a',
+      cascadeStep: 0,
+    })),
+  stopMapSimulation: () => set({ isSimulatingOnMap: false, cascadeStep: 0 }),
 
   // Explainability drawer state
   explainabilityDrawerOpen: false,
