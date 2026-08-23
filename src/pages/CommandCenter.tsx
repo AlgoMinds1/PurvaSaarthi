@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight, Route, Truck,
   AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map,
-  Activity, Sliders, ShieldAlert, Zap, Brain
+  Activity, Sliders, ShieldAlert, Zap, Brain, ChevronDown
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
@@ -136,19 +136,20 @@ function ParamItem({
 // ── MAIN COMMAND CENTER ────────────────────────────────────────────────────────
 export default function CommandCenter() {
   const { setView } = useAppStore();
+  const [showMetricsDropdown, setShowMetricsDropdown] = useState(false);
   const unreadCritical = shipments.filter(s => s.status === 'AT_RISK').length;
 
   return (
-    <div className="flex h-full min-h-0 p-5 gap-4 transition-colors duration-200">
+    <div className="flex h-full min-h-0 p-5 transition-colors duration-200">
 
-      {/* Full-Height Expanded Regional Map (Left) */}
+      {/* Full-Width & Full-Height Regional Map */}
       <div className="flex-1 min-w-0 glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
+        <div className="relative z-30 flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
           <div className="flex items-center gap-2">
             <Map size={16} className="text-orange-500" />
             <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Operations GIS Map</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/20">
               <span className="pulse-dot green" /> LIVE GIS
             </span>
@@ -165,6 +166,155 @@ export default function CommandCenter() {
             >
               Full GIS View <ArrowRight size={12} />
             </button>
+
+            {/* Operations & Metrics Dropdown Toggle Button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowMetricsDropdown(!showMetricsDropdown)}
+                className={clsx(
+                  'flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border shadow-xs',
+                  showMetricsDropdown
+                    ? 'bg-orange-500 text-white border-orange-500 ring-2 ring-orange-500/20'
+                    : 'bg-white dark:bg-white/5 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10'
+                )}
+                title="Toggle Operations & Metrics Stats"
+              >
+                <Sliders size={13} className={showMetricsDropdown ? 'text-white' : 'text-orange-500'} />
+                <span>Operations & Metrics</span>
+                <ChevronDown size={12} className={clsx('transition-transform duration-200', showMetricsDropdown && 'rotate-180')} />
+              </button>
+
+              {/* Dropdown Menu Modal */}
+              {showMetricsDropdown && (
+                <>
+                  <div
+                    className="fixed inset-0 z-[1000]"
+                    onClick={() => setShowMetricsDropdown(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-2 w-80 max-h-[calc(100vh-12rem)] overflow-y-auto bg-white/95 dark:bg-[#0b1322]/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 dark:border-white/10 shadow-2xl p-4 z-[1001] animate-fade-in space-y-3.5">
+                    {/* Header */}
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/[0.08]">
+                      <div className="flex items-center gap-2">
+                        <Sliders size={14} className="text-orange-500" />
+                        <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">OPERATIONS & METRICS</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">NER OPS</span>
+                    </div>
+
+                    {/* Primary 3 Summary KPIs */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Key Indicators</div>
+                      <KpiCard
+                        label="Corridors at Risk"
+                        value={7}
+                        icon={<Route size={18} className="text-orange-500" />}
+                        trend="↑ 2 At Risk"
+                        trendUp
+                        critical
+                        onClick={() => { setView('roads'); setShowMetricsDropdown(false); }}
+                      />
+                      <KpiCard
+                        label="Active Fleet"
+                        value={18}
+                        icon={<Truck size={18} className="text-blue-500" />}
+                        trend="18 Live GPS"
+                        onClick={() => { setView('vehicles'); setShowMetricsDropdown(false); }}
+                      />
+                      <KpiCard
+                        label="Critical Alerts"
+                        value={unreadCritical}
+                        icon={<AlertOctagon size={18} className="text-red-500" />}
+                        trend="Action Required"
+                        trendUp
+                        critical
+                        onClick={() => { setView('alerts'); setShowMetricsDropdown(false); }}
+                      />
+                    </div>
+
+                    {/* Environmental Telemetry */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Environmental Telemetry</div>
+                      <ParamItem
+                        icon={<CloudRain size={15} className="text-blue-500" />}
+                        label="Forecast Rainfall"
+                        sub="Next 24 Hours"
+                        value="87 mm"
+                        status="warning"
+                      />
+                      <ParamItem
+                        icon={<Mountain size={15} className="text-amber-500" />}
+                        label="Terrain Gradient"
+                        sub="Landslide Probability"
+                        value="HIGH (32°)"
+                        status="alert"
+                      />
+                    </div>
+
+                    {/* Network & Infrastructure */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Network Telemetry</div>
+                      <ParamItem
+                        icon={<Radio size={15} className="text-emerald-500" />}
+                        label="Roads Monitored"
+                        sub="National Highways"
+                        value="24 Corridors"
+                        status="success"
+                      />
+                      <ParamItem
+                        icon={<Landmark size={15} className="text-cyan-500" />}
+                        label="Active Bridges"
+                        sub="Key River Crossings"
+                        value="8 Bridges"
+                        status="normal"
+                      />
+                      <ParamItem
+                        icon={<Users size={15} className="text-purple-500" />}
+                        label="Field Response"
+                        sub="On-ground Personnel"
+                        value="7 Officers"
+                        status="normal"
+                      />
+                    </div>
+
+                    {/* Resilience Index */}
+                    <div className="space-y-2">
+                      <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Cascade Vulnerability</div>
+                      <ParamItem
+                        icon={<ShieldAlert size={15} className="text-red-500" />}
+                        label="Peak Disruption Corridor"
+                        sub="Single Point of Failure"
+                        value="NH-06 (91%)"
+                        status="alert"
+                      />
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-white/[0.08] space-y-2">
+                      <button
+                        onClick={() => {
+                          useAppStore.getState().openExplainabilityDrawer('road', 'road-nh27');
+                          setShowMetricsDropdown(false);
+                        }}
+                        className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                      >
+                        <Brain size={13} />
+                        <span>Explain AI Risk Weights</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setView('roads');
+                          setShowMetricsDropdown(false);
+                        }}
+                        className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                      >
+                        <Activity size={13} />
+                        <span>Inspect All Corridors</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -186,127 +336,6 @@ export default function CommandCenter() {
             Interactive Zoom & Pan Enabled
           </div>
         </div>
-      </div>
-
-      {/* Right-Side Operations & Parameters Rail */}
-      <div className="w-80 shrink-0 glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] flex flex-col justify-between gap-3 overflow-y-auto h-full shadow-xs">
-        
-        <div className="space-y-3.5">
-          {/* Header */}
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">
-            <div className="flex items-center gap-2">
-              <Sliders size={15} className="text-orange-500" />
-              <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">OPERATIONS & METRICS</span>
-            </div>
-            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">NER OPS</span>
-          </div>
-
-          {/* Primary 3 Summary KPIs */}
-          <div className="space-y-2">
-            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Key Indicators</div>
-            <KpiCard
-              label="Corridors at Risk"
-              value={7}
-              icon={<Route size={18} className="text-orange-500" />}
-              trend="↑ 2 At Risk"
-              trendUp
-              critical
-              onClick={() => setView('roads')}
-            />
-            <KpiCard
-              label="Active Fleet"
-              value={18}
-              icon={<Truck size={18} className="text-blue-500" />}
-              trend="18 Live GPS"
-              onClick={() => setView('vehicles')}
-            />
-            <KpiCard
-              label="Critical Alerts"
-              value={unreadCritical}
-              icon={<AlertOctagon size={18} className="text-red-500" />}
-              trend="Action Required"
-              trendUp
-              critical
-              onClick={() => setView('alerts')}
-            />
-          </div>
-
-          {/* Environmental Telemetry */}
-          <div className="space-y-2">
-            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Environmental Telemetry</div>
-            <ParamItem
-              icon={<CloudRain size={15} className="text-blue-500" />}
-              label="Forecast Rainfall"
-              sub="Next 24 Hours"
-              value="87 mm"
-              status="warning"
-            />
-            <ParamItem
-              icon={<Mountain size={15} className="text-amber-500" />}
-              label="Terrain Gradient"
-              sub="Landslide Probability"
-              value="HIGH (32°)"
-              status="alert"
-            />
-          </div>
-
-          {/* Network & Infrastructure */}
-          <div className="space-y-2">
-            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Network Telemetry</div>
-            <ParamItem
-              icon={<Radio size={15} className="text-emerald-500" />}
-              label="Roads Monitored"
-              sub="National Highways"
-              value="24 Corridors"
-              status="success"
-            />
-            <ParamItem
-              icon={<Landmark size={15} className="text-cyan-500" />}
-              label="Active Bridges"
-              sub="Key River Crossings"
-              value="8 Bridges"
-              status="normal"
-            />
-            <ParamItem
-              icon={<Users size={15} className="text-purple-500" />}
-              label="Field Response"
-              sub="On-ground Personnel"
-              value="7 Officers"
-              status="normal"
-            />
-          </div>
-
-          {/* Resilience Index */}
-          <div className="space-y-2">
-            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Cascade Vulnerability</div>
-            <ParamItem
-              icon={<ShieldAlert size={15} className="text-red-500" />}
-              label="Peak Disruption Corridor"
-              sub="Single Point of Failure"
-              value="NH-06 (91%)"
-              status="alert"
-            />
-          </div>
-        </div>
-
-        {/* Quick Action */}
-        <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] space-y-2">
-          <button
-            onClick={() => useAppStore.getState().openExplainabilityDrawer('road', 'road-nh27')}
-            className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-          >
-            <Brain size={13} />
-            <span>Explain AI Risk Weights</span>
-          </button>
-          <button
-            onClick={() => setView('roads')}
-            className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-          >
-            <Activity size={13} />
-            <span>Inspect All Corridors</span>
-          </button>
-        </div>
-
       </div>
 
     </div>
