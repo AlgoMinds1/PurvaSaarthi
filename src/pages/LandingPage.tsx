@@ -1,6 +1,6 @@
 import {
-  ArrowRight, Shield, Route, Truck, Building2,
-  Sparkles, CloudRain, Mountain, Navigation, CheckCircle2,
+  ArrowRight, Shield, Route, Truck, Building2, User,
+  Sparkles, CloudRain, Navigation, CheckCircle2,
   Sun, Moon
 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
@@ -276,38 +276,38 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-105 transition-transform">
                 <Shield size={22} />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">State & District Operations</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Authority level visibility into stock, isolation metrics & reroute authorizations.</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">1. Admin Portal</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">State & district command, AI disruption models, reroute authorizations & critical supply depots.</div>
               <span className="text-xs font-bold text-orange-600 dark:text-orange-400 inline-flex items-center gap-1">
                 Enter as Admin <ArrowRight size={12} />
               </span>
             </div>
 
             <div
-              onClick={() => login('Field Officer')}
+              onClick={() => login('User')}
               className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/50 transition-all cursor-pointer text-center group"
             >
               <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-105 transition-transform">
-                <Mountain size={22} />
+                <User size={22} />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">Field Verification Officer</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">On-ground incident reporting, road blockage verification & offline sync.</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">2. User / Citizen Portal</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Public highway advisory, live corridor status, weather warning alerts & district accessibility.</div>
               <span className="text-xs font-bold text-blue-600 dark:text-blue-400 inline-flex items-center gap-1">
-                Enter as Field Officer <ArrowRight size={12} />
+                Enter as User <ArrowRight size={12} />
               </span>
             </div>
 
             <div
-              onClick={() => login('Driver / Operator')}
+              onClick={() => login('Truck Driver')}
               className="p-5 rounded-2xl bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/50 transition-all cursor-pointer text-center group"
             >
               <div className="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-3.5 group-hover:scale-105 transition-transform">
                 <Truck size={22} />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">Fleet & Driver Navigation</div>
-              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Direct turn-by-turn reroute instructions, safe layby waypoints & ETA updates.</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-1">3. Truck Driver Portal</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-3">Assigned vehicle telemetry (TRK-204), turn-by-turn detour guidance & safe layby turnaround points.</div>
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 inline-flex items-center gap-1">
-                Enter as Driver <ArrowRight size={12} />
+                Enter as Truck Driver <ArrowRight size={12} />
               </span>
             </div>
 

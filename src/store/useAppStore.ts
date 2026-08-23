@@ -100,8 +100,23 @@ export const useAppStore = create<AppState>((set) => ({
   authFlowState: 'landing',
   goToLogin: () => set({ authFlowState: 'login' }),
   goToLanding: () => set({ authFlowState: 'landing' }),
-  login: (role) => set({ isLoggedIn: true, userRole: role }),
-  logout: () => set({ isLoggedIn: false, authFlowState: 'landing', userRole: 'Admin' }),
+  login: (role) => {
+    let defaultView: AppView = 'command';
+    let defaultVehicle: string | null = null;
+    if (role === 'User') {
+      defaultView = 'map';
+    } else if (role === 'Truck Driver') {
+      defaultView = 'vehicles';
+      defaultVehicle = 'TRK-204';
+    }
+    set({
+      isLoggedIn: true,
+      userRole: role,
+      activeView: defaultView,
+      selectedVehicleId: defaultVehicle,
+    });
+  },
+  logout: () => set({ isLoggedIn: false, authFlowState: 'landing', userRole: 'Admin', selectedVehicleId: null }),
 
   activeView: 'command',
   setView: (v) => set({ activeView: v }),

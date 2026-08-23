@@ -1,5 +1,5 @@
 import {
-  Map, Route, Package, Building2, Bell, Truck,
+  Map, Route, Package, Building2, Bell, Truck, User,
   Shield, LogOut, AlertTriangle, LayoutDashboard
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -91,14 +91,25 @@ export function Sidebar() {
       {/* User pill */}
       <div className="px-3 pb-4 border-t border-slate-200 dark:border-white/[0.06] pt-3">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-slate-100 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center shadow-sm">
-            <Shield size={14} className="text-white" />
+          <div className={clsx(
+            'w-7 h-7 rounded-full flex items-center justify-center shadow-sm text-white',
+            userRole === 'Truck Driver' ? 'bg-gradient-to-br from-emerald-500 to-teal-600' :
+            userRole === 'User' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' :
+            'bg-gradient-to-br from-orange-400 to-red-500'
+          )}>
+            {userRole === 'Truck Driver' ? <Truck size={14} /> :
+             userRole === 'User' ? <User size={14} /> :
+             <Shield size={14} />}
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-slate-900 dark:text-white text-xs font-semibold truncate">{userRole}</div>
-            <div className="text-slate-500 dark:text-slate-400 text-[10px]">Full Access</div>
+            <div className="text-slate-500 dark:text-slate-400 text-[10px]">
+              {userRole === 'Truck Driver' ? 'Assigned: TRK-204' :
+               userRole === 'User' ? 'Public & Regional View' :
+               'Command Authority'}
+            </div>
           </div>
-          <button onClick={logout} className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors p-1" title="Logout">
+          <button onClick={logout} className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors p-1 cursor-pointer" title="Logout">
             <LogOut size={14} />
           </button>
         </div>
