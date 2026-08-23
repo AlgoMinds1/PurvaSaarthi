@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Shield, Truck, User, ArrowRight, ArrowLeft, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
-import { Logo } from '../components/ui/Logo';
 
 const roles = [
   {
@@ -93,112 +92,152 @@ export default function LoginPage() {
         />
       </div>
 
-      <div className="relative w-full max-w-lg px-4">
+      {/* Main 2-Column Split Layout Container */}
+      <div className="relative z-10 w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
 
-        {/* Brand */}
-        <div className="text-center mb-6">
-          <Logo size="lg" className="justify-center mb-3" />
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">PurvaSaarthi</h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1 font-medium">
-            NER Logistics Resilience & Cascade Intelligence Platform
-          </p>
-        </div>
+          {/* Left Column: Big Logo, Brand Name & Tagline */}
+          <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
+            
+            {/* Big Emblem Logo */}
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl bg-white dark:bg-white/[0.04] p-4 shadow-xl border border-slate-200/80 dark:border-white/[0.08] backdrop-blur-md flex items-center justify-center mb-6">
+              <img
+                src="/logo.svg"
+                alt="PurvaSaarthi Logo"
+                className="w-full h-full object-contain drop-shadow-lg"
+              />
+            </div>
 
-        {/* Login card */}
-        <div className="bg-white/90 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-2xl p-6 sm:p-7 shadow-xl dark:shadow-2xl backdrop-blur-md">
+            {/* Brand Title */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tight mb-3 leading-tight">
+              PurvaSaarthi
+            </h1>
 
-          <div className="mb-5">
-            <h2 className="text-slate-900 dark:text-white font-bold text-lg">Sign In to Platform</h2>
-            <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Select one of the 3 dedicated operational portals:</p>
+            {/* Tagline */}
+            <p className="text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400 mb-3 tracking-wide">
+              NER Logistics Resilience & Cascade Intelligence Platform
+            </p>
+
+            {/* Mission Statement */}
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-lg mb-8 font-normal">
+              Predicting lifeline highway disruptions, eliminating cascading district isolation risks, and orchestrating dynamic proactive rerouting across 8 North-Eastern states.
+            </p>
+
+            {/* Value Pillars List */}
+            <div className="space-y-2.5 w-full max-w-md hidden sm:block">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                <span>Multi-Hazard Landslide & Weather Disruption AI</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-orange-500 shrink-0" />
+                <span>Single Point of Failure (SPOF) Isolation Simulation</span>
+              </div>
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/[0.06] text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-2xs">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0" />
+                <span>Proactive Turnaround & pgRouting Detour Engine</span>
+              </div>
+            </div>
+
           </div>
 
-          {/* Role selector */}
-          <div className="mb-5 space-y-2">
-            <div className="text-slate-700 dark:text-slate-400 text-xs font-semibold">Select Login Portal</div>
-            <div className="grid grid-cols-1 gap-2.5">
-              {roles.map((role) => {
-                const isSelected = selectedRole === role.id;
-                return (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => handleRoleSelect(role.id)}
-                    className={clsx(
-                      'flex items-center gap-3.5 p-3 rounded-xl border text-left transition-all cursor-pointer group',
-                      isSelected
-                        ? 'bg-orange-50/90 border-orange-400 dark:bg-orange-500/15 dark:border-orange-500/40 shadow-xs'
-                        : 'bg-slate-50 border-slate-200 dark:bg-white/[0.02] dark:border-white/[0.06] hover:border-slate-300 dark:hover:border-white/20'
-                    )}
-                  >
-                    <div className={clsx(
-                      'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors',
-                      isSelected ? 'bg-white dark:bg-white/10 shadow-xs' : 'bg-slate-200/60 dark:bg-white/5'
-                    )}>
-                      {role.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-900 dark:text-white">{role.name}</span>
-                        {isSelected && (
-                          <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Active</span>
+          {/* Right Column: Dedicated Login Card */}
+          <div className="lg:col-span-6 w-full max-w-md mx-auto lg:max-w-none">
+            <div className="bg-white/90 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-2xl p-6 sm:p-7 shadow-xl dark:shadow-2xl backdrop-blur-md">
+
+              <div className="mb-5">
+                <h2 className="text-slate-900 dark:text-white font-bold text-xl">Sign In to Platform</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Select one of the 3 dedicated operational portals:</p>
+              </div>
+
+              {/* Role selector */}
+              <div className="mb-5 space-y-2">
+                <div className="text-slate-700 dark:text-slate-400 text-xs font-semibold">Select Login Portal</div>
+                <div className="grid grid-cols-1 gap-2.5">
+                  {roles.map((role) => {
+                    const isSelected = selectedRole === role.id;
+                    return (
+                      <button
+                        key={role.id}
+                        type="button"
+                        onClick={() => handleRoleSelect(role.id)}
+                        className={clsx(
+                          'flex items-center gap-3.5 p-3 rounded-xl border text-left transition-all cursor-pointer group',
+                          isSelected
+                            ? 'bg-orange-50/90 border-orange-400 dark:bg-orange-500/15 dark:border-orange-500/40 shadow-xs'
+                            : 'bg-slate-50 border-slate-200 dark:bg-white/[0.02] dark:border-white/[0.06] hover:border-slate-300 dark:hover:border-white/20'
                         )}
-                      </div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">{role.desc}</div>
-                    </div>
-                  </button>
-                );
-              })}
+                      >
+                        <div className={clsx(
+                          'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors',
+                          isSelected ? 'bg-white dark:bg-white/10 shadow-xs' : 'bg-slate-200/60 dark:bg-white/5'
+                        )}>
+                          {role.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">{role.name}</span>
+                            {isSelected && (
+                              <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Active</span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">{role.desc}</div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Credentials Inputs */}
+              <div className="space-y-3.5 mb-5">
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1">Email / SSO Identifier</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleLogin()}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-60 cursor-pointer active:scale-[0.99]"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ef4444)' }}
+              >
+                {loading ? (
+                  <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Sign In as {selectedRole}</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+
+              {/* Status footer */}
+              <div className="mt-4 pt-3 border-t border-slate-200/80 dark:border-white/[0.06] flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span className="pulse-dot green" /> Systems Operational
+                </span>
+                <span>NER Logistics Net</span>
+              </div>
+
             </div>
           </div>
 
-          {/* Credentials Inputs */}
-          <div className="space-y-3.5 mb-5">
-            <div>
-              <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1">Email / SSO Identifier</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all font-mono"
-              />
-            </div>
-            <div>
-              <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
-              />
-            </div>
-          </div>
-
-          <button
-            onClick={() => handleLogin()}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-60 cursor-pointer active:scale-[0.99]"
-            style={{ background: 'linear-gradient(135deg, #f97316, #ef4444)' }}
-          >
-            {loading ? (
-              <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <>
-                <span>Sign In as {selectedRole}</span>
-                <ArrowRight size={16} />
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Footer stats */}
-        <div className="mt-5 text-center">
-          <div className="flex items-center justify-center gap-2 mb-1.5">
-            <span className="pulse-dot green" />
-            <span className="text-emerald-700 dark:text-green-400 text-xs font-semibold">Ready for Operations</span>
-          </div>
-          <p className="text-slate-400 dark:text-slate-600 text-[10px]">
-            PurvaSaarthi MVP — Role-Authenticated NER Logistics Command Platform
-          </p>
         </div>
       </div>
     </div>
