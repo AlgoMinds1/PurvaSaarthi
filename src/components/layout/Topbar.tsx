@@ -1,18 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Cloud, Bell, Radio, Sun, Moon } from 'lucide-react';
+import { Bell, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../../store/useAppStore';
 
 export function Topbar() {
-  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme, login } = useAppStore();
-  const [time, setTime] = useState('');
-
-  useEffect(() => {
-    const tick = () => setTime(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
+  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme } = useAppStore();
 
   const titles: Record<string, { title: string; subtitle: string }> = {
     command:   { title: 'Command Center',       subtitle: 'Regional Logistics Operations Overview' },
@@ -39,47 +30,11 @@ export function Topbar() {
         <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{subtitle}</p>
       </div>
 
-      <div className="flex items-center gap-3.5">
-        {/* Live clock */}
-        <div className="font-mono text-slate-600 dark:text-slate-400 text-xs tabular-nums bg-slate-100 dark:bg-white/[0.04] px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-transparent font-medium">
-          {time}
-        </div>
-
-        {/* Weather chip */}
-        <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 px-2.5 py-1 rounded-full">
-          <Cloud size={13} className="text-blue-500 dark:text-blue-400" />
-          <span className="text-blue-700 dark:text-blue-300 text-xs font-medium">87mm forecast</span>
-        </div>
-
-        {/* Realtime indicator */}
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-50 dark:bg-transparent border border-emerald-200 dark:border-transparent">
-          <span className="pulse-dot green" />
-          <Radio size={13} className="text-emerald-600 dark:text-green-400" />
-          <span className="text-emerald-700 dark:text-green-400 text-xs font-semibold">LIVE</span>
-        </div>
-
-        {/* Role Portal Quick Switcher */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/[0.04] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
-          <button
-            onClick={() => login('User')}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors cursor-pointer"
-            title="Open User Delivery Tracking Mobile PWA"
-          >
-            <span>User PWA</span>
-          </button>
-          <button
-            onClick={() => login('Truck Driver')}
-            className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors cursor-pointer"
-            title="Open Driver Navigation Mobile PWA"
-          >
-            <span>Driver PWA</span>
-          </button>
-        </div>
-
+      <div className="flex items-center gap-2.5">
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] px-2.5 py-1 rounded-full text-slate-700 dark:text-slate-300 text-xs transition-all duration-200 font-medium cursor-pointer"
+          className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] px-3 py-1.5 rounded-full text-slate-700 dark:text-slate-300 text-xs transition-all duration-200 font-medium cursor-pointer"
           title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
         >
           {theme === 'dark' ? (
@@ -106,7 +61,7 @@ export function Topbar() {
         {/* Alert button */}
         <button
           onClick={() => setView('alerts')}
-          className="relative flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] px-3 py-1 rounded-full transition-colors cursor-pointer"
+          className="relative flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] px-3 py-1.5 rounded-full transition-colors cursor-pointer"
         >
           <Bell size={13} className="text-slate-700 dark:text-slate-300" />
           <span className="text-slate-700 dark:text-slate-300 text-xs font-medium">{unreadCount} Critical</span>
