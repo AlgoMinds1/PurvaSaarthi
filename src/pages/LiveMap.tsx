@@ -43,8 +43,8 @@ export default function LiveMap() {
     if (!mapRef.current || mapInstance.current) return;
 
     const map = L.map(mapRef.current, {
-      center: [26.1, 92.5],
-      zoom: 7,
+      center: [26.05, 92.8],
+      zoom: 8,
       zoomControl: true,
     });
 

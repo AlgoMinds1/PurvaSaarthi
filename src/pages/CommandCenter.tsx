@@ -60,8 +60,8 @@ function MiniMap() {
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
     const map = L.map(mapRef.current, {
-      center: [25.9, 92.2],
-      zoom: 7,
+      center: [26.05, 92.8],
+      zoom: 8,
       zoomControl: true,
       attributionControl: true,
       dragging: true,
