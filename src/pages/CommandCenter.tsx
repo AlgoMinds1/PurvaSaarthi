@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
-  ArrowRight, Route, Truck, Package, Building2,
-  AlertTriangle, AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map,
+  ArrowRight, Route, Truck,
+  AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map,
   Activity, Sliders, ShieldAlert
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -141,18 +141,37 @@ export default function CommandCenter() {
   return (
     <div className="flex flex-col gap-4 h-full overflow-y-auto p-6 transition-colors duration-200">
 
-      {/* Top KPI Grid */}
-      <div className="grid grid-cols-6 gap-3">
-        <KpiCard label="Roads at Risk" value={7} icon={<Route size={18} className="text-orange-500" />} trend="↑ 2" trendUp onClick={() => setView('roads')} />
-        <KpiCard label="Active Vehicles" value={18} icon={<Truck size={18} className="text-blue-500" />} trend="→ 0" onClick={() => setView('vehicles')} />
-        <KpiCard label="Supplies at Risk" value={4} icon={<Package size={18} className="text-amber-500" />} trend="↑ 1" trendUp critical onClick={() => setView('supply')} />
-        <KpiCard label="Districts at Risk" value={3} icon={<Building2 size={18} className="text-purple-500" />} trend="↑ 1" trendUp onClick={() => setView('districts')} />
-        <KpiCard label="Peak Isolation Risk" value="87%" icon={<AlertTriangle size={18} className="text-red-500" />} trend="↑ 12%" trendUp critical onClick={() => setView('districts')} />
-        <KpiCard label="Critical Alerts" value={unreadCritical} icon={<AlertOctagon size={18} className="text-red-500" />} trend="NEW" trendUp critical onClick={() => setView('alerts')} />
+      {/* Top 3 Core Summary KPIs */}
+      <div className="grid grid-cols-3 gap-4">
+        <KpiCard
+          label="Corridors at Risk"
+          value={7}
+          icon={<Route size={20} className="text-orange-500" />}
+          trend="↑ 2 At Risk"
+          trendUp
+          critical
+          onClick={() => setView('roads')}
+        />
+        <KpiCard
+          label="Active Fleet"
+          value={18}
+          icon={<Truck size={20} className="text-blue-500" />}
+          trend="18 Live GPS"
+          onClick={() => setView('vehicles')}
+        />
+        <KpiCard
+          label="Critical Alerts"
+          value={unreadCritical}
+          icon={<AlertOctagon size={20} className="text-red-500" />}
+          trend="Action Required"
+          trendUp
+          critical
+          onClick={() => setView('alerts')}
+        />
       </div>
 
       {/* Main Expanded Map View + Telemetry Parameters Rail */}
-      <div className="grid grid-cols-[1fr_290px] gap-4 flex-1 min-h-[500px]">
+      <div className="grid grid-cols-[1fr_290px] gap-4 flex-1 min-h-[520px]">
 
         {/* Expanded Regional Map */}
         <div className="glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
