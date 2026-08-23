@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# PurvaSaarthi
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**North East Region (NER) Logistics Resilience & Cascade Intelligence Platform**
 
-Currently, two official plugins are available:
+PurvaSaarthi is an operational decision-intelligence dashboard that predicts highway corridor disruptions, isolates cascading supply risks across North East India, and orchestrates proactive rerouting for essential commodities.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. Start Development Server
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+---
+
+## Available Scripts
+
+- `npm run dev` — Start the local Vite development server
+- `npm run build` — Type-check with TypeScript and create an optimized production bundle
+- `npm run preview` — Locally preview the production build
+- `npm run lint` — Fast linting with Oxlint
+
+---
+
+## Tech Stack
+
+- **Framework**: React 19 + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Mapping & GIS**: Leaflet + React Leaflet
+- **State Management**: Zustand
+- **Icons**: Lucide Icons
