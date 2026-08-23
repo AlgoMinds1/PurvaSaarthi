@@ -50,7 +50,7 @@ interface AppState {
 
 const getInitialTheme = (): ThemeMode => {
   if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem('routemind-theme');
+    const saved = localStorage.getItem('purvasaarthi-theme');
     if (saved === 'light' || saved === 'dark') return saved;
   }
   return 'light'; // Default to light or dual theme
@@ -62,7 +62,7 @@ export const useAppStore = create<AppState>((set) => ({
     set((s) => {
       const nextTheme = s.theme === 'dark' ? 'light' : 'dark';
       if (typeof window !== 'undefined') {
-        localStorage.setItem('routemind-theme', nextTheme);
+        localStorage.setItem('purvasaarthi-theme', nextTheme);
         if (nextTheme === 'dark') {
           document.documentElement.classList.add('dark');
           document.documentElement.classList.remove('light');
@@ -75,7 +75,7 @@ export const useAppStore = create<AppState>((set) => ({
     }),
   setTheme: (theme) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('routemind-theme', theme);
+      localStorage.setItem('purvasaarthi-theme', theme);
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
         document.documentElement.classList.remove('light');

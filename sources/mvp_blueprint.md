@@ -1,6 +1,6 @@
 Yes. After re-reading the **PS Understanding** and **PS Technology** documents together, I would make one important adjustment to the earlier product architecture:
 
-> **The MVP should not try to build the entire production RouteMind platform. It should build one tightly connected, fully demonstrable intelligence loop that touches every mandatory requirement.**
+> **The MVP should not try to build the entire production PurvaSaarthi platform. It should build one tightly connected, fully demonstrable intelligence loop that touches every mandatory requirement.**
 
 The PS itself explicitly says the MVP must cover all core requirements, while the technology document separately identifies what should **not** be built for the hackathon—real IoT GPS hardware, Kafka/Redis, Neo4j, live IMD integration, etc.  
 
@@ -8,11 +8,11 @@ Below is the MVP I would actually build.
 
 ---
 
-# ROUTEMIND — COMPLETE MVP BLUEPRINT
+# PURVASAARTHI — COMPLETE MVP BLUEPRINT
 
 ```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║                    ROUTEMIND — MVP SPECIFICATION                            ║
+║                    PURVASAARTHI — MVP SPECIFICATION                            ║
 ║                                                                              ║
 ║       AI-POWERED LOGISTICS RESILIENCE & CASCADE INTELLIGENCE                ║
 ║                                                                              ║
@@ -25,7 +25,7 @@ Below is the MVP I would actually build.
 # 1. THE MVP IN ONE SENTENCE
 
 ```text
-RouteMind MVP is a web-based operational intelligence dashboard
+PurvaSaarthi MVP is a web-based operational intelligence dashboard
 connected to a mobile field/driver application that combines:
 
     GIS
@@ -72,7 +72,7 @@ Do **not** build 5–6 independent applications.
 Build:
 
 ```text
-                     ROUTEMIND MVP
+                     PURVASAARTHI MVP
                           │
               ┌───────────┴───────────┐
               │                       │
@@ -187,7 +187,7 @@ Not:
 "Here is a map."
 ```
 
-The PS explicitly distinguishes RouteMind from a generic GIS dashboard, vehicle tracker, weather application or route optimizer. 
+The PS explicitly distinguishes PurvaSaarthi from a generic GIS dashboard, vehicle tracker, weather application or route optimizer. 
 
 ---
 
@@ -283,7 +283,7 @@ The first screen should communicate:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│ ROUTEMIND                                       3 Critical Alerts │
+│ PURVASAARTHI                                       3 Critical Alerts │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │  REGIONAL RESILIENCE                                               │
@@ -330,7 +330,7 @@ For the MVP, build approximately **8 primary screens**.
 ## SCREEN 1 — LOGIN
 
 ```text
-ROUTEMIND
+PURVASAARTHI
 
 Email
 Password
@@ -368,7 +368,7 @@ It is the most important screen.
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────┐
-│ ROUTEMIND                                     Emergency Mode: OFF   │
+│ PURVASAARTHI                                     Emergency Mode: OFF   │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │  REGIONAL STATUS                                                    │
@@ -983,7 +983,7 @@ Recommended action:
 REROUTE NOW
 ```
 
-This is the point where RouteMind becomes more than a route application.
+This is the point where PurvaSaarthi becomes more than a route application.
 
 The PS explicitly gives this medicine shipment scenario as the model use case. 
 
@@ -1242,7 +1242,7 @@ This is decision intelligence.
 The mobile application should have **two modes**.
 
 ```text
-                 ROUTEMIND MOBILE
+                 PURVASAARTHI MOBILE
                        │
               ┌────────┴────────┐
               │                 │
@@ -1274,7 +1274,7 @@ The driver is not supposed to operate the government dashboard.
 
 ```text
 ┌─────────────────────────────┐
-│ ROUTEMIND                   │
+│ PURVASAARTHI                   │
 │ TRUCK TRK-204               │
 ├─────────────────────────────┤
 │                             │
@@ -1727,7 +1727,7 @@ geometry:
 Polygon
 ```
 
-The technology document recommends Bhuvan/GSI data as overlays and explicitly frames RouteMind as a decision-intelligence layer that complements existing government infrastructure rather than replacing it. 
+The technology document recommends Bhuvan/GSI data as overlays and explicitly frames PurvaSaarthi as a decision-intelligence layer that complements existing government infrastructure rather than replacing it. 
 
 ---
 
@@ -2281,7 +2281,7 @@ The technology document explicitly recommends a simple audit log for sensitive G
 
 ```text
 ╔════════════════════════════════════════════════════╗
-║                  ROUTEMIND MVP                    ║
+║                  PURVASAARTHI MVP                    ║
 ╠════════════════════════════════════════════════════╣
 ║ Web              React + Vite + TypeScript        ║
 ║ Styling          Tailwind CSS                     ║
@@ -3557,7 +3557,7 @@ Road blocked
 Alternative route
 ```
 
-RouteMind:
+PurvaSaarthi:
 
 ```text
 Weather
@@ -3611,7 +3611,7 @@ That is exactly the difference the PS is trying to establish.
 
 ```text
                          ┌───────────────────────┐
-                         │       ROUTEMIND       │
+                         │       PURVASAARTHI       │
                          │     WEB DASHBOARD     │
                          └───────────┬───────────┘
                                      │
@@ -3693,7 +3693,7 @@ PRODUCT COUNT:
 
 
 PRODUCT 1:
-ROUTEMIND WEB
+PURVASAARTHI WEB
 
 Contains:
 
@@ -3709,7 +3709,7 @@ Contains:
 
 
 PRODUCT 2:
-ROUTEMIND MOBILE
+PURVASAARTHI MOBILE
 
 Contains:
 
@@ -3884,7 +3884,7 @@ That is the story the judges remember.
 
 ```text
 ╔════════════════════════════════════════════════════════════════════╗
-║                        ROUTEMIND MVP                              ║
+║                        PURVASAARTHI MVP                              ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║                                                                    ║
 ║  OBSERVE                                                          ║
@@ -3952,7 +3952,7 @@ That is the story the judges remember.
 
 Build it as **one working causal chain**:
 
-> **Weather/terrain predicts a road disruption → a field officer verifies it → RouteMind identifies the affected truck and essential shipment → calculates district and supply impact → finds a safer route → estimates delay and last safe action window → alerts the authority and driver → driver reroutes → live GPS confirms the response.**
+> **Weather/terrain predicts a road disruption → a field officer verifies it → PurvaSaarthi identifies the affected truck and essential shipment → calculates district and supply impact → finds a safer route → estimates delay and last safe action window → alerts the authority and driver → driver reroutes → live GPS confirms the response.**
 
 That chain covers the mandatory PS capabilities while showcasing the strongest differentiators—**cascade intelligence, district isolation, supply-at-risk, explainability and actionable intervention**. The source documents explicitly identify that end-to-end scenario as the ideal demonstration. 
 

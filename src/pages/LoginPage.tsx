@@ -75,7 +75,7 @@ export default function LoginPage() {
               </defs>
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">RouteMind</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">PurvaSaarthi</h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-1.5 leading-relaxed font-medium">
             NER Logistics Resilience & Cascade Intelligence
           </p>
@@ -166,7 +166,7 @@ export default function LoginPage() {
             <span>12 Districts</span>
           </div>
           <p className="text-slate-400 dark:text-slate-600 text-[10px] mt-3">
-            RouteMind MVP — Hackathon Prototype • NER Logistics Intelligence
+            PurvaSaarthi MVP — Hackathon Prototype • NER Logistics Intelligence
           </p>
         </div>
       </div>

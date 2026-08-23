@@ -39,7 +39,7 @@ export function Sidebar() {
           </svg>
         </div>
         <div>
-          <div className="text-slate-900 dark:text-white font-bold text-[15px] leading-tight tracking-wide">RouteMind</div>
+          <div className="text-slate-900 dark:text-white font-bold text-[15px] leading-tight tracking-wide">PurvaSaarthi</div>
           <div className="text-slate-500 dark:text-slate-400 text-[10px] leading-tight mt-0.5 font-medium">NER Logistics Intelligence</div>
         </div>
       </div>
