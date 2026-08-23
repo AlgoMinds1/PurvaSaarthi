@@ -46,6 +46,11 @@ interface AppState {
   rerouteModalOpen: boolean;
   openRerouteModal: () => void;
   closeRerouteModal: () => void;
+
+  // Vehicle Tracking on Map
+  selectedVehicleId: string | null;
+  trackVehicleOnMap: (id: string) => void;
+  clearSelectedVehicle: () => void;
 }
 
 const getInitialTheme = (): ThemeMode => {
@@ -112,4 +117,8 @@ export const useAppStore = create<AppState>((set) => ({
   rerouteModalOpen: false,
   openRerouteModal: () => set({ rerouteModalOpen: true }),
   closeRerouteModal: () => set({ rerouteModalOpen: false }),
+
+  selectedVehicleId: null,
+  trackVehicleOnMap: (id) => set({ selectedVehicleId: id, activeView: 'map' }),
+  clearSelectedVehicle: () => set({ selectedVehicleId: null }),
 }));

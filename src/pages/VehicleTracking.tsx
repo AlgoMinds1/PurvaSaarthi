@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ChevronRight, Radio, AlertTriangle, Truck } from 'lucide-react';
+import { ChevronRight, Radio, AlertTriangle, Truck, Map, ArrowRight, Navigation } from 'lucide-react';
 import { vehicles } from '../data/mockData';
+import { useAppStore } from '../store/useAppStore';
 import type { Vehicle } from '../types';
 
 function VehicleDetail({ v }: { v: Vehicle }) {
+  const { trackVehicleOnMap } = useAppStore();
   const riskColor = v.routeRisk > 80 ? '#ef4444' : v.routeRisk > 60 ? '#f97316' : '#22c55e';
 
   return (
@@ -22,6 +24,18 @@ function VehicleDetail({ v }: { v: Vehicle }) {
         )}>
           {v.status.replace(/_/g, ' ')}
         </span>
+      </div>
+
+      {/* Direct Live Map Redirection Action Button */}
+      <div className="mb-5">
+        <button
+          onClick={() => trackVehicleOnMap(v.id)}
+          className="w-full py-3.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 active:scale-[0.99] text-white font-bold text-sm shadow-md hover:shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2.5 transition-all cursor-pointer group"
+        >
+          <Navigation size={18} className="text-white group-hover:rotate-12 transition-transform" />
+          <span>Track Real-Time on Live GIS Map</span>
+          <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+        </button>
       </div>
 
       {/* Telemetry warning */}
@@ -60,9 +74,18 @@ function VehicleDetail({ v }: { v: Vehicle }) {
 
       {/* GPS status */}
       <div className="glass-card p-4 rounded-xl mb-4 border border-slate-200/80 dark:border-white/[0.07]">
-        <div className="flex items-center gap-2 mb-2">
-          <Radio size={14} className={v.telemetryFresh ? 'text-emerald-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'} />
-          <span className="text-xs font-semibold text-slate-900 dark:text-slate-300">GPS Telemetry</span>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Radio size={14} className={v.telemetryFresh ? 'text-emerald-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'} />
+            <span className="text-xs font-semibold text-slate-900 dark:text-slate-300">GPS Telemetry</span>
+          </div>
+          <button
+            onClick={() => trackVehicleOnMap(v.id)}
+            className="text-[11px] font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 cursor-pointer"
+          >
+            <Map size={12} />
+            <span>View Pin</span>
+          </button>
         </div>
         <div className="text-xs space-y-1 text-slate-600 dark:text-slate-400">
           <div className="flex justify-between">
@@ -104,7 +127,7 @@ export default function VehicleTracking() {
                 key={v.id}
                 onClick={() => setSelected(v)}
                 className={clsx(
-                  'w-full text-left px-4 py-3.5 border-b border-slate-200/80 dark:border-white/[0.05] flex items-center gap-3 transition-all hover:bg-slate-50 dark:hover:bg-white/[0.04] cursor-pointer',
+                  'w-full text-left px-4 py-3.5 border-b border-slate-200/80 dark:border-white/[0.05] flex items-center gap-3 transition-all hover:bg-slate-50 dark:hover:bg-white/[0.04] cursor-pointer group',
                   selected?.id === v.id && 'bg-orange-50/80 dark:bg-white/[0.06] border-l-3 border-l-orange-500 font-medium'
                 )}
               >
@@ -127,7 +150,7 @@ export default function VehicleTracking() {
                     <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-0.5">TELEMETRY UNAVAILABLE</div>
                   )}
                 </div>
-                <ChevronRight size={14} className={clsx('text-slate-400 dark:text-slate-600', selected?.id === v.id && 'text-orange-500 dark:text-orange-400')} />
+                <ChevronRight size={14} className={clsx('text-slate-400 dark:text-slate-600 shrink-0', selected?.id === v.id && 'text-orange-500 dark:text-orange-400')} />
               </button>
             );
           })}

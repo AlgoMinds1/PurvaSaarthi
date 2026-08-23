@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import clsx from 'clsx';
-import { Route, Landmark, Building2, Truck, AlertTriangle, CloudRain, Check } from 'lucide-react';
+import { Route, Landmark, Building2, Truck, AlertTriangle, CloudRain, Check, Navigation, X, Crosshair } from 'lucide-react';
 import { roads, bridges, vehicles, districts } from '../data/mockData';
+import { useAppStore } from '../store/useAppStore';
 import { statusColor } from '../lib/utils';
 
 type LayerKey = 'roads' | 'bridges' | 'districts' | 'vehicles' | 'incidents' | 'weather';
@@ -13,10 +14,30 @@ export default function LiveMap() {
   const layerGroups = useRef<Record<LayerKey, L.LayerGroup>>({} as Record<LayerKey, L.LayerGroup>);
   const vehicleMarkers = useRef<Record<string, L.Marker>>({});
 
+  const { selectedVehicleId, clearSelectedVehicle } = useAppStore();
+
   const [layers, setLayers] = useState<Record<LayerKey, boolean>>({
     roads: true, bridges: true, districts: true,
     vehicles: true, incidents: true, weather: false,
   });
+
+  const focusVehicle = useCallback((vehicleId: string) => {
+    const map = mapInstance.current;
+    const v = vehicles.find((item) => item.id === vehicleId);
+    if (!map || !v) return;
+
+    // Ensure vehicles layer is on
+    const vGroup = layerGroups.current.vehicles;
+    if (vGroup && !map.hasLayer(vGroup)) {
+      map.addLayer(vGroup);
+      setLayers((prev) => ({ ...prev, vehicles: true }));
+    }
+
+    map.flyTo(v.currentLocation, 12, { duration: 1.2 });
+    setTimeout(() => {
+      vehicleMarkers.current[vehicleId]?.openPopup();
+    }, 700);
+  }, []);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -150,7 +171,7 @@ export default function LiveMap() {
       const marker = L.marker(v.currentLocation, { icon: truckIcon })
         .bindPopup(
           `<div style="min-width:210px">
-            <div style="font-weight:700;font-size:13px;margin-bottom:8px">Vehicle ${v.id}</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:8px">Vehicle ${v.id} (${v.plateNo})</div>
             <div style="font-size:12px;display:grid;gap:4px">
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Driver</span><span style="font-weight:500">${v.driverName}</span></div>
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Destination</span><span style="font-weight:500">${v.destination}</span></div>
@@ -180,6 +201,17 @@ export default function LiveMap() {
     mapInstance.current = map;
   }, []);
 
+  // Handle redirect & focus on vehicle
+  useEffect(() => {
+    if (selectedVehicleId) {
+      // Allow map initialization to complete
+      const timer = setTimeout(() => {
+        focusVehicle(selectedVehicleId);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedVehicleId, focusVehicle]);
+
   const toggleLayer = (layer: LayerKey) => {
     const map = mapInstance.current;
     const group = layerGroups.current[layer];
@@ -198,10 +230,12 @@ export default function LiveMap() {
     { id: 'weather', label: 'Weather Risk', icon: <CloudRain size={14} className="text-cyan-500" /> },
   ];
 
+  const trackedVehicle = selectedVehicleId ? vehicles.find((v) => v.id === selectedVehicleId) : null;
+
   return (
-    <div className="flex h-full min-h-0 transition-colors duration-200">
+    <div className="flex h-full min-h-0 relative transition-colors duration-200">
       {/* Controls */}
-      <div className="w-52 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col overflow-y-auto">
+      <div className="w-56 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col overflow-y-auto">
         <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
           <h3 className="text-slate-900 dark:text-white text-sm font-semibold">Map Layers</h3>
         </div>
@@ -249,30 +283,90 @@ export default function LiveMap() {
         <div className="px-4 py-3 border-t border-slate-200 dark:border-white/[0.06] flex-1">
           <div className="text-xs font-semibold text-slate-700 dark:text-slate-400 mb-3">Active Vehicles</div>
           <div className="space-y-2">
-            {vehicles.map((v) => (
-              <div key={v.id} className="text-xs p-2 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Truck size={13} className="text-slate-500" />
-                    <span className="text-slate-900 dark:text-white font-semibold">{v.id}</span>
+            {vehicles.map((v) => {
+              const isSelected = v.id === selectedVehicleId;
+              return (
+                <button
+                  key={v.id}
+                  onClick={() => focusVehicle(v.id)}
+                  className={clsx(
+                    'w-full text-left text-xs p-2 rounded-lg transition-all cursor-pointer border',
+                    isSelected
+                      ? 'bg-orange-50 border-orange-300 dark:bg-orange-500/15 dark:border-orange-500/30'
+                      : 'bg-slate-50 dark:bg-white/[0.03] border-slate-200/60 dark:border-transparent hover:border-slate-300 dark:hover:border-white/10'
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Truck size={13} className={isSelected ? 'text-orange-500' : 'text-slate-500'} />
+                      <span className="text-slate-900 dark:text-white font-semibold">{v.id}</span>
+                    </div>
+                    <span className={clsx(
+                      'text-[10px] font-bold',
+                      v.routeRisk > 80 ? 'text-red-600 dark:text-red-400' : v.routeRisk > 60 ? 'text-orange-600 dark:text-orange-400' : 'text-emerald-600 dark:text-green-400'
+                    )}>{v.routeRisk}%</span>
                   </div>
-                  <span className={clsx(
-                    'text-[10px] font-bold',
-                    v.routeRisk > 80 ? 'text-red-600 dark:text-red-400' : v.routeRisk > 60 ? 'text-orange-600 dark:text-orange-400' : 'text-emerald-600 dark:text-green-400'
-                  )}>{v.routeRisk}%</span>
-                </div>
-                <div className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5">{v.destination}</div>
-                {!v.telemetryFresh && (
-                  <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-1">TELEMETRY UNAVAILABLE</div>
-                )}
-              </div>
-            ))}
+                  <div className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5">{v.destination}</div>
+                  {!v.telemetryFresh && (
+                    <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-1">TELEMETRY UNAVAILABLE</div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Map */}
-      <div ref={mapRef} className="flex-1 min-h-0" />
+      {/* Map Container */}
+      <div className="flex-1 min-h-0 relative">
+        {/* Real-Time Tracking Floating Header HUD */}
+        {trackedVehicle && (
+          <div className="absolute top-4 left-4 right-4 z-[1000] animate-fade-up pointer-events-none">
+            <div className="bg-slate-900/90 dark:bg-slate-950/95 backdrop-blur-md text-white rounded-xl p-3 px-4 shadow-xl border border-white/10 flex items-center justify-between pointer-events-auto max-w-2xl mx-auto">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-orange-500 flex items-center justify-center text-white shrink-0">
+                  <Navigation size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-white">{trackedVehicle.id} — {trackedVehicle.plateNo}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                      LIVE GPS
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-300 mt-0.5 flex items-center gap-2">
+                    <span>Driver: <b>{trackedVehicle.driverName}</b></span>
+                    <span>·</span>
+                    <span>Dest: <b>{trackedVehicle.destination}</b></span>
+                    <span>·</span>
+                    <span className="text-orange-400 font-semibold">Route Risk: {trackedVehicle.routeRisk}%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => focusVehicle(trackedVehicle.id)}
+                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  title="Center map on vehicle"
+                >
+                  <Crosshair size={13} />
+                  <span>Center Pin</span>
+                </button>
+                <button
+                  onClick={clearSelectedVehicle}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                  title="Close vehicle focus"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div ref={mapRef} className="w-full h-full" />
+      </div>
     </div>
   );
 }
