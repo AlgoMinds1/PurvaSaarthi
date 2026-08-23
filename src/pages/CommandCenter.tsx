@@ -95,7 +95,7 @@ function MiniMap() {
     mapInstance.current = map;
   }, []);
 
-  return <div ref={mapRef} className="w-full h-full min-h-[460px] rounded-b-xl" />;
+  return <div ref={mapRef} className="w-full h-full min-h-0 rounded-b-xl" />;
 }
 
 // ── PARAMETER ROW ─────────────────────────────────────────────────────────────
@@ -139,162 +139,158 @@ export default function CommandCenter() {
   const unreadCritical = shipments.filter(s => s.status === 'AT_RISK').length;
 
   return (
-    <div className="flex flex-col gap-4 h-full overflow-y-auto p-6 transition-colors duration-200">
+    <div className="flex h-full min-h-0 p-5 gap-4 transition-colors duration-200">
 
-      {/* Top 3 Core Summary KPIs */}
-      <div className="grid grid-cols-3 gap-4">
-        <KpiCard
-          label="Corridors at Risk"
-          value={7}
-          icon={<Route size={20} className="text-orange-500" />}
-          trend="↑ 2 At Risk"
-          trendUp
-          critical
-          onClick={() => setView('roads')}
-        />
-        <KpiCard
-          label="Active Fleet"
-          value={18}
-          icon={<Truck size={20} className="text-blue-500" />}
-          trend="18 Live GPS"
-          onClick={() => setView('vehicles')}
-        />
-        <KpiCard
-          label="Critical Alerts"
-          value={unreadCritical}
-          icon={<AlertOctagon size={20} className="text-red-500" />}
-          trend="Action Required"
-          trendUp
-          critical
-          onClick={() => setView('alerts')}
-        />
-      </div>
-
-      {/* Main Expanded Map View + Telemetry Parameters Rail */}
-      <div className="grid grid-cols-[1fr_290px] gap-4 flex-1 min-h-[520px]">
-
-        {/* Expanded Regional Map */}
-        <div className="glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
-            <div className="flex items-center gap-2">
-              <Map size={16} className="text-orange-500" />
-              <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Operations GIS Map</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/20">
-                <span className="pulse-dot green" /> LIVE GIS
-              </span>
-              <button
-                onClick={() => setView('map')}
-                className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
-              >
-                Full GIS View <ArrowRight size={12} />
-              </button>
-            </div>
+      {/* Full-Height Expanded Regional Map (Left) */}
+      <div className="flex-1 min-w-0 glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07] h-full shadow-xs">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] bg-white/50 dark:bg-white/[0.02]">
+          <div className="flex items-center gap-2">
+            <Map size={16} className="text-orange-500" />
+            <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Operations GIS Map</span>
           </div>
-
-          <div className="flex-1 min-h-0 relative">
-            <MiniMap />
-          </div>
-
-          {/* Map Legend */}
-          <div className="flex items-center justify-between px-4 py-2 border-t border-slate-200 dark:border-white/[0.05] text-[11px] text-slate-700 dark:text-slate-400 bg-slate-50/70 dark:bg-white/[0.02] font-medium">
-            <div className="flex items-center gap-4">
-              {[['#22c55e', 'Open'], ['#eab308', 'Degraded'], ['#f97316', 'High Risk'], ['#ef4444', 'Blocked'], ['#6b7280', 'Unknown']].map(([c, l]) => (
-                <span key={l} className="flex items-center gap-1.5">
-                  <span className="inline-block w-4 h-1.5 rounded-full" style={{ background: c }} />
-                  {l}
-                </span>
-              ))}
-            </div>
-            <div className="text-[10px] text-slate-400">
-              Interactive Zoom & Pan Enabled
-            </div>
+          <div className="flex items-center gap-3">
+            <span className="flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/20">
+              <span className="pulse-dot green" /> LIVE GIS
+            </span>
+            <button
+              onClick={() => setView('map')}
+              className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
+            >
+              Full GIS View <ArrowRight size={12} />
+            </button>
           </div>
         </div>
 
-        {/* Necessary Parameters Panel (Right Side) */}
-        <div className="glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] flex flex-col justify-between gap-3 overflow-y-auto">
-          
-          <div>
-            {/* Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.06] mb-3">
-              <div className="flex items-center gap-2">
-                <Sliders size={15} className="text-orange-500" />
-                <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">REGIONAL PARAMETERS</span>
-              </div>
-              <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">NER OPS</span>
-            </div>
+        <div className="flex-1 min-h-0 relative">
+          <MiniMap />
+        </div>
 
-            {/* Environmental Parameters */}
-            <div className="space-y-2 mb-3">
-              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Environmental Telemetry</div>
-              <ParamItem
-                icon={<CloudRain size={15} className="text-blue-500" />}
-                label="Forecast Rainfall"
-                sub="Next 24 Hours"
-                value="87 mm"
-                status="warning"
-              />
-              <ParamItem
-                icon={<Mountain size={15} className="text-amber-500" />}
-                label="Terrain Gradient"
-                sub="Landslide Probability"
-                value="HIGH (32°)"
-                status="alert"
-              />
-            </div>
+        {/* Map Legend */}
+        <div className="flex items-center justify-between px-4 py-2 border-t border-slate-200 dark:border-white/[0.05] text-[11px] text-slate-700 dark:text-slate-400 bg-slate-50/70 dark:bg-white/[0.02] font-medium">
+          <div className="flex items-center gap-4">
+            {[['#22c55e', 'Open'], ['#eab308', 'Degraded'], ['#f97316', 'High Risk'], ['#ef4444', 'Blocked'], ['#6b7280', 'Unknown']].map(([c, l]) => (
+              <span key={l} className="flex items-center gap-1.5">
+                <span className="inline-block w-4 h-1.5 rounded-full" style={{ background: c }} />
+                {l}
+              </span>
+            ))}
+          </div>
+          <div className="text-[10px] text-slate-400">
+            Interactive Zoom & Pan Enabled
+          </div>
+        </div>
+      </div>
 
-            {/* Network & Infrastructure */}
-            <div className="space-y-2 mb-3">
-              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Network Telemetry</div>
-              <ParamItem
-                icon={<Radio size={15} className="text-emerald-500" />}
-                label="Roads Monitored"
-                sub="National Highways"
-                value="24 Corridors"
-                status="success"
-              />
-              <ParamItem
-                icon={<Landmark size={15} className="text-cyan-500" />}
-                label="Active Bridges"
-                sub="Key River Crossings"
-                value="8 Bridges"
-                status="normal"
-              />
-              <ParamItem
-                icon={<Users size={15} className="text-purple-500" />}
-                label="Field Response"
-                sub="On-ground Personnel"
-                value="7 Officers"
-                status="normal"
-              />
+      {/* Right-Side Operations & Parameters Rail */}
+      <div className="w-80 shrink-0 glass-card p-4 rounded-2xl border border-slate-200 dark:border-white/[0.07] flex flex-col justify-between gap-3 overflow-y-auto h-full shadow-xs">
+        
+        <div className="space-y-3.5">
+          {/* Header */}
+          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200 dark:border-white/[0.06]">
+            <div className="flex items-center gap-2">
+              <Sliders size={15} className="text-orange-500" />
+              <span className="text-xs font-bold text-slate-900 dark:text-white tracking-wide">OPERATIONS & METRICS</span>
             </div>
-
-            {/* Resilience Index */}
-            <div className="space-y-2">
-              <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Cascade Vulnerability</div>
-              <ParamItem
-                icon={<ShieldAlert size={15} className="text-red-500" />}
-                label="Peak Disruption Corridor"
-                sub="Single Point of Failure"
-                value="NH-06 (91%)"
-                status="alert"
-              />
-            </div>
+            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-semibold">NER OPS</span>
           </div>
 
-          {/* Quick Action */}
-          <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06]">
-            <button
+          {/* Primary 3 Summary KPIs */}
+          <div className="space-y-2">
+            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Key Indicators</div>
+            <KpiCard
+              label="Corridors at Risk"
+              value={7}
+              icon={<Route size={18} className="text-orange-500" />}
+              trend="↑ 2 At Risk"
+              trendUp
+              critical
               onClick={() => setView('roads')}
-              className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-            >
-              <Activity size={13} />
-              <span>Inspect All Corridors</span>
-            </button>
+            />
+            <KpiCard
+              label="Active Fleet"
+              value={18}
+              icon={<Truck size={18} className="text-blue-500" />}
+              trend="18 Live GPS"
+              onClick={() => setView('vehicles')}
+            />
+            <KpiCard
+              label="Critical Alerts"
+              value={unreadCritical}
+              icon={<AlertOctagon size={18} className="text-red-500" />}
+              trend="Action Required"
+              trendUp
+              critical
+              onClick={() => setView('alerts')}
+            />
           </div>
 
+          {/* Environmental Telemetry */}
+          <div className="space-y-2">
+            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Environmental Telemetry</div>
+            <ParamItem
+              icon={<CloudRain size={15} className="text-blue-500" />}
+              label="Forecast Rainfall"
+              sub="Next 24 Hours"
+              value="87 mm"
+              status="warning"
+            />
+            <ParamItem
+              icon={<Mountain size={15} className="text-amber-500" />}
+              label="Terrain Gradient"
+              sub="Landslide Probability"
+              value="HIGH (32°)"
+              status="alert"
+            />
+          </div>
+
+          {/* Network & Infrastructure */}
+          <div className="space-y-2">
+            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Network Telemetry</div>
+            <ParamItem
+              icon={<Radio size={15} className="text-emerald-500" />}
+              label="Roads Monitored"
+              sub="National Highways"
+              value="24 Corridors"
+              status="success"
+            />
+            <ParamItem
+              icon={<Landmark size={15} className="text-cyan-500" />}
+              label="Active Bridges"
+              sub="Key River Crossings"
+              value="8 Bridges"
+              status="normal"
+            />
+            <ParamItem
+              icon={<Users size={15} className="text-purple-500" />}
+              label="Field Response"
+              sub="On-ground Personnel"
+              value="7 Officers"
+              status="normal"
+            />
+          </div>
+
+          {/* Resilience Index */}
+          <div className="space-y-2">
+            <div className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase">Cascade Vulnerability</div>
+            <ParamItem
+              icon={<ShieldAlert size={15} className="text-red-500" />}
+              label="Peak Disruption Corridor"
+              sub="Single Point of Failure"
+              value="NH-06 (91%)"
+              status="alert"
+            />
+          </div>
+        </div>
+
+        {/* Quick Action */}
+        <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06]">
+          <button
+            onClick={() => setView('roads')}
+            className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+          >
+            <Activity size={13} />
+            <span>Inspect All Corridors</span>
+          </button>
         </div>
 
       </div>
