@@ -7,6 +7,12 @@ import type { Road } from '../types';
 
 function RoadListItem({ road, selected, onClick }: { road: Road; selected: boolean; onClick: () => void }) {
   const color = statusColor(road.status);
+  
+  // Parse highway identifier and route name concisely
+  const nameParts = road.name.split('—');
+  const highwayCode = nameParts[0]?.trim() || road.name;
+  const routeDescription = nameParts[1]?.trim() || '';
+
   return (
     <button
       onClick={onClick}
@@ -18,13 +24,13 @@ function RoadListItem({ road, selected, onClick }: { road: Road; selected: boole
       )}
     >
       <div 
-        className="w-2.5 h-10 rounded-full shrink-0 shadow-xs" 
+        className="w-2 h-10 rounded-full shrink-0 shadow-xs" 
         style={{ background: color }} 
       />
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-1">
-          <div className="text-slate-900 dark:text-white text-xs font-bold truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
-            {road.name}
+        <div className="flex items-center justify-between gap-1.5">
+          <div className="text-slate-900 dark:text-white text-xs font-black truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+            {highwayCode}
           </div>
           {road.isSPOF && (
             <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30 shrink-0 uppercase">
@@ -32,15 +38,22 @@ function RoadListItem({ road, selected, onClick }: { road: Road; selected: boole
             </span>
           )}
         </div>
+
+        {routeDescription && (
+          <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">
+            {routeDescription}
+          </div>
+        )}
+
         <div className="flex items-center justify-between mt-1.5 text-[11px]">
-          <span className="font-extrabold" style={{ color }}>{statusLabel(road.status)}</span>
+          <span className="font-bold" style={{ color }}>{statusLabel(road.status)}</span>
           <span className="font-semibold text-slate-500 dark:text-slate-400">
             Risk: <strong className="text-slate-800 dark:text-slate-200">{road.riskScore}%</strong>
           </span>
         </div>
       </div>
       <ChevronRight 
-        size={15} 
+        size={14} 
         className={clsx(
           'shrink-0 transition-transform duration-150 group-hover:translate-x-0.5',
           selected ? 'text-orange-600 dark:text-orange-400' : 'text-slate-400 dark:text-slate-600'
