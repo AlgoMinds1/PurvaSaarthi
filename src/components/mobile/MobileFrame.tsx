@@ -10,7 +10,9 @@ interface MobileFrameProps {
 }
 
 export function MobileFrame({ children, roleName }: MobileFrameProps) {
-  const { theme, toggleTheme, login, goToLanding } = useAppStore();
+  const { theme, toggleTheme, login, goToLanding, language } = useAppStore();
+
+  const isHindi = language === 'hi';
 
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex flex-col transition-colors duration-300">
@@ -23,7 +25,7 @@ export function MobileFrame({ children, roleName }: MobileFrameProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Overview</span>
+            <span>{isHindi ? 'मुख्य दृश्य' : 'Overview'}</span>
           </button>
 
           <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-1" />
@@ -31,7 +33,9 @@ export function MobileFrame({ children, roleName }: MobileFrameProps) {
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold text-slate-800 dark:text-slate-100">
-              {roleName === 'User' ? 'Consignee / User Delivery Tracking' : 'Truck Driver Road-Tracking Navigation'}
+              {roleName === 'User'
+                ? isHindi ? 'प्राप्तकर्ता / डिलीवरी ट्रैकिंग' : 'Consignee / User Delivery Tracking'
+                : isHindi ? 'ट्रक चालक लाइव नेविगेशन व ट्रैकिंग' : 'Truck Driver Road-Tracking Navigation'}
             </span>
           </div>
         </div>

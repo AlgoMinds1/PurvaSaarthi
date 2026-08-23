@@ -3,7 +3,8 @@ import {
   Truck, Navigation, AlertTriangle, ShieldCheck, CheckCircle2,
   Phone, ArrowRight, CornerUpRight, RotateCcw, CloudRain,
   MapPin, Radio, Compass, WifiOff, Wifi, Clock, ShieldAlert,
-  HelpCircle, Coffee, Check, Volume2, VolumeX, RefreshCw
+  HelpCircle, Coffee, Check, Volume2, VolumeX, RefreshCw,
+  Globe, ChevronDown
 } from 'lucide-react';
 import clsx from 'clsx';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
@@ -14,6 +15,7 @@ import {
   vehicles, shipments, safeLaybys, driverWaypoints,
   routeAPPath, routeBPath
 } from '../../data/mockData';
+import { translations } from '../../utils/translations';
 
 // Custom icons for Driver Navigation
 const driverTruckIcon = L.divIcon({
@@ -52,6 +54,8 @@ export default function DriverApp() {
     language,
     setLanguage
   } = useAppStore();
+
+  const t = translations[language === 'hi' ? 'hi' : 'en'];
 
   const [activeDriverTab, setActiveDriverTab] = useState<'nav' | 'reroute' | 'checkpoints' | 'laybys'>('nav');
   const [showRerouteAlertModal, setShowRerouteAlertModal] = useState(!isDriverRerouted);
@@ -104,7 +108,7 @@ export default function DriverApp() {
               </div>
               <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
-                {vehicle.driverName} • Active Trip
+                {vehicle.driverName} • {t.activeTrip}
               </p>
             </div>
           </div>
@@ -112,10 +116,10 @@ export default function DriverApp() {
           {/* Desktop Navigation Tabs for Driver */}
           <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/[0.05] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
             {[
-              { id: 'nav', label: 'Navigation', icon: <Navigation size={14} /> },
-              { id: 'reroute', label: 'AI Reroute', icon: <RotateCcw size={14} /> },
-              { id: 'checkpoints', label: 'Checkpoints', icon: <MapPin size={14} /> },
-              { id: 'laybys', label: 'Safe Shelters', icon: <Coffee size={14} /> },
+              { id: 'nav', label: t.tabNav, icon: <Navigation size={14} /> },
+              { id: 'reroute', label: t.tabReroute, icon: <RotateCcw size={14} /> },
+              { id: 'checkpoints', label: t.tabCheckpoints, icon: <MapPin size={14} /> },
+              { id: 'laybys', label: t.tabLaybys, icon: <Coffee size={14} /> },
             ].map((tab) => {
               const isActive = activeDriverTab === tab.id;
               return (
@@ -149,14 +153,30 @@ export default function DriverApp() {
               title="Toggle Simulated Network / Mountain Gap"
             >
               {isOffline ? <WifiOff size={12} /> : <Wifi size={12} />}
-              <span>{isOffline ? 'OFFLINE QUEUE' : 'ONLINE 5G'}</span>
+              <span>{isOffline ? t.offlineQueue : t.online5G}</span>
             </button>
+
+            {/* Language Selector */}
+            <div className="relative flex items-center gap-0.5 sm:gap-1 px-2 py-1 rounded-lg border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all cursor-pointer shrink-0">
+              <Globe size={13} className="text-slate-600 dark:text-slate-400 shrink-0" />
+              <span className="font-semibold text-[10px] sm:text-xs text-slate-800 dark:text-slate-200 uppercase">{language === 'hi' ? 'HI' : 'EN'}</span>
+              <ChevronDown size={11} className="text-slate-500 dark:text-slate-400 shrink-0" />
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as any)}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                title="Select language"
+              >
+                <option value="en">English (EN)</option>
+                <option value="hi">हिंदी (HI)</option>
+              </select>
+            </div>
 
             <button
               onClick={logout}
               className="text-[11px] font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 cursor-pointer transition-colors"
             >
-              Exit
+              {t.exit}
             </button>
           </div>
         </div>
@@ -164,9 +184,9 @@ export default function DriverApp() {
         {/* Offline Queue Badge Notice */}
         {isOffline && offlineQueue.length > 0 && (
           <div className="mt-2 py-1 px-2.5 rounded-lg bg-amber-50 dark:bg-amber-500/15 border border-amber-200 dark:border-amber-500/30 flex items-center justify-between text-[10px] text-amber-800 dark:text-amber-300">
-            <span>{offlineQueue.length} telemetry action(s) stored locally</span>
+            <span>{offlineQueue.length} {t.telemetryStored}</span>
             <button onClick={syncOfflineQueue} className="font-bold underline cursor-pointer">
-              Sync Now
+              {t.syncNow}
             </button>
           </div>
         )}
@@ -182,9 +202,9 @@ export default function DriverApp() {
               </span>
               <div>
                 <span className="text-[10px] font-black tracking-wider uppercase bg-white/20 px-2 py-0.5 rounded text-amber-200">
-                  CRITICAL ROUTE ALERT
+                  {t.criticalRouteAlert}
                 </span>
-                <h2 className="text-sm font-black text-white mt-0.5">HIGH LANDSLIDE DISRUPTION (91%)</h2>
+                <h2 className="text-sm font-black text-white mt-0.5">{t.landslideDisruption}</h2>
               </div>
             </div>
             <button
@@ -196,17 +216,16 @@ export default function DriverApp() {
           </div>
 
           <p className="text-xs text-red-100 leading-relaxed mb-3">
-            Heavy rainfall (87mm) + slope destabilization detected on <strong>NH-27 near Umtru Gorge</strong>.
-            PurvaSaarthi recommends an immediate detour via <strong>NH-106 East Bypass</strong> before the 4:30 PM cutoff.
+            {t.hazardAlertMsg}
           </p>
 
           <div className="grid grid-cols-2 gap-2 text-xs mb-3 bg-black/20 p-2.5 rounded-xl">
             <div>
-              <span className="text-[10px] text-red-200 block">CURRENT NH-27</span>
+              <span className="text-[10px] text-red-200 block">{t.currentRoadRisk}</span>
               <strong className="text-white">91% Risk • Delay +11h</strong>
             </div>
             <div>
-              <span className="text-[10px] text-emerald-200 block">AI DETOUR (NH-106)</span>
+              <span className="text-[10px] text-emerald-200 block">{t.detourRoadBenefit}</span>
               <strong className="text-emerald-300">24% Risk • ETA 6:15 PM</strong>
             </div>
           </div>
@@ -217,13 +236,13 @@ export default function DriverApp() {
               className="flex-1 py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-red-700 font-black text-xs shadow-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform cursor-pointer"
             >
               <Check size={16} className="text-emerald-600 stroke-[3]" />
-              <span>ACCEPT ROUTE B DETOUR</span>
+              <span>{t.acceptDetourBtn}</span>
             </button>
             <button
               onClick={() => setShowRerouteAlertModal(false)}
               className="px-3 py-3 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs cursor-pointer"
             >
-              Later
+              {t.laterBtn}
             </button>
           </div>
         </aside>
@@ -244,17 +263,15 @@ export default function DriverApp() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                      <span>IN 3.2 KM</span>
+                      <span>{t.inDistance} 3.2 KM</span>
                       <span>•</span>
-                      <span>SPEED LIMIT {vehicle.speedLimit} KM/H</span>
+                      <span>{t.speedLimit} {vehicle.speedLimit} KM/H</span>
                     </div>
                     <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug mt-0.5">
-                      {isDriverRerouted
-                        ? 'Follow NH-106 East Bypass towards Ri-Bhoi Corridor'
-                        : 'Turn Left onto NH-106 Bypass (Safe Landslide Detour)'}
+                      {isDriverRerouted ? t.hudRerouted : t.hudOriginal}
                     </h1>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                      Destination: {shipment.destinationFacility}
+                      {t.destination}: {shipment.destinationFacility}
                     </p>
                   </div>
                 </div>
@@ -262,26 +279,26 @@ export default function DriverApp() {
                 {/* Live Telemetry Gauges */}
                 <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-white/10 text-center">
                   <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">SPEED</div>
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">{t.speed}</div>
                     <div className="text-base font-black text-slate-900 dark:text-white font-mono">{speed}</div>
                     <div className="text-[8px] text-slate-500 dark:text-slate-400">km/h</div>
                   </div>
                   <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ELEVATION</div>
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">{t.elevation}</div>
                     <div className="text-base font-black text-slate-900 dark:text-white font-mono">{vehicle.currentElevation}</div>
-                    <div className="text-[8px] text-slate-500 dark:text-slate-400">meters</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{t.meters}</div>
                   </div>
                   <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">GRADIENT</div>
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">{t.gradient}</div>
                     <div className="text-base font-black text-orange-600 dark:text-orange-400 font-mono">{vehicle.slopeGradient}°</div>
-                    <div className="text-[8px] text-slate-500 dark:text-slate-400">slope</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{t.slope}</div>
                   </div>
                   <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ROUTE RISK</div>
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">{t.routeRisk}</div>
                     <div className={clsx('text-base font-black font-mono', isDriverRerouted ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
                       {isDriverRerouted ? '24%' : '91%'}
                     </div>
-                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{isDriverRerouted ? 'Low' : 'Critical'}</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{isDriverRerouted ? t.riskLow : t.riskCritical}</div>
                   </div>
                 </div>
               </section>
@@ -289,9 +306,9 @@ export default function DriverApp() {
               {/* 3. TRIP SHIPMENT & CARGO STATUS */}
               <section className="bg-white dark:bg-[#090f1c] rounded-2xl p-4 border border-slate-200 dark:border-white/[0.08] shadow-xs">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">Active Cargo Manifest</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">{t.activeCargoManifest}</span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300">
-                    CRITICAL LIFE-SAVING
+                    {t.criticalLifeSaving}
                   </span>
                 </div>
 
@@ -304,12 +321,12 @@ export default function DriverApp() {
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.06] text-xs">
                   <div>
-                    <div className="text-[10px] text-slate-400 font-semibold">EXPECTED ETA</div>
+                    <div className="text-[10px] text-slate-400 font-semibold">{t.eta}</div>
                     <div className="text-sm font-black text-slate-900 dark:text-white">{shipment.expectedDeliveryTime}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-slate-400 font-semibold">COLD CHAIN STATUS</div>
-                    <div className="text-xs font-bold text-blue-600 dark:text-blue-400">❄️ 3.4°C SECURE</div>
+                    <div className="text-[10px] text-slate-400 font-semibold">{t.coldChain}</div>
+                    <div className="text-xs font-bold text-blue-600 dark:text-blue-400">❄️ {t.coldChainSecure}</div>
                   </div>
                 </div>
               </section>
@@ -321,9 +338,9 @@ export default function DriverApp() {
                     <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
                       <CheckCircle2 size={24} />
                     </div>
-                    <span>Delivery Handover Verified at Hospital</span>
+                    <span>{t.deliveryVerified}</span>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
-                      District stock updated from 1.7 to 3.8 days. Alert resolved.
+                      {t.stockUpdatedMsg}
                     </p>
                   </div>
                 ) : (
@@ -332,7 +349,7 @@ export default function DriverApp() {
                     className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
                   >
                     <CheckCircle2 size={16} />
-                    <span>Mark Arrived & Handover Delivery at Hospital</span>
+                    <span>{t.handoverDeliveryBtn}</span>
                   </button>
                 )}
               </section>
@@ -418,7 +435,7 @@ export default function DriverApp() {
                       className="absolute bottom-3 left-3 right-3 z-[400] py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <AlertTriangle size={15} />
-                      <span>Review AI Reroute Recommendation</span>
+                      <span>{t.reviewDetourBtn}</span>
                     </button>
                   )}
                 </div>
@@ -433,8 +450,8 @@ export default function DriverApp() {
       {activeDriverTab === 'reroute' && (
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-4 pb-24 md:pb-8">
           <div>
-            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">AI Dynamic Reroute Comparison</h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time pgRouting single point of failure calculation</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{t.aiRerouteTitle}</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{t.aiRerouteSub}</p>
           </div>
 
           {/* Current vs Alternative Route Cards */}
@@ -454,7 +471,7 @@ export default function DriverApp() {
                 </span>
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                <div>• Active heavy rainfall (87mm) & mudslide warnings at Umtru Sector</div>
+                <div>• {t.routeAWarning}</div>
                 <div>• Single Point of Failure (SPOF): High risk of bridge approach submergence</div>
                 <div>• Predicted Delay if stranded: <strong>+11 hours</strong></div>
               </div>
@@ -474,7 +491,7 @@ export default function DriverApp() {
                 </span>
               </div>
               <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                <div>• Avoids vulnerable Umtru river gorge and low-lying bridge B-17</div>
+                <div>• {t.routeBAdvantage}</div>
                 <div>• Lower slope gradient (14°) and reinforced asphalt pavement</div>
                 <div>• Estimated Arrival Time: <strong>6:15 PM (+2h 05m detour vs 11h cutoff)</strong></div>
               </div>
@@ -485,7 +502,7 @@ export default function DriverApp() {
                   className="w-full mt-3 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Check size={16} />
-                  <span>Accept and Switch Navigation to Route B</span>
+                  <span>{t.acceptRouteB}</span>
                 </button>
               )}
             </div>
@@ -498,8 +515,8 @@ export default function DriverApp() {
       {activeDriverTab === 'checkpoints' && (
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div>
-            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Trip Checkpoints & Geofences</h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time driver transit progression log</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{t.checkpointsTitle}</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{t.checkpointsSub}</p>
           </div>
 
           <div className="space-y-3">
@@ -524,7 +541,7 @@ export default function DriverApp() {
                   )}
                   {wp.isReroutedSegment && (
                     <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-                      ✓ AI Verified Safe Detour Segment
+                      ✓ {t.safeDetourSegment}
                     </div>
                   )}
                 </div>
@@ -538,8 +555,8 @@ export default function DriverApp() {
       {activeDriverTab === 'laybys' && (
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div>
-            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Safe Laybys & Emergency Shelters</h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Designated disaster-time freight staging locations on this route</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">{t.laybysTitle}</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{t.laybysSub}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
@@ -552,7 +569,7 @@ export default function DriverApp() {
                   <div>
                     <h4 className="text-xs font-bold text-slate-900 dark:text-white">{layby.name}</h4>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
-                      Distance: {layby.distanceKm} km ahead • Capacity: {layby.capacityTrucks} heavy trucks
+                      {t.distanceAhead}: {layby.distanceKm} km ahead • {t.truckCapacity}: {layby.capacityTrucks} heavy trucks
                     </span>
                   </div>
                   <span className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -579,10 +596,10 @@ export default function DriverApp() {
       {/* ── DRIVER BOTTOM NAVIGATION BAR (MOBILE ONLY) ── */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 px-3 py-2 flex items-center justify-around select-none text-slate-700 dark:text-white transition-colors md:hidden">
         {[
-          { id: 'nav', label: 'Navigation', icon: <Navigation size={18} /> },
-          { id: 'reroute', label: 'AI Reroute', icon: <RotateCcw size={18} /> },
-          { id: 'checkpoints', label: 'Checkpoints', icon: <MapPin size={18} /> },
-          { id: 'laybys', label: 'Safe Shelters', icon: <Coffee size={18} /> },
+          { id: 'nav', label: t.tabNav, icon: <Navigation size={18} /> },
+          { id: 'reroute', label: t.tabReroute, icon: <RotateCcw size={18} /> },
+          { id: 'checkpoints', label: t.tabCheckpoints, icon: <MapPin size={18} /> },
+          { id: 'laybys', label: t.tabLaybys, icon: <Coffee size={18} /> },
         ].map((tab) => {
           const isActive = activeDriverTab === tab.id;
           return (

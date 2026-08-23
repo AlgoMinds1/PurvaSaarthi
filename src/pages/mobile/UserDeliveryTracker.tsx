@@ -12,6 +12,7 @@ import 'leaflet/dist/leaflet.css';
 import { useAppStore } from '../../store/useAppStore';
 import { vehicles, roads, routeAPPath, routeBPath } from '../../data/mockData';
 import type { Shipment, Vehicle, CommodityType } from '../../types';
+import { translations } from '../../utils/translations';
 
 // Leaflet custom icons for mobile map
 const truckIcon = L.divIcon({
@@ -50,43 +51,17 @@ const COMMODITY_ICONS: Record<CommodityType, string> = {
 };
 
 const COMMODITY_PRESETS = [
-  {
-    type: 'medicine' as CommodityType,
-    label: 'Critical ICU Medicines & Vaccines',
-    icon: '💊',
-    desc: 'Insulin, Anti-venom, Cold Chain Vaccines, Trauma Fluids',
-    defaultQty: '120 Units (Temp Controlled 2°C - 8°C)',
-    priority: 100,
-  },
-  {
-    type: 'food' as CommodityType,
-    label: 'Emergency Relief Food & Rations',
-    icon: '🍞',
-    desc: 'Fortified Grains, High Energy Biscuits, Baby Formula',
-    defaultQty: '500 Ration Kits',
-    priority: 85,
-  },
-  {
-    type: 'construction' as CommodityType,
-    label: 'Lifeline Generator Fuel & Power',
-    icon: '⚡',
-    desc: 'Diesel Drums, Backup Inverters, Water Pump Spares',
-    defaultQty: '800 Litres (Hospital Backup)',
-    priority: 95,
-  },
-  {
-    type: 'agri' as CommodityType,
-    label: 'Agricultural Resilience & Seeds',
-    icon: '🌾',
-    desc: 'Flood-Resistant Paddy Seeds, Soil Nutrients',
-    defaultQty: '250 Bags',
-    priority: 70,
-  },
+  { type: 'medicine' as CommodityType, label: 'Anti-Venom & Rabies Immunoglobulins', defaultQty: '120 Vials', icon: '💊' },
+  { type: 'medicine' as CommodityType, label: 'Medical Oxygen Cylinders (B-Type)', defaultQty: '40 Cylinders', icon: '🫁' },
+  { type: 'medicine' as CommodityType, label: 'Cold-Chain Vaccine Batch', defaultQty: '300 Doses', icon: '🧪' },
+  { type: 'construction' as CommodityType, label: 'High-Octane Hospital Diesel Resupply', defaultQty: '1,500 Liters', icon: '⛽' },
+  { type: 'medicine' as CommodityType, label: 'Emergency Universal Blood Units', defaultQty: '25 Pints', icon: '🩸' },
+  { type: 'food' as CommodityType, label: 'Water Purification Tablets & Relief Kits', defaultQty: '800 Sachets', icon: '📦' },
 ];
 
 const DESTINATIONS = [
-  { id: 'dist-x', name: 'District X Civil Hospital & Central ICU', region: 'East Khasi Hills' },
-  { id: 'dist-y', name: 'District Y Food Grain Warehouse', region: 'Ri-Bhoi Corridor' },
+  { id: 'dist-x', name: 'District X Civil Hospital & Central ICU', region: 'Shillong Bypass Corridor' },
+  { id: 'dist-y', name: 'Barapani Emergency Triage Center', region: 'Ri-Bhoi Hill Sector' },
   { id: 'dist-z', name: 'Disaster Relief Camp Alpha', region: 'Upper Brahmaputra Basin' },
   { id: 'dist-w', name: 'District Health Sub-centre #3', region: 'Silchar Mountain Sector' },
 ];
@@ -102,6 +77,8 @@ export default function UserDeliveryTracker() {
     language,
     setLanguage,
   } = useAppStore();
+
+  const t = translations[language === 'hi' ? 'hi' : 'en'];
 
   const [activeTab, setActiveTab] = useState<'track' | 'orders' | 'hazards' | 'sos'>('track');
   const [searchQuery, setSearchQuery] = useState('');
@@ -204,10 +181,10 @@ export default function UserDeliveryTracker() {
           {/* Desktop Navigation Tabs */}
           <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/[0.05] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
             {[
-              { id: 'track', label: 'Live Track', icon: <Package size={14} /> },
-              { id: 'orders', label: 'My Orders', icon: <Layers size={14} /> },
-              { id: 'hazards', label: 'Hazards', icon: <AlertTriangle size={14} /> },
-              { id: 'sos', label: 'SOS Desk', icon: <Phone size={14} /> },
+              { id: 'track', label: t.tabLiveTrack, icon: <Package size={14} /> },
+              { id: 'orders', label: t.tabMyOrders, icon: <Layers size={14} /> },
+              { id: 'hazards', label: t.tabHazards, icon: <AlertTriangle size={14} /> },
+              { id: 'sos', label: t.tabSos, icon: <Phone size={14} /> },
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -235,12 +212,12 @@ export default function UserDeliveryTracker() {
               className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl bg-[#ff6200] hover:bg-orange-600 active:scale-95 text-white text-[11px] sm:text-xs font-semibold shadow-xs shadow-orange-500/20 transition-all cursor-pointer shrink-0"
             >
               <Plus size={13} strokeWidth={2.5} />
-              <span>Create</span>
+              <span>{t.create}</span>
             </button>
 
             <div className="relative flex items-center gap-0.5 sm:gap-1 px-2 py-1.5 rounded-xl border border-slate-200/90 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] sm:text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all cursor-pointer shrink-0">
               <Globe size={13} className="text-slate-600 dark:text-slate-400 shrink-0" />
-              <span className="font-semibold text-[11px] sm:text-xs text-slate-800 dark:text-slate-200 uppercase">{language}</span>
+              <span className="font-semibold text-[11px] sm:text-xs text-slate-800 dark:text-slate-200 uppercase">{language === 'hi' ? 'HI' : 'EN'}</span>
               <ChevronDown size={12} className="text-slate-500 dark:text-slate-400 shrink-0" />
               <select
                 value={language}
@@ -248,10 +225,8 @@ export default function UserDeliveryTracker() {
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                 title="Select language"
               >
-                <option value="en">EN</option>
-                <option value="hi">HI</option>
-                <option value="as">AS</option>
-                <option value="bn">BN</option>
+                <option value="en">English (EN)</option>
+                <option value="hi">हिंदी (HI)</option>
               </select>
             </div>
 
@@ -287,7 +262,7 @@ export default function UserDeliveryTracker() {
                       <span>•</span>
                       <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-                        LIVE
+                        {t.live}
                       </span>
                     </div>
                     <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight truncate">
@@ -302,7 +277,7 @@ export default function UserDeliveryTracker() {
                     title="View Waybill & Pass"
                   >
                     <QrCode size={12} />
-                    <span>Pass</span>
+                    <span>{t.pass}</span>
                   </button>
                 </div>
 
@@ -331,32 +306,32 @@ export default function UserDeliveryTracker() {
                   <div>
                     <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
                       <Clock size={11} className="text-emerald-600 dark:text-emerald-400" />
-                      <span>ETA</span>
+                      <span>{t.eta}</span>
                     </div>
                     <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">{currentShipment.expectedDeliveryTime}</div>
-                    <div className="text-[8px] text-slate-500 dark:text-slate-400 font-mono">Today</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400 font-mono">{t.today}</div>
                   </div>
 
                   <div className="border-x border-slate-200 dark:border-white/10 px-1">
                     <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
                       <ShieldCheck size={11} className="text-orange-600 dark:text-orange-400" />
-                      <span>CORRIDOR</span>
+                      <span>{t.corridor}</span>
                     </div>
                     <div className="text-xs font-black text-slate-900 dark:text-white truncate">
                       {isDriverRerouted || currentShipment.routeRisk < 30 ? 'NH-106 (Safe)' : 'NH-27'}
                     </div>
                     <div className="text-[8px] text-orange-600 dark:text-orange-300 font-bold">
-                      {isDriverRerouted || currentShipment.routeRisk < 30 ? 'Detour Active' : 'Monitored'}
+                      {isDriverRerouted || currentShipment.routeRisk < 30 ? t.detourActive : t.monitored}
                     </div>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
                       <Zap size={11} className="text-amber-600 dark:text-amber-400" />
-                      <span>PRIORITY</span>
+                      <span>{t.priority}</span>
                     </div>
                     <div className="text-xs font-black text-amber-600 dark:text-amber-300">{currentShipment.priority}/100</div>
-                    <div className="text-[8px] text-slate-500 dark:text-slate-400">Stock {currentShipment.stockDaysRemaining}d</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{t.stockRemaining} {currentShipment.stockDaysRemaining}d</div>
                   </div>
                 </div>
 
@@ -367,13 +342,13 @@ export default function UserDeliveryTracker() {
                     className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
                   >
                     <Phone size={13} />
-                    <span>Call Driver ({currentVehicle?.driverName?.split(' ')[0] || 'Driver'})</span>
+                    <span>{t.callDriver} ({currentVehicle?.driverName?.split(' ')[0] || 'Rahul'})</span>
                   </a>
 
                   <button
                     onClick={() => {
                       navigator.clipboard?.writeText?.(window.location.href);
-                      showToast('🔗 Live Tracking link copied!');
+                      showToast(`🔗 ${t.shareLinkCopied}`);
                     }}
                     className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent text-[11px] font-bold transition-all shrink-0 cursor-pointer"
                     title="Share Tracking"
@@ -418,12 +393,12 @@ export default function UserDeliveryTracker() {
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <Package size={13} className="text-blue-500" />
-                    <span>Cargo Items ({currentShipment.items.length})</span>
+                    <span>{t.cargoItems} ({currentShipment.items.length})</span>
                   </span>
                   {currentShipment.items.some((i) => i.tempControlled) && (
                     <span className="text-[9px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
                       <ThermometerSnowflake size={10} />
-                      <span>Cold Chain</span>
+                      <span>{t.coldChain}</span>
                     </span>
                   )}
                 </div>
@@ -436,7 +411,7 @@ export default function UserDeliveryTracker() {
                     >
                       <div className="min-w-0 pr-2">
                         <div className="font-bold text-slate-900 dark:text-white truncate text-[11px]">{item.name}</div>
-                        <div className="text-[9px] text-slate-400">Batch #{item.batchNumber || 'NER-STD'}</div>
+                        <div className="text-[9px] text-slate-400">{t.batch} #{item.batchNumber || 'NER-STD'}</div>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">{item.quantity}</div>
@@ -455,14 +430,14 @@ export default function UserDeliveryTracker() {
                 <div className="px-3 py-2 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02]">
                   <div className="flex items-center gap-1.5">
                     <Compass size={14} className="text-orange-500" />
-                    <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">Live Highway Corridor</span>
+                    <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">{t.liveHighwayCorridor}</span>
                   </div>
                   
                   <button
                     onClick={() => setMapExpanded(!mapExpanded)}
                     className="text-[10px] font-bold text-orange-600 dark:text-orange-400 flex items-center gap-0.5 cursor-pointer"
                   >
-                    <span>{mapExpanded ? 'Shrink' : 'Expand'}</span>
+                    <span>{mapExpanded ? t.shrink : t.expand}</span>
                     <ChevronDown size={12} className={clsx('transition-transform', mapExpanded && 'rotate-180')} />
                   </button>
                 </div>
@@ -526,10 +501,10 @@ export default function UserDeliveryTracker() {
                   <div className="absolute bottom-2 left-2 right-2 z-[400] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.1] flex items-center justify-between text-[9px] font-bold text-slate-700 dark:text-slate-300 shadow-sm">
                     <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                       <ShieldCheck size={12} />
-                      <span>Detour Active (NH-106)</span>
+                      <span>{t.detourActive} (NH-106)</span>
                     </span>
                     <span className="font-mono text-slate-500 dark:text-slate-400">
-                      Speed: <strong className="text-slate-900 dark:text-white">{currentVehicle?.currentSpeed || 44} km/h</strong>
+                      {t.speed}: <strong className="text-slate-900 dark:text-white">{currentVehicle?.currentSpeed || 44} km/h</strong>
                     </span>
                   </div>
                 </div>
@@ -540,10 +515,10 @@ export default function UserDeliveryTracker() {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
                     <RefreshCw size={13} className="text-orange-500 animate-spin" style={{ animationDuration: '8s' }} />
-                    <span>Tracking Milestones</span>
+                    <span>{t.trackingMilestones}</span>
                   </h3>
                   <span className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                    Active Step
+                    {t.activeStep}
                   </span>
                 </div>
 
@@ -597,15 +572,15 @@ export default function UserDeliveryTracker() {
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xs font-black text-slate-900 dark:text-white">Your Requisitions & Orders</h2>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Track and manage destination consignments</p>
+              <h2 className="text-xs font-black text-slate-900 dark:text-white">{t.yourRequisitions}</h2>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">{t.manageConsignments}</p>
             </div>
             <button
               onClick={() => setShowOrderModal(true)}
               className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-orange-500 text-white font-bold text-xs shadow-sm hover:bg-orange-600 transition-all cursor-pointer"
             >
               <Plus size={13} strokeWidth={3} />
-              <span>New Order</span>
+              <span>{t.newOrder}</span>
             </button>
           </div>
 
@@ -614,7 +589,7 @@ export default function UserDeliveryTracker() {
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
-              placeholder="Search by ID, Commodity, or Hospital..."
+              placeholder={t.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-8 pr-3 py-2 rounded-xl text-xs bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] text-slate-900 dark:text-white placeholder-slate-400 outline-none"
@@ -676,7 +651,7 @@ export default function UserDeliveryTracker() {
                       <div className="text-[10px] font-mono font-bold text-slate-900 dark:text-white">
                         {s.expectedDeliveryTime}
                       </div>
-                      <div className="text-[9px] text-slate-400">ETA</div>
+                      <div className="text-[9px] text-slate-400">{t.eta}</div>
                     </div>
 
                     <ChevronRight size={14} className="text-slate-400 shrink-0" />
@@ -691,8 +666,8 @@ export default function UserDeliveryTracker() {
       {activeTab === 'hazards' && (
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8 text-xs">
           <div>
-            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Corridor Road Hazards</h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time hill terrain resilience intelligence</p>
+            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">{t.corridorRoadHazards}</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{t.hazardsSubtitle}</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
@@ -731,39 +706,39 @@ export default function UserDeliveryTracker() {
       {activeTab === 'sos' && (
         <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-4 pb-24 md:pb-8 text-xs">
           <div>
-            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Emergency Logistics Lifeline</h2>
-            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">24x7 North East Disaster Desk & Support</p>
+            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">{t.emergencyLifeline}</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{t.sosSubtitle}</p>
           </div>
 
           <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 space-y-2.5">
             <div className="flex items-center gap-2 font-bold text-red-700 dark:text-red-400 text-xs sm:text-sm">
               <AlertOctagon size={16} />
-              <span>Critical Stock-Out / Highway Isolation SOS</span>
+              <span>{t.sosAlertTitle}</span>
             </div>
             <p className="text-[11px] text-red-900/80 dark:text-red-200/90 leading-relaxed">
-              If ICU stock is below 12 hours or arterial roads are severed, trigger SEOC fast-track helicopter / green-corridor requisition.
+              {t.sosAlertDesc}
             </p>
             <a
               href="tel:1070"
               className="w-full sm:w-auto inline-flex px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs items-center justify-center gap-1.5 shadow-sm transition-all"
             >
               <Phone size={13} />
-              <span>Call State Emergency Operations (1070)</span>
+              <span>{t.callSeocBtn}</span>
             </a>
           </div>
 
           <div className="bg-white dark:bg-[#0b1322] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] space-y-2.5">
-            <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Direct Helplines</span>
+            <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{t.directHelplines}</span>
             <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5 text-xs">
-              <span>NER Logistics Control</span>
+              <span>{t.logisticsControl}</span>
               <a href="tel:18003459090" className="font-mono font-bold text-orange-600 dark:text-orange-400">1800-345-9090</a>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5 text-xs">
-              <span>Health Services (DHS)</span>
+              <span>{t.healthServices}</span>
               <a href="tel:03612260033" className="font-mono font-bold text-blue-600 dark:text-blue-400">0361-2260033</a>
             </div>
             <div className="flex justify-between items-center py-2 text-xs">
-              <span>Highway Helpline</span>
+              <span>{t.highwayHelpline}</span>
               <a href="tel:1033" className="font-mono font-bold text-slate-700 dark:text-slate-300">1033</a>
             </div>
           </div>
@@ -773,10 +748,10 @@ export default function UserDeliveryTracker() {
       {/* ── BOTTOM TAB NAVIGATION BAR (CLEAN & SLEEK - MOBILE ONLY) ── */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#090f1c]/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-white/[0.08] px-3 py-1.5 flex items-center justify-around select-none md:hidden">
         {[
-          { id: 'track', label: 'Live Track', icon: <Package size={17} /> },
-          { id: 'orders', label: 'My Orders', icon: <Layers size={17} /> },
-          { id: 'hazards', label: 'Hazards', icon: <AlertTriangle size={17} /> },
-          { id: 'sos', label: 'SOS Desk', icon: <Phone size={17} /> },
+          { id: 'track', label: t.tabLiveTrack, icon: <Package size={17} /> },
+          { id: 'orders', label: t.tabMyOrders, icon: <Layers size={17} /> },
+          { id: 'hazards', label: t.tabHazards, icon: <AlertTriangle size={17} /> },
+          { id: 'sos', label: t.tabSos, icon: <Phone size={17} /> },
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -808,8 +783,8 @@ export default function UserDeliveryTracker() {
                   <Package size={16} />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black">Place Consignment Requisition</h3>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Emergency & Essential Corridor Dispatch</p>
+                  <h3 className="text-sm font-black">{t.createRequisition}</h3>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">{t.requisitionDesc}</p>
                 </div>
               </div>
 
@@ -826,7 +801,7 @@ export default function UserDeliveryTracker() {
               {/* 1. Category Presets */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Select Essential Commodity Type
+                  {t.itemCategory}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {COMMODITY_PRESETS.map((preset) => {
@@ -857,7 +832,7 @@ export default function UserDeliveryTracker() {
               {/* 2. Custom Item Specification */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Specific Item / Batch Description (Optional)
+                  {t.selectItem}
                 </label>
                 <input
                   type="text"
@@ -871,7 +846,7 @@ export default function UserDeliveryTracker() {
               {/* 3. Destination Facility */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  Destination Hospital / Drop-off Facility
+                  {t.destinationFacility}
                 </label>
                 <select
                   value={selectedDest.id}
@@ -892,7 +867,7 @@ export default function UserDeliveryTracker() {
               {/* 4. Priority Level */}
               <div>
                 <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                  Priority Urgency
+                  {t.priorityLevel}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
@@ -930,12 +905,12 @@ export default function UserDeliveryTracker() {
                   {isSubmittingOrder ? (
                     <>
                       <RefreshCw size={14} className="animate-spin" />
-                      <span>Dispatching Requisition...</span>
+                      <span>{t.submitting}</span>
                     </>
                   ) : (
                     <>
                       <CheckCircle2 size={15} />
-                      <span>Confirm & Track Lifeline Requisition</span>
+                      <span>{t.submitOrder}</span>
                     </>
                   )}
                 </button>
@@ -961,7 +936,7 @@ export default function UserDeliveryTracker() {
               <QrCode size={24} />
             </div>
 
-            <h3 className="text-sm font-black mb-0.5">Digital Waybill Pass</h3>
+            <h3 className="text-sm font-black mb-0.5">{t.pass}</h3>
             <p className="text-[10px] text-slate-500 font-mono">#{currentShipment.trackingNumber}</p>
 
             {/* Mock QR SVG representation */}
