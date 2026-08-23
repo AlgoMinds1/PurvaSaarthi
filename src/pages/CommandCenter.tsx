@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import {
   ArrowRight, Route, Truck,
   AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map,
-  Activity, Sliders, ShieldAlert
+  Activity, Sliders, ShieldAlert, Zap, Brain
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
@@ -153,6 +153,13 @@ export default function CommandCenter() {
               <span className="pulse-dot green" /> LIVE GIS
             </span>
             <button
+              onClick={() => useAppStore.getState().openCascadeModal()}
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 bg-amber-500/10 px-3 py-1 rounded-lg border border-amber-500/20 transition-all cursor-pointer shadow-2xs"
+            >
+              <Zap size={13} className="animate-pulse text-amber-500" />
+              <span>Simulate Cascade Failure</span>
+            </button>
+            <button
               onClick={() => setView('map')}
               className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
             >
@@ -283,7 +290,14 @@ export default function CommandCenter() {
         </div>
 
         {/* Quick Action */}
-        <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06]">
+        <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] space-y-2">
+          <button
+            onClick={() => useAppStore.getState().openExplainabilityDrawer('road', 'road-nh27')}
+            className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+          >
+            <Brain size={13} />
+            <span>Explain AI Risk Weights</span>
+          </button>
           <button
             onClick={() => setView('roads')}
             className="w-full py-2 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"

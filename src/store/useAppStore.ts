@@ -75,6 +75,22 @@ interface AppState {
   offlineQueue: { id: string; timestamp: string; title: string }[];
   addOfflineAction: (title: string) => void;
   syncOfflineQueue: () => void;
+
+  // Cascading Disruption Simulation
+  cascadeModalOpen: boolean;
+  simulatedRoadId: string | null;
+  cascadeStep: number;
+  openCascadeModal: () => void;
+  closeCascadeModal: () => void;
+  setSimulatedRoadId: (id: string | null) => void;
+  setCascadeStep: (step: number) => void;
+  resetCascadeSimulation: () => void;
+
+  // AI Explainability & Data Trust Drawer
+  explainabilityDrawerOpen: boolean;
+  explainTarget: { type: 'road' | 'shipment' | 'district'; id: string } | null;
+  openExplainabilityDrawer: (type: 'road' | 'shipment' | 'district', id: string) => void;
+  closeExplainabilityDrawer: () => void;
 }
 
 const getInitialTheme = (): ThemeMode => {
@@ -220,5 +236,23 @@ export const useAppStore = create<AppState>((set) => ({
       ],
     })),
   syncOfflineQueue: () => set({ offlineQueue: [] }),
+
+  // Cascade simulation state
+  cascadeModalOpen: false,
+  simulatedRoadId: 'road-nh27',
+  cascadeStep: 0,
+  openCascadeModal: () => set({ cascadeModalOpen: true }),
+  closeCascadeModal: () => set({ cascadeModalOpen: false }),
+  setSimulatedRoadId: (id) => set({ simulatedRoadId: id }),
+  setCascadeStep: (step) => set({ cascadeStep: step }),
+  resetCascadeSimulation: () => set({ cascadeStep: 0, simulatedRoadId: 'road-nh27' }),
+
+  // Explainability drawer state
+  explainabilityDrawerOpen: false,
+  explainTarget: null,
+  openExplainabilityDrawer: (type, id) =>
+    set({ explainabilityDrawerOpen: true, explainTarget: { type, id } }),
+  closeExplainabilityDrawer: () =>
+    set({ explainabilityDrawerOpen: false, explainTarget: null }),
 }));
 

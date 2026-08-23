@@ -53,6 +53,11 @@ export default function LiveMap() {
       maxZoom: 18,
     }).addTo(map);
 
+    // Expose window helper for popup buttons
+    (window as any).openExplainDrawer = (type: 'road' | 'shipment' | 'district', id: string) => {
+      useAppStore.getState().openExplainabilityDrawer(type, id);
+    };
+
     // ── ROADS LAYER ──
     const roadsGroup = L.layerGroup().addTo(map);
     roads.forEach((r) => {
@@ -86,6 +91,7 @@ export default function LiveMap() {
               <span>${r.lastVerified}</span>
             </div>
             <div style="opacity:0.6;font-size:11px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(128,128,128,0.2)">Source: ${r.source}</div>
+            <button onclick="window.openExplainDrawer('road', '${r.id}')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Risk Weights</button>
           </div>
         </div>`
       ).addTo(roadsGroup);

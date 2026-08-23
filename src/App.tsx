@@ -13,6 +13,8 @@ import DistrictIntelligence from './pages/DistrictIntelligence';
 import AlertCenter from './pages/AlertCenter';
 import VehicleTracking from './pages/VehicleTracking';
 import { RerouteModal } from './components/ui/RerouteModal';
+import { CascadeSimulator } from './components/ui/CascadeSimulator';
+import { AIExplainabilityDrawer } from './components/ui/AIExplainabilityDrawer';
 import { MobileFrame } from './components/mobile/MobileFrame';
 import UserDeliveryTracker from './pages/mobile/UserDeliveryTracker';
 import DriverApp from './pages/mobile/DriverApp';
@@ -50,6 +52,8 @@ function AppShell() {
         </main>
       </div>
       <RerouteModal />
+      <CascadeSimulator />
+      <AIExplainabilityDrawer />
     </div>
   );
 }
