@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import clsx from 'clsx';
+import { Route, Landmark, Building2, Truck, AlertTriangle, CloudRain, Check } from 'lucide-react';
 import { roads, bridges, vehicles, districts } from '../data/mockData';
 import { statusColor } from '../lib/utils';
 
@@ -74,14 +75,14 @@ export default function LiveMap() {
     bridges.forEach((b) => {
       const bridgeIcon = L.divIcon({
         className: 'truck-icon-custom',
-        html: `<div style="font-size:22px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));cursor:pointer" title="${b.name}">🌉</div>`,
-        iconSize: [28, 28], iconAnchor: [14, 14],
+        html: `<div style="width:26px;height:26px;background:#2563eb;border:2px solid white;border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 2px 5px rgba(0,0,0,0.35);cursor:pointer" title="${b.name}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14"/><path d="M4 15h16"/><path d="M10 3v16"/><path d="M14 3v16"/></svg></div>`,
+        iconSize: [26, 26], iconAnchor: [13, 13],
       });
       L.marker(b.latlng, { icon: bridgeIcon })
         .bindPopup(
           `<div style="min-width:200px">
             <div style="font-weight:700;font-size:13px;margin-bottom:6px">${b.name}</div>
-            ${b.isSPOF ? '<div style="background:#ef444420;color:#dc2626;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:8px">⚠ SINGLE POINT OF FAILURE</div>' : ''}
+            ${b.isSPOF ? '<div style="background:#ef444420;color:#dc2626;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:8px">SINGLE POINT OF FAILURE</div>' : ''}
             <div style="font-size:12px;display:grid;gap:4px">
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Status</span><span style="color:${statusColor(b.status)};font-weight:600">${b.status}</span></div>
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Criticality</span><span style="color:#f97316;font-weight:600">${b.criticalityScore}%</span></div>
@@ -133,9 +134,9 @@ export default function LiveMap() {
       const truckIcon = L.divIcon({
         className: 'truck-icon-custom',
         html: `<div style="position:relative;cursor:pointer">
-          <div style="font-size:24px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4))">🚛</div>
+          <div style="width:28px;height:28px;background:#0284c7;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 2px 6px rgba(0,0,0,0.35)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="7" cy="18.5" r="2.5"/></svg></div>
           <div style="
-            position:absolute;top:-8px;right:-8px;
+            position:absolute;top:-6px;right:-6px;
             background:${riskC};color:white;
             border-radius:50%;width:16px;height:16px;
             font-size:8px;font-weight:800;
@@ -144,7 +145,7 @@ export default function LiveMap() {
             box-shadow:0 1px 3px rgba(0,0,0,0.3);
           ">${Math.round(v.routeRisk)}</div>
         </div>`,
-        iconSize: [36, 36], iconAnchor: [18, 18],
+        iconSize: [32, 32], iconAnchor: [16, 16],
       });
       const marker = L.marker(v.currentLocation, { icon: truckIcon })
         .bindPopup(
@@ -158,7 +159,7 @@ export default function LiveMap() {
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Delay</span><span style="color:#f97316;font-weight:600">${v.delayMinutes > 0 ? '+' + v.delayMinutes + ' min' : 'On time'}</span></div>
               <div style="display:flex;justify-content:space-between">
                 <span style="opacity:0.7">GPS Status</span>
-                <span style="color:${v.telemetryFresh ? '#16a34a' : '#f97316'};font-weight:600">${v.telemetryFresh ? '● Fresh — ' + v.lastPingAt : '⚠ TELEMETRY UNAVAILABLE'}</span>
+                <span style="color:${v.telemetryFresh ? '#16a34a' : '#f97316'};font-weight:600">${v.telemetryFresh ? '● Fresh — ' + v.lastPingAt : 'TELEMETRY UNAVAILABLE'}</span>
               </div>
             </div>
           </div>`
@@ -188,13 +189,13 @@ export default function LiveMap() {
     setLayers((prev) => ({ ...prev, [layer]: !prev[layer] }));
   };
 
-  const layerDefs: { id: LayerKey; label: string; icon: string }[] = [
-    { id: 'roads', label: 'Roads', icon: '🛣️' },
-    { id: 'bridges', label: 'Bridges', icon: '🌉' },
-    { id: 'districts', label: 'Districts', icon: '🏘️' },
-    { id: 'vehicles', label: 'Vehicles', icon: '🚛' },
-    { id: 'incidents', label: 'Incidents', icon: '⚠️' },
-    { id: 'weather', label: 'Weather Risk', icon: '🌧️' },
+  const layerDefs: { id: LayerKey; label: string; icon: React.ReactNode }[] = [
+    { id: 'roads', label: 'Roads', icon: <Route size={14} className="text-orange-500" /> },
+    { id: 'bridges', label: 'Bridges', icon: <Landmark size={14} className="text-blue-500" /> },
+    { id: 'districts', label: 'Districts', icon: <Building2 size={14} className="text-purple-500" /> },
+    { id: 'vehicles', label: 'Vehicles', icon: <Truck size={14} className="text-sky-500" /> },
+    { id: 'incidents', label: 'Incidents', icon: <AlertTriangle size={14} className="text-red-500" /> },
+    { id: 'weather', label: 'Weather Risk', icon: <CloudRain size={14} className="text-cyan-500" /> },
   ];
 
   return (
@@ -217,11 +218,12 @@ export default function LiveMap() {
                 'w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all',
                 layers[l.id] ? 'bg-orange-500 border-orange-500' : 'border-slate-300 dark:border-white/20 bg-transparent'
               )}>
-                {layers[l.id] && <span className="text-white text-[10px] font-bold">✓</span>}
+                {layers[l.id] && <Check size={10} strokeWidth={3} className="text-white" />}
               </div>
-              <span className="text-xs text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors font-medium">
-                {l.icon} {l.label}
-              </span>
+              <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors font-medium">
+                {l.icon}
+                <span>{l.label}</span>
+              </div>
             </label>
           ))}
         </div>
@@ -250,7 +252,10 @@ export default function LiveMap() {
             {vehicles.map((v) => (
               <div key={v.id} className="text-xs p-2 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-900 dark:text-white font-semibold">🚛 {v.id}</span>
+                  <div className="flex items-center gap-1.5">
+                    <Truck size={13} className="text-slate-500" />
+                    <span className="text-slate-900 dark:text-white font-semibold">{v.id}</span>
+                  </div>
                   <span className={clsx(
                     'text-[10px] font-bold',
                     v.routeRisk > 80 ? 'text-red-600 dark:text-red-400' : v.routeRisk > 60 ? 'text-orange-600 dark:text-orange-400' : 'text-emerald-600 dark:text-green-400'
@@ -258,7 +263,7 @@ export default function LiveMap() {
                 </div>
                 <div className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5">{v.destination}</div>
                 {!v.telemetryFresh && (
-                  <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-1">⚠ TELEMETRY UNAVAILABLE</div>
+                  <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-1">TELEMETRY UNAVAILABLE</div>
                 )}
               </div>
             ))}

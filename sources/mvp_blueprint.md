@@ -283,7 +283,7 @@ The first screen should communicate:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│ ROUTEMIND                                      🚨 3 Critical Alerts │
+│ ROUTEMIND                                       3 Critical Alerts │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
 │  REGIONAL RESILIENCE                                               │
@@ -295,16 +295,16 @@ The first screen should communicate:
 │                                                                    │
 │                         LIVE GIS MAP                               │
 │                                                                    │
-│          🟢              🟠                  🔴                    │
+│          [Open]              [High Risk]                  [Blocked]                    │
 │                                                                    │
-│                       🚚                                           │
+│                       [Truck]                                           │
 │                                                                    │
-│             ⚠ ROAD A — HIGH RISK                                  │
+│             ! ROAD A — HIGH RISK                                  │
 │                                                                    │
 ├────────────────────────────────────────────────────────────────────┤
 │ CRITICAL INTELLIGENCE                                              │
 │                                                                    │
-│ ⚠ Medicine Shipment #104 at risk                                  │
+│ ! Medicine Shipment #104 at risk                                  │
 │                                                                    │
 │ Road A disruption probability: 91%                                │
 │ District X supply coverage: 1.7 days                              │
@@ -383,13 +383,13 @@ It is the most important screen.
 │                                     │                               │
 │                                     │ CRITICAL INTELLIGENCE        │
 │                                     │                               │
-│              GIS MAP                │ ⚠ Medicine #104              │
+│              GIS MAP                │ ! Medicine #104              │
 │                                     │   HIGH RISK                   │
 │                                     │                               │
-│                                     │ ⚠ District X                 │
+│                                     │ ! District X                 │
 │                                     │   Isolation Risk 87%          │
 │                                     │                               │
-│                                     │ ⚠ Road A                     │
+│                                     │ ! Road A                     │
 │                                     │   91% disruption probability  │
 │                                     │                               │
 ├─────────────────────────────────────┴───────────────────────────────┤
@@ -486,15 +486,15 @@ The technology document explicitly recommends Leaflet as the primary map impleme
 The map should have toggles:
 
 ```text
-☑ Roads
-☑ Bridges
-☑ Districts
-☑ Vehicles
-☑ Incidents
-☑ Risk
-☑ Weather
-☑ Alternative Routes
-☑ Remote Locations
+[x] Roads
+[x] Bridges
+[x] Districts
+[x] Vehicles
+[x] Incidents
+[x] Risk
+[x] Weather
+[x] Alternative Routes
+[x] Remote Locations
 ```
 
 ---
@@ -535,7 +535,7 @@ Infrastructure status must carry source, timestamp, freshness and confidence.
 Every active vehicle appears as:
 
 ```text
-🚚
+[Truck]
 ```
 
 Clicking:
@@ -707,11 +707,11 @@ Clicking it:
 ```text
 WHY?
 
-✓ Heavy rainfall forecast
-✓ High terrain slope
-✓ 3 historical landslides
-✓ Recent field report
-✓ Heavy congestion
+[x] Heavy rainfall forecast
+[x] High terrain slope
+[x] 3 historical landslides
+[x] Recent field report
+[x] Heavy congestion
 
 Confidence: 89%
 
@@ -854,9 +854,9 @@ ALTERNATIVE ROUTES
 │ Risk: 91%                                                     │
 │ Status: HIGH RISK                                             │
 │                                                               │
-│ ⚠ Heavy rainfall                                             │
-│ ⚠ Landslide risk                                             │
-│ ⚠ Bridge dependency                                          │
+│ ! Heavy rainfall                                             │
+│ ! Landslide risk                                             │
+│ ! Bridge dependency                                          │
 └───────────────────────────────────────────────────────────────┘
 
 
@@ -868,9 +868,9 @@ ALTERNATIVE ROUTES
 │ Risk: 24%                                                     │
 │ Delay: +2h                                                    │
 │                                                               │
-│ ✓ Lower terrain risk                                         │
-│ ✓ Avoids damaged road                                        │
-│ ✓ Suitable for vehicle                                       │
+│ [x] Lower terrain risk                                         │
+│ [x] Avoids damaged road                                        │
+│ [x] Suitable for vehicle                                       │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -1200,13 +1200,13 @@ with progressively stronger notification mechanisms.
 Never send:
 
 ```text
-⚠ Road risk high
+! Road risk high
 ```
 
 Instead:
 
 ```text
-🚨 MEDICINE DELIVERY AT RISK
+ MEDICINE DELIVERY AT RISK
 
 Shipment:
 #104
@@ -1303,7 +1303,7 @@ The driver is not supposed to operate the government dashboard.
 When the backend changes the road:
 
 ```text
-⚠ ROUTE RISK INCREASED
+! ROUTE RISK INCREASED
 
 Road A is now HIGH RISK.
 
@@ -1496,7 +1496,7 @@ Network returns:
 ```text
 SYNCING...
        ↓
-SYNCED ✓
+SYNCED [x]
 ```
 
 Dashboard then receives:
@@ -1564,7 +1564,7 @@ Do not automatically choose one.
 Display:
 
 ```text
-⚠ CONFLICTING REPORTS
+! CONFLICTING REPORTS
 
 Road A
 
@@ -1628,7 +1628,7 @@ Wrong:
 ```text
 Weather:
 
-Rain 🌧
+Rain 
 ```
 
 Correct:
@@ -1898,7 +1898,7 @@ Add one toggle:
 
 ```text
 NORMAL MODE
-       ↕
+       |
 EMERGENCY MODE
 ```
 
@@ -1930,7 +1930,7 @@ This follows the PS's emergency-aware optimization requirement.
 
 ```text
 ┌──────────────────────────────────────────┐
-│ 🚨 EMERGENCY MODE ACTIVE                │
+│  EMERGENCY MODE ACTIVE                │
 │                                          │
 │ Route priorities changed                 │
 │                                          │
@@ -2319,22 +2319,22 @@ This is extremely important for the pitch.
 ## REAL
 
 ```text
-✓ GIS map
-✓ Database
-✓ Authentication
-✓ Weather API
-✓ Risk calculations
-✓ Route generation
-✓ Risk-aware route ranking
-✓ Supply-at-risk logic
-✓ District isolation calculation
-✓ Field reports
-✓ Photo upload
-✓ GPS coordinates
-✓ Offline storage
-✓ Realtime updates
-✓ Alerts
-✓ Commodity tracking
+[x] GIS map
+[x] Database
+[x] Authentication
+[x] Weather API
+[x] Risk calculations
+[x] Route generation
+[x] Risk-aware route ranking
+[x] Supply-at-risk logic
+[x] District isolation calculation
+[x] Field reports
+[x] Photo upload
+[x] GPS coordinates
+[x] Offline storage
+[x] Realtime updates
+[x] Alerts
+[x] Commodity tracking
 ```
 
 ## SIMULATED
@@ -2358,22 +2358,22 @@ The technology document explicitly recommends simulation for hardware GPS and wa
 This is just as important.
 
 ```text
-❌ Kafka
-❌ Redis
-❌ Neo4j
-❌ Real truck GPS hardware
-❌ AIS-140 hardware integration
-❌ Live IMD API
-❌ Complex IoT architecture
-❌ 3D GIS
-❌ AR navigation
-❌ Blockchain
-❌ Generic chatbot
-❌ Social feed
-❌ Gamification
-❌ Separate citizen mobile app
-❌ Complex multimodal transport engine
-❌ Huge analytics suite
+ Kafka
+ Redis
+ Neo4j
+ Real truck GPS hardware
+ AIS-140 hardware integration
+ Live IMD API
+ Complex IoT architecture
+ 3D GIS
+ AR navigation
+ Blockchain
+ Generic chatbot
+ Social feed
+ Gamification
+ Separate citizen mobile app
+ Complex multimodal transport engine
+ Huge analytics suite
 ```
 
 The technology document explicitly says Kafka/Redis, Neo4j, real IoT GPS hardware, live IMD integration, Cloudinary and live machine-translated critical alerts should **not** be built for the hackathon. 
@@ -2557,7 +2557,7 @@ HIGH RISK
 Output:
 
 ```text
-🚨 MEDICINE SUPPLY AT RISK
+ MEDICINE SUPPLY AT RISK
 ```
 
 ---
@@ -3181,17 +3181,17 @@ That's completely acceptable for a prototype **as long as you clearly label synt
 These should actually work:
 
 ```text
-✓ Weather API
-✓ GIS
-✓ Database
-✓ Route generation
-✓ Risk calculation
-✓ Field report
-✓ GPS coordinate handling
-✓ Supply-at-risk calculation
-✓ Realtime dashboard update
-✓ Alert generation
-✓ Offline → online sync
+[x] Weather API
+[x] GIS
+[x] Database
+[x] Route generation
+[x] Risk calculation
+[x] Field report
+[x] GPS coordinate handling
+[x] Supply-at-risk calculation
+[x] Realtime dashboard update
+[x] Alert generation
+[x] Offline → online sync
 ```
 
 These are the pieces that prove you built a platform rather than a presentation.

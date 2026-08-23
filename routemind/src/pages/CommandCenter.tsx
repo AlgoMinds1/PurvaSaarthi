@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import {
-  ArrowRight, GitBranch
+  ArrowRight, GitBranch, Route, Truck, Package, Building2,
+  AlertTriangle, AlertOctagon, CloudRain, Mountain, Radio, Landmark, Users, Map, Activity
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
@@ -169,9 +170,9 @@ function MiniMap() {
     vehicles.forEach((v) => {
       const truckIcon = L.divIcon({
         className: 'truck-icon-custom',
-        html: `<div style="font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚛</div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
+        html: `<div style="width:24px;height:24px;background:#0284c7;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 2px 4px rgba(0,0,0,0.3)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18.5" r="2.5"/><circle cx="7" cy="18.5" r="2.5"/></svg></div>`,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
       });
       L.marker(v.currentLocation, { icon: truckIcon })
         .bindPopup(`<div style="font-size:12px;color:#0f172a"><b>${v.id}</b><br/>${v.driverName}<br/>${v.destination}</div>`)
@@ -186,18 +187,20 @@ function MiniMap() {
 // ── STATS STRIP ───────────────────────────────────────────────────────────────
 function StatsStrip() {
   const stats = [
-    { icon: '🌧️', val: '87mm', lbl: 'Forecast Rainfall' },
-    { icon: '🏔️', val: 'HIGH', lbl: 'Terrain Risk' },
-    { icon: '📡', val: '24', lbl: 'Roads Monitored' },
-    { icon: '🌉', val: '8', lbl: 'Bridges Active' },
-    { icon: '📦', val: '23', lbl: 'Active Shipments' },
-    { icon: '👤', val: '7', lbl: 'Field Officers' },
+    { icon: <CloudRain size={18} className="text-blue-500" />, val: '87mm', lbl: 'Forecast Rainfall' },
+    { icon: <Mountain size={18} className="text-amber-500" />, val: 'HIGH', lbl: 'Terrain Risk' },
+    { icon: <Radio size={18} className="text-emerald-500" />, val: '24', lbl: 'Roads Monitored' },
+    { icon: <Landmark size={18} className="text-cyan-500" />, val: '8', lbl: 'Bridges Active' },
+    { icon: <Package size={18} className="text-orange-500" />, val: '23', lbl: 'Active Shipments' },
+    { icon: <Users size={18} className="text-purple-500" />, val: '7', lbl: 'Field Officers' },
   ];
   return (
     <div className="grid grid-cols-6 gap-3">
       {stats.map((s) => (
         <div key={s.lbl} className="glass-card px-4 py-3 flex items-center gap-3 border border-slate-200 dark:border-white/[0.07]">
-          <span className="text-xl">{s.icon}</span>
+          <div className="w-9 h-9 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
+            {s.icon}
+          </div>
           <div>
             <div className="text-slate-900 dark:text-white font-bold text-sm">{s.val}</div>
             <div className="text-slate-600 dark:text-slate-400 text-[10px] font-medium">{s.lbl}</div>
@@ -219,12 +222,12 @@ export default function CommandCenter() {
 
       {/* KPI Grid */}
       <div className="grid grid-cols-6 gap-3">
-        <KpiCard label="Roads at Risk" value={7} icon="🛣️" trend="↑ 2" trendUp onClick={() => setView('roads')} />
-        <KpiCard label="Active Vehicles" value={18} icon="🚛" trend="→ 0" onClick={() => setView('vehicles')} />
-        <KpiCard label="Supplies at Risk" value={4} icon="📦" trend="↑ 1" trendUp critical onClick={() => setView('supply')} />
-        <KpiCard label="Districts at Risk" value={3} icon="🏘️" trend="↑ 1" trendUp onClick={() => setView('districts')} />
-        <KpiCard label="Peak Isolation Risk" value="87%" icon="⚠️" trend="↑ 12%" trendUp critical onClick={() => setView('districts')} />
-        <KpiCard label="Critical Alerts" value={unreadCritical} icon="🚨" trend="NEW" trendUp critical onClick={() => setView('alerts')} />
+        <KpiCard label="Roads at Risk" value={7} icon={<Route size={20} className="text-orange-500" />} trend="↑ 2" trendUp onClick={() => setView('roads')} />
+        <KpiCard label="Active Vehicles" value={18} icon={<Truck size={20} className="text-blue-500" />} trend="→ 0" onClick={() => setView('vehicles')} />
+        <KpiCard label="Supplies at Risk" value={4} icon={<Package size={20} className="text-amber-500" />} trend="↑ 1" trendUp critical onClick={() => setView('supply')} />
+        <KpiCard label="Districts at Risk" value={3} icon={<Building2 size={20} className="text-purple-500" />} trend="↑ 1" trendUp onClick={() => setView('districts')} />
+        <KpiCard label="Peak Isolation Risk" value="87%" icon={<AlertTriangle size={20} className="text-red-500" />} trend="↑ 12%" trendUp critical onClick={() => setView('districts')} />
+        <KpiCard label="Critical Alerts" value={unreadCritical} icon={<AlertOctagon size={20} className="text-red-500" />} trend="NEW" trendUp critical onClick={() => setView('alerts')} />
       </div>
 
       {/* Main body: Map + Intel Panel */}
@@ -233,7 +236,10 @@ export default function CommandCenter() {
         {/* Mini Map */}
         <div className="glass-card overflow-hidden flex flex-col border border-slate-200 dark:border-white/[0.07]">
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
-            <span className="text-sm font-bold text-slate-900 dark:text-white">🗺️ Regional Status Map</span>
+            <div className="flex items-center gap-2">
+              <Map size={16} className="text-orange-500" />
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Regional Status Map</span>
+            </div>
             <button
               onClick={() => setView('map')}
               className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-bold cursor-pointer"
@@ -258,7 +264,10 @@ export default function CommandCenter() {
         {/* Critical Intelligence */}
         <div className="flex flex-col gap-3 overflow-y-auto">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-900 dark:text-white">🧠 Critical Intelligence</span>
+            <div className="flex items-center gap-2">
+              <Activity size={16} className="text-orange-500" />
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Critical Intelligence</span>
+            </div>
             <span className="flex items-center gap-1.5 text-[10px] text-emerald-700 dark:text-green-400 font-bold bg-emerald-50 dark:bg-transparent px-2 py-0.5 rounded-full border border-emerald-200 dark:border-transparent">
               <span className="pulse-dot green" /> LIVE
             </span>
@@ -266,7 +275,7 @@ export default function CommandCenter() {
 
           <IntelCard
             severity="CRITICAL"
-            title="🚨 Medicine Shipment #104 at Risk"
+            title="Medicine Shipment #104 at Risk"
             time="14:32"
             onAction={openRerouteModal}
             actionLabel="Reroute Now"
@@ -279,7 +288,7 @@ export default function CommandCenter() {
 
           <IntelCard
             severity="HIGH"
-            title="⚠️ District X — Isolation Risk 87%"
+            title="District X — Isolation Risk 87%"
             time="14:28"
             onAction={() => setView('districts')}
             actionLabel="View District"
@@ -291,7 +300,7 @@ export default function CommandCenter() {
 
           <IntelCard
             severity="HIGH"
-            title="🛣️ Road A — 91% Disruption Probability"
+            title="Road A — 91% Disruption Probability"
             time="14:19"
             onAction={() => setView('roads')}
             actionLabel="Road Details"

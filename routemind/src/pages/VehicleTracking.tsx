@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ChevronRight, Radio } from 'lucide-react';
+import { ChevronRight, Radio, AlertTriangle, Truck } from 'lucide-react';
 import { vehicles } from '../data/mockData';
 import type { Vehicle } from '../types';
 
@@ -27,7 +27,10 @@ function VehicleDetail({ v }: { v: Vehicle }) {
       {/* Telemetry warning */}
       {!v.telemetryFresh && (
         <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-xl p-4 mb-4">
-          <div className="text-orange-700 dark:text-orange-400 font-bold text-xs mb-1.5">⚠ VEHICLE TELEMETRY UNAVAILABLE</div>
+          <div className="text-orange-700 dark:text-orange-400 font-bold text-xs mb-1.5 flex items-center gap-1.5">
+            <AlertTriangle size={13} />
+            <span>VEHICLE TELEMETRY UNAVAILABLE</span>
+          </div>
           <p className="text-slate-700 dark:text-slate-300 text-xs">
             Last GPS ping: <span className="font-semibold text-orange-700 dark:text-orange-300">{v.lastPingAt}</span>
           </p>
@@ -65,7 +68,7 @@ function VehicleDetail({ v }: { v: Vehicle }) {
           <div className="flex justify-between">
             <span>Status</span>
             <span className={v.telemetryFresh ? 'text-emerald-600 dark:text-green-400 font-semibold' : 'text-orange-600 dark:text-orange-400 font-semibold'}>
-              {v.telemetryFresh ? '● FRESH' : '⚠ UNAVAILABLE'}
+              {v.telemetryFresh ? '● FRESH' : '● UNAVAILABLE'}
             </span>
           </div>
           <div className="flex justify-between">
@@ -106,7 +109,9 @@ export default function VehicleTracking() {
                 )}
               >
                 <div className="relative shrink-0">
-                  <span className="text-2xl">🚛</span>
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center text-slate-700 dark:text-slate-300">
+                    <Truck size={18} />
+                  </div>
                   {!v.telemetryFresh && (
                     <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border border-white dark:border-[#090f1c]" />
                   )}
@@ -119,7 +124,7 @@ export default function VehicleTracking() {
                   <div className="text-slate-500 dark:text-slate-400 text-[10px] truncate font-medium">{v.driverName}</div>
                   <div className="text-slate-500 dark:text-slate-400 text-[10px]">→ {v.destination}</div>
                   {!v.telemetryFresh && (
-                    <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-0.5">⚠ TELEMETRY UNAVAILABLE</div>
+                    <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-0.5">TELEMETRY UNAVAILABLE</div>
                   )}
                 </div>
                 <ChevronRight size={14} className={clsx('text-slate-400 dark:text-slate-600', selected?.id === v.id && 'text-orange-500 dark:text-orange-400')} />
@@ -135,7 +140,7 @@ export default function VehicleTracking() {
           <VehicleDetail v={selected} />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600">
-            <div className="text-5xl mb-3">🚛</div>
+            <Truck size={48} className="text-slate-300 dark:text-slate-600 mb-3 stroke-[1.5]" />
             <p className="text-sm font-medium">Select a vehicle to view details</p>
           </div>
         )}

@@ -364,12 +364,12 @@ PART 5 — WHAT TO EXPLICITLY NOT BUILD FOR THE HACKATHON
 Per your own PRD's section 42 and general hackathon-scoping sense:
 
 Component / Feature (DO NOT BUILD)
-❌ Kafka/Redis event streaming — mention only as a "production roadmap" line, never implement for MVP.
-❌ Neo4j — pgRouting on Postgres covers the graph use case without a second database.
-❌ Real IoT/hardware GPS integration — simulate; cite Traccar/AIS-140 as the production path.
-❌ Live IMD API — cite as production integration target; IP whitelisting process is too slow for a hackathon timeline.
-❌ Cloudinary or any third paid-adjacent vendor — client-side compression + Supabase Storage covers it.
-❌ Fully live machine-translated critical alerts — pre-verified templates only, for safety and demo reliability.
+[x] Kafka/Redis event streaming — mention only as a "production roadmap" line, never implement for MVP.
+[x] Neo4j — pgRouting on Postgres covers the graph use case without a second database.
+[x] Real IoT/hardware GPS integration — simulate; cite Traccar/AIS-140 as the production path.
+[x] Live IMD API — cite as production integration target; IP whitelisting process is too slow for a hackathon timeline.
+[x] Cloudinary or any third paid-adjacent vendor — client-side compression + Supabase Storage covers it.
+[x] Fully live machine-translated critical alerts — pre-verified templates only, for safety and demo reliability.
 
 
 PART 6 — OPTIONAL DIFFERENTIATOR FEATURES (not required by PS, cheap to add, strengthen the demo)

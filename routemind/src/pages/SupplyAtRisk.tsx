@@ -1,14 +1,28 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ArrowRight, Clock } from 'lucide-react';
+import { ArrowRight, Clock, Pill, Wheat, Sprout, HardHat, Boxes } from 'lucide-react';
 import { shipments, supplyInventory, districts } from '../data/mockData';
-import { commodityEmoji } from '../lib/utils';
 import { useAppStore } from '../store/useAppStore';
 import type { CommodityType } from '../types';
 
 const PRIORITY_LABELS: Record<number, string> = {
   100: 'CRITICAL', 90: 'HIGH', 60: 'MEDIUM', 40: 'LOW',
 };
+
+function CommodityIcon({ commodity, size = 18 }: { commodity: CommodityType; size?: number }) {
+  switch (commodity) {
+    case 'medicine':
+      return <Pill size={size} className="text-red-500" />;
+    case 'food':
+      return <Wheat size={size} className="text-amber-500" />;
+    case 'agri':
+      return <Sprout size={size} className="text-emerald-500" />;
+    case 'construction':
+      return <HardHat size={size} className="text-blue-500" />;
+    default:
+      return <Boxes size={size} className="text-slate-500" />;
+  }
+}
 
 function SupplyShortageBar({ days }: { days: number }) {
   const max = 7;
@@ -42,7 +56,9 @@ function ShipmentCard({ s }: { s: typeof shipments[0] }) {
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{commodityEmoji(s.commodity)}</span>
+          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
+            <CommodityIcon commodity={s.commodity} size={20} />
+          </div>
           <div>
             <div className="text-slate-900 dark:text-white font-bold text-sm">{s.commodityLabel}</div>
             <div className="text-slate-500 dark:text-slate-400 text-xs mt-0.5 font-medium">Shipment {s.id} · {s.origin}</div>
@@ -152,23 +168,24 @@ export default function SupplyAtRisk() {
         {/* Tabs */}
         <div className="flex items-center gap-2 mb-5">
           {[
-            { id: 'all', label: 'All Commodities' },
-            { id: 'medicine', label: '💊 Medicine' },
-            { id: 'food', label: '🌾 Food' },
-            { id: 'agri', label: '🚜 Agricultural' },
-            { id: 'construction', label: '🏗️ Construction' },
+            { id: 'all', label: 'All Commodities', icon: null },
+            { id: 'medicine', label: 'Medicine', icon: <Pill size={13} className="text-red-500" /> },
+            { id: 'food', label: 'Food', icon: <Wheat size={13} className="text-amber-500" /> },
+            { id: 'agri', label: 'Agricultural', icon: <Sprout size={13} className="text-emerald-500" /> },
+            { id: 'construction', label: 'Construction', icon: <HardHat size={13} className="text-blue-500" /> },
           ].map((t) => (
             <button
               key={t.id}
               onClick={() => setFilter(t.id as any)}
               className={clsx(
-                'px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer',
+                'flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer',
                 filter === t.id
                   ? 'bg-orange-100 text-orange-800 border border-orange-300 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30'
                   : 'text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/[0.06] hover:text-slate-900 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-white/20'
               )}
             >
-              {t.label}
+              {t.icon}
+              <span>{t.label}</span>
             </button>
           ))}
         </div>
@@ -180,14 +197,15 @@ export default function SupplyAtRisk() {
 
       {/* District stock panel */}
       <div className="w-72 shrink-0 bg-white dark:bg-[#090f1c] border-l border-slate-200 dark:border-white/[0.06] p-4 overflow-y-auto">
-        <div className="text-sm font-semibold text-slate-900 dark:text-white mb-4">📊 District Stock Coverage</div>
+        <div className="text-sm font-semibold text-slate-900 dark:text-white mb-4">District Stock Coverage</div>
         <div className="space-y-3">
           {supplyInventory.map((inv) => (
             <div key={`${inv.districtId}-${inv.commodity}`} className="glass-card px-3 py-3 rounded-xl border border-slate-200/80 dark:border-white/[0.07]">
               <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs text-slate-800 dark:text-slate-300 font-semibold">
-                  {commodityEmoji(inv.commodity)} {inv.districtName.split('—')[0].trim()}
-                </span>
+                <div className="flex items-center gap-1.5 text-xs text-slate-800 dark:text-slate-300 font-semibold">
+                  <CommodityIcon commodity={inv.commodity} size={14} />
+                  <span>{inv.districtName.split('—')[0].trim()}</span>
+                </div>
                 <span className={clsx(
                   'text-[10px] font-bold',
                   inv.risk === 'CRITICAL' ? 'text-red-600 dark:text-red-400' :

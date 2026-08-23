@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ChevronRight, Info } from 'lucide-react';
+import { ChevronRight, Info, AlertTriangle, CloudRain, Mountain, Gauge, Landmark, Check, Route } from 'lucide-react';
 import { roads } from '../data/mockData';
 import { statusColor, statusLabel, riskLabel } from '../lib/utils';
 import type { Road } from '../types';
@@ -49,8 +49,8 @@ function RoadDetail({ road }: { road: Road }) {
         <div className="flex items-start justify-between gap-3 mb-2">
           <h3 className="text-slate-900 dark:text-white font-bold text-base leading-snug">{road.name}</h3>
           {road.isSPOF && (
-            <span className="shrink-0 text-[10px] font-bold bg-red-100 text-red-800 border border-red-300 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/25 px-2 py-1 rounded">
-              ⚠ SINGLE POINT OF FAILURE
+            <span className="shrink-0 text-[10px] font-bold bg-red-100 text-red-800 border border-red-300 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/25 px-2 py-1 rounded flex items-center gap-1">
+              <AlertTriangle size={11} /> SINGLE POINT OF FAILURE
             </span>
           )}
         </div>
@@ -85,14 +85,17 @@ function RoadDetail({ road }: { road: Road }) {
         <div className="text-xs font-bold text-slate-800 dark:text-slate-300 mb-3 tracking-wide">CURRENT CONDITIONS</div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Rainfall Forecast', val: `${road.rainfallForecast}mm`, icon: '🌧️', warn: road.rainfallForecast > 70 },
-            { label: 'Terrain Slope', val: `${road.terrainSlope}°`, icon: '🏔️', warn: road.terrainSlope > 25 },
-            { label: 'Historical Landslides', val: road.historicalLandslides.toString(), icon: '⛰️', warn: road.historicalLandslides > 0 },
-            { label: 'Traffic Level', val: road.trafficLevel, icon: '🚦', warn: road.trafficLevel === 'HEAVY' || road.trafficLevel === 'CONGESTED' },
-            { label: 'Bridge Dependency', val: road.bridgeDependency, icon: '🌉', warn: road.bridgeDependency === 'HIGH' || road.bridgeDependency === 'CRITICAL' },
+            { label: 'Rainfall Forecast', val: `${road.rainfallForecast}mm`, icon: <CloudRain size={13} className="text-blue-500" />, warn: road.rainfallForecast > 70 },
+            { label: 'Terrain Slope', val: `${road.terrainSlope}°`, icon: <Mountain size={13} className="text-amber-500" />, warn: road.terrainSlope > 25 },
+            { label: 'Historical Landslides', val: road.historicalLandslides.toString(), icon: <AlertTriangle size={13} className="text-red-500" />, warn: road.historicalLandslides > 0 },
+            { label: 'Traffic Level', val: road.trafficLevel, icon: <Gauge size={13} className="text-purple-500" />, warn: road.trafficLevel === 'HEAVY' || road.trafficLevel === 'CONGESTED' },
+            { label: 'Bridge Dependency', val: road.bridgeDependency, icon: <Landmark size={13} className="text-cyan-500" />, warn: road.bridgeDependency === 'HIGH' || road.bridgeDependency === 'CRITICAL' },
           ].map((c) => (
             <div key={c.label} className="bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent rounded-lg px-3 py-2.5">
-              <div className="text-slate-500 dark:text-slate-400 text-[10px] mb-1">{c.icon} {c.label}</div>
+              <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[10px] mb-1">
+                {c.icon}
+                <span>{c.label}</span>
+              </div>
               <div className={clsx('text-sm font-bold', c.warn ? 'text-orange-600 dark:text-orange-400' : 'text-slate-900 dark:text-white')}>
                 {c.val}
               </div>
@@ -110,7 +113,7 @@ function RoadDetail({ road }: { road: Road }) {
         <div className="space-y-2">
           {road.reasons.map((r, i) => (
             <div key={i} className="flex items-start gap-2 text-xs">
-              <span className="text-orange-500 dark:text-orange-400 font-bold shrink-0 mt-0.5">✓</span>
+              <Check size={12} className="text-orange-500 dark:text-orange-400 font-bold shrink-0 mt-0.5" />
               <span className="text-slate-700 dark:text-slate-300 font-medium">{r}</span>
             </div>
           ))}
@@ -125,7 +128,9 @@ function RoadDetail({ road }: { road: Road }) {
       {/* SPOF warning */}
       {road.isSPOF && road.affectedDistricts && (
         <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4">
-          <div className="text-red-700 dark:text-red-400 font-bold text-xs mb-2">⚠ SINGLE POINT OF FAILURE DETECTED</div>
+          <div className="text-red-700 dark:text-red-400 font-bold text-xs mb-2 flex items-center gap-1.5">
+            <AlertTriangle size={13} /> SINGLE POINT OF FAILURE DETECTED
+          </div>
           <p className="text-slate-700 dark:text-slate-300 text-xs mb-2">
             Failure of this road/corridor would disconnect the following downstream regions:
           </p>
@@ -194,7 +199,7 @@ export default function RoadIntelligence() {
           <RoadDetail road={selected} />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600">
-            <div className="text-5xl mb-3">🛣️</div>
+            <Route size={48} className="text-slate-300 dark:text-slate-600 mb-3 stroke-[1.5]" />
             <p className="text-sm font-medium">Select a road to view intelligence</p>
           </div>
         )}

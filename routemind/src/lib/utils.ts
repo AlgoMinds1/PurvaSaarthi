@@ -45,10 +45,6 @@ export function severityBg(sev: AlertSeverity): string {
   });
 }
 
-export function commodityEmoji(c: string): string {
-  return { medicine: '💊', food: '🌾', agri: '🚜', construction: '🏗️' }[c] ?? '📦';
-}
-
 export function priorityColor(p: number): string {
   if (p >= 90) return 'text-red-400';
   if (p >= 70) return 'text-orange-400';

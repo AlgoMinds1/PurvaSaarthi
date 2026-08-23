@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Building2, Sparkles, Package } from 'lucide-react';
 import { districts, roads, supplyInventory } from '../data/mockData';
 import type { District } from '../types';
 
@@ -105,8 +105,9 @@ function DistrictDetail({ district }: { district: District }) {
       {/* IF Road Fails simulation */}
       {criticalRoad && (
         <div className="glass-card p-4 rounded-xl mb-4 border border-orange-300 dark:border-orange-500/15 bg-orange-50/40 dark:bg-orange-500/[0.03]">
-          <div className="text-xs font-bold text-slate-900 dark:text-slate-300 mb-3">
-            🔮 IF <span className="text-orange-600 dark:text-orange-400">{criticalRoad.name.split('—')[0].trim()}</span> FAILS:
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-slate-300 mb-3">
+            <Sparkles size={14} className="text-orange-500" />
+            <span>SIMULATION: IF <span className="text-orange-600 dark:text-orange-400">{criticalRoad.name.split('—')[0].trim()}</span> FAILS</span>
           </div>
           <div className="space-y-2 text-xs">
             <div className="flex justify-between">
@@ -135,7 +136,10 @@ function DistrictDetail({ district }: { district: District }) {
       {/* Supply inventory */}
       {distInventory.length > 0 && (
         <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.07]">
-          <div className="text-xs font-bold text-slate-900 dark:text-slate-300 mb-3">📦 Commodity Stock</div>
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-300 mb-3">
+            <Package size={14} className="text-orange-500" />
+            <span>Commodity Stock</span>
+          </div>
           <div className="space-y-3">
             {distInventory.map((inv) => (
               <div key={inv.commodity}>
@@ -220,7 +224,7 @@ export default function DistrictIntelligence() {
           <DistrictDetail district={selected} />
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600">
-            <div className="text-5xl mb-3">🏘️</div>
+            <Building2 size={48} className="text-slate-300 dark:text-slate-600 mb-3 stroke-[1.5]" />
             <p className="text-sm font-medium">Select a district to view isolation intelligence</p>
           </div>
         )}

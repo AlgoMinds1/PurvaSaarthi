@@ -1,4 +1,4 @@
-import { X, Clock, CheckCircle } from 'lucide-react';
+import { X, Clock, CheckCircle, Route, Pill, AlertTriangle, Check } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 export function RerouteModal() {
@@ -13,7 +13,10 @@ export function RerouteModal() {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-white/[0.06]">
-          <h3 className="text-slate-900 dark:text-white font-bold text-base">🔀 AI Route Recommendation</h3>
+          <div className="flex items-center gap-2">
+            <Route size={18} className="text-orange-500" />
+            <h3 className="text-slate-900 dark:text-white font-bold text-base">AI Route Recommendation</h3>
+          </div>
           <button onClick={closeRerouteModal} className="text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.05] cursor-pointer">
             <X size={18} />
           </button>
@@ -22,7 +25,10 @@ export function RerouteModal() {
         <div className="p-6 space-y-4">
           {/* Shipment info */}
           <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-xl px-4 py-3">
-            <div className="text-orange-800 dark:text-orange-300 font-bold text-sm">💊 Shipment #104 — Medicine — CRITICAL</div>
+            <div className="flex items-center gap-2 text-orange-800 dark:text-orange-300 font-bold text-sm">
+              <Pill size={16} />
+              <span>Shipment #104 — Medicine — CRITICAL</span>
+            </div>
             <div className="text-slate-600 dark:text-slate-400 text-xs mt-0.5 font-medium">Guwahati Central Depot → District X</div>
           </div>
 
@@ -39,10 +45,10 @@ export function RerouteModal() {
                 <div className="flex justify-between"><span>Normal ETA</span><span className="text-slate-900 dark:text-slate-200">4h 10m</span></div>
                 <div className="flex justify-between"><span>Status</span><span className="text-red-600 dark:text-red-400 font-semibold">HIGH RISK</span></div>
               </div>
-              <div className="space-y-1 text-[10px] text-red-600 dark:text-red-400 font-medium">
-                <div>⚠ Heavy rainfall forecast</div>
-                <div>⚠ Landslide susceptibility</div>
-                <div>⚠ Bridge dependency critical</div>
+              <div className="space-y-1.5 text-[10px] text-red-600 dark:text-red-400 font-medium">
+                <div className="flex items-center gap-1.5"><AlertTriangle size={11} className="shrink-0" /><span>Heavy rainfall forecast</span></div>
+                <div className="flex items-center gap-1.5"><AlertTriangle size={11} className="shrink-0" /><span>Landslide susceptibility</span></div>
+                <div className="flex items-center gap-1.5"><AlertTriangle size={11} className="shrink-0" /><span>Bridge dependency critical</span></div>
               </div>
             </div>
 
@@ -57,10 +63,10 @@ export function RerouteModal() {
                 <div className="flex justify-between"><span>ETA</span><span className="text-slate-900 dark:text-slate-200">6h 10m</span></div>
                 <div className="flex justify-between"><span>Delay</span><span className="text-orange-600 dark:text-orange-400 font-semibold">+2h</span></div>
               </div>
-              <div className="space-y-1 text-[10px] text-emerald-700 dark:text-green-400 font-medium">
-                <div>✓ Lower terrain risk</div>
-                <div>✓ Avoids damaged section</div>
-                <div>✓ Vehicle compatible</div>
+              <div className="space-y-1.5 text-[10px] text-emerald-700 dark:text-green-400 font-medium">
+                <div className="flex items-center gap-1.5"><Check size={11} className="shrink-0 text-emerald-600 dark:text-green-400" /><span>Lower terrain risk</span></div>
+                <div className="flex items-center gap-1.5"><Check size={11} className="shrink-0 text-emerald-600 dark:text-green-400" /><span>Avoids damaged section</span></div>
+                <div className="flex items-center gap-1.5"><Check size={11} className="shrink-0 text-emerald-600 dark:text-green-400" /><span>Vehicle compatible</span></div>
               </div>
             </div>
           </div>
