@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import clsx from 'clsx';
-import { ChevronRight, Info, AlertTriangle, CloudRain, Mountain, Gauge, Landmark, Check, Route } from 'lucide-react';
+import { ChevronRight, Info, AlertTriangle, CloudRain, Mountain, Gauge, Landmark, Check, Route, Search, Zap } from 'lucide-react';
 import { roads } from '../data/mockData';
 import { statusColor, statusLabel, riskLabel } from '../lib/utils';
 import type { Road } from '../types';
@@ -11,20 +11,41 @@ function RoadListItem({ road, selected, onClick }: { road: Road; selected: boole
     <button
       onClick={onClick}
       className={clsx(
-        'w-full text-left px-4 py-3 border-b border-slate-200/80 dark:border-white/[0.05] flex items-center gap-3 transition-all hover:bg-slate-50 dark:hover:bg-white/[0.04] cursor-pointer',
-        selected && 'bg-orange-50/80 dark:bg-white/[0.06] border-l-3 border-l-orange-500 font-medium'
+        'w-full text-left p-3 rounded-xl border transition-all duration-150 flex items-center gap-3 cursor-pointer group',
+        selected 
+          ? 'bg-orange-50/90 dark:bg-orange-500/10 border-orange-300 dark:border-orange-500/30 shadow-xs ring-1 ring-orange-500/20' 
+          : 'bg-white dark:bg-[#0c1424] border-slate-200/80 dark:border-white/[0.06] hover:border-slate-300 dark:hover:border-white/15 hover:shadow-2xs'
       )}
     >
-      <div className="w-2 h-10 rounded-full shrink-0" style={{ background: color }} />
+      <div 
+        className="w-2.5 h-10 rounded-full shrink-0 shadow-xs" 
+        style={{ background: color }} 
+      />
       <div className="flex-1 min-w-0">
-        <div className="text-slate-900 dark:text-white text-xs font-semibold truncate">{road.name}</div>
-        <div className="flex items-center gap-2 mt-1">
-          <span className="text-[10px] font-bold" style={{ color }}>{statusLabel(road.status)}</span>
-          <span className="text-slate-400 text-[10px]">·</span>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">Risk: {road.riskScore}%</span>
+        <div className="flex items-center justify-between gap-1">
+          <div className="text-slate-900 dark:text-white text-xs font-bold truncate group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+            {road.name}
+          </div>
+          {road.isSPOF && (
+            <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/30 shrink-0 uppercase">
+              SPOF
+            </span>
+          )}
+        </div>
+        <div className="flex items-center justify-between mt-1.5 text-[11px]">
+          <span className="font-extrabold" style={{ color }}>{statusLabel(road.status)}</span>
+          <span className="font-semibold text-slate-500 dark:text-slate-400">
+            Risk: <strong className="text-slate-800 dark:text-slate-200">{road.riskScore}%</strong>
+          </span>
         </div>
       </div>
-      <ChevronRight size={14} className={clsx('text-slate-400 dark:text-slate-600 shrink-0', selected && 'text-orange-500 dark:text-orange-400')} />
+      <ChevronRight 
+        size={15} 
+        className={clsx(
+          'shrink-0 transition-transform duration-150 group-hover:translate-x-0.5',
+          selected ? 'text-orange-600 dark:text-orange-400' : 'text-slate-400 dark:text-slate-600'
+        )} 
+      />
     </button>
   );
 }
@@ -235,46 +256,104 @@ function RoadDetail({ road }: { road: Road }) {
 export default function RoadIntelligence() {
   const [selected, setSelected] = useState<Road | null>(roads[0]);
   const [filter, setFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const filtered = filter === 'all' ? roads
-    : filter === 'BLOCKED' ? roads.filter(r => r.status === 'BLOCKED')
-    : filter === 'HIGH_RISK' ? roads.filter(r => r.status === 'HIGH_RISK')
-    : filter === 'CRITICAL' ? roads.filter(r => r.riskScore >= 81)
-    : roads;
+  const filtered = roads.filter((r) => {
+    // Filter type
+    const matchesFilter = filter === 'all' 
+      ? true 
+      : filter === 'BLOCKED' 
+      ? r.status === 'BLOCKED' 
+      : filter === 'HIGH_RISK' 
+      ? r.status === 'HIGH_RISK' 
+      : filter === 'CRITICAL' 
+      ? r.riskScore >= 81 
+      : true;
+
+    // Search query
+    const q = searchQuery.toLowerCase().trim();
+    const matchesSearch = !q || r.name.toLowerCase().includes(q) || (r.affectedDistricts && r.affectedDistricts.some(d => d.toLowerCase().includes(q)));
+
+    return matchesFilter && matchesSearch;
+  });
+
+  const filterTabs = [
+    { id: 'all', label: 'All', count: roads.length },
+    { id: 'CRITICAL', label: 'Critical', count: roads.filter(r => r.riskScore >= 81).length },
+    { id: 'HIGH_RISK', label: 'High Risk', count: roads.filter(r => r.status === 'HIGH_RISK').length },
+    { id: 'BLOCKED', label: 'Blocked', count: roads.filter(r => r.status === 'BLOCKED').length },
+  ];
 
   return (
     <div className="flex h-full min-h-0 transition-colors duration-200">
-      {/* Roads list */}
-      <div className="w-72 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col">
-        <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
-          <span className="text-slate-900 dark:text-white text-sm font-semibold">Road Network</span>
-          <span className="text-slate-500 text-xs">{roads.length} roads</span>
+      {/* Roads list sidebar */}
+      <div className="w-80 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col">
+        
+        {/* Top Header */}
+        <div className="px-4 py-3.5 border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Route size={16} className="text-orange-500" />
+            <span className="text-slate-900 dark:text-white text-sm font-bold">Corridor Network</span>
+          </div>
+          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+            {roads.length} Corridors
+          </span>
         </div>
-        <div className="flex gap-1.5 px-3 py-2 border-b border-slate-200 dark:border-white/[0.05]">
-          {['all', 'CRITICAL', 'HIGH_RISK', 'BLOCKED'].map((f) => (
+
+        {/* Search Bar */}
+        <div className="px-3 pt-3 pb-2">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search highway or corridor..."
+              className="w-full h-8.5 pl-8.5 pr-3 text-xs rounded-xl bg-slate-100/80 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1 px-3 pb-2.5 overflow-x-auto border-b border-slate-200 dark:border-white/[0.05]">
+          {filterTabs.map((t) => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
+              key={t.id}
+              onClick={() => setFilter(t.id)}
               className={clsx(
-                'px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer',
-                filter === f
-                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300 border border-orange-300 dark:border-transparent'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+                'flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 border',
+                filter === t.id
+                  ? 'bg-orange-50 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30'
+                  : 'bg-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 border-transparent hover:bg-slate-100/60 dark:hover:bg-white/[0.04]'
               )}
             >
-              {f === 'all' ? 'All' : f.replace('_', ' ')}
+              <span>{t.label}</span>
+              <span className={clsx(
+                'text-[10px] px-1.5 py-0.2 rounded-full font-bold',
+                filter === t.id ? 'bg-orange-200 dark:bg-orange-500/40 text-orange-950 dark:text-orange-200' : 'bg-slate-200/80 dark:bg-white/10 text-slate-600 dark:text-slate-400'
+              )}>
+                {t.count}
+              </span>
             </button>
           ))}
         </div>
-        <div className="flex-1 overflow-y-auto">
-          {filtered.map((road) => (
-            <RoadListItem
-              key={road.id}
-              road={road}
-              selected={selected?.id === road.id}
-              onClick={() => setSelected(road)}
-            />
-          ))}
+
+        {/* Road List Cards */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          {filtered.length > 0 ? (
+            filtered.map((road) => (
+              <RoadListItem
+                key={road.id}
+                road={road}
+                selected={selected?.id === road.id}
+                onClick={() => setSelected(road)}
+              />
+            ))
+          ) : (
+            <div className="text-center py-8 text-xs text-slate-400 font-medium">
+              No matching corridors found
+            </div>
+          )}
         </div>
       </div>
 
