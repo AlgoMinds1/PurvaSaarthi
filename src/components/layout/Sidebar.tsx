@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore, type AppView } from '../../store/useAppStore';
-import { Logo } from '../ui/Logo';
 
 interface NavItem { id: AppView; label: string; icon: React.ReactNode }
 
@@ -56,7 +55,7 @@ export function Sidebar() {
   return (
     <div
       className={clsx(
-        'relative shrink-0 z-40 transition-all duration-300 ease-in-out select-none',
+        'relative shrink-0 h-full z-40 select-none transition-[width] duration-300 ease-[cubic-bezier(0.2,0,0,1)]',
         sidebarCollapsed ? 'w-[68px]' : 'w-60'
       )}
       onMouseEnter={() => {
@@ -68,40 +67,58 @@ export function Sidebar() {
     >
       <aside
         className={clsx(
-          'flex flex-col h-full bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] transition-all duration-300 ease-in-out',
-          sidebarCollapsed && isHovered
-            ? 'absolute left-0 top-0 bottom-0 w-60 shadow-2xl z-50 border-r border-slate-200/90 dark:border-white/[0.1] bg-white/98 dark:bg-[#090f1c]/98 backdrop-blur-xl'
-            : sidebarCollapsed
-            ? 'w-[68px]'
-            : 'w-60'
+          'flex flex-col h-full bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] transition-[width,box-shadow,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden absolute left-0 top-0 bottom-0 will-change-[width]',
+          isExpanded
+            ? 'w-60 shadow-2xl bg-white/98 dark:bg-[#090f1c]/98 backdrop-blur-xl z-50 border-r border-slate-200/90 dark:border-white/[0.1]'
+            : 'w-[68px] shadow-none z-40'
         )}
       >
         {/* Brand Header */}
-        <div
-          className={clsx(
-            'flex items-center border-b border-slate-200 dark:border-white/[0.06] h-[65px] transition-all shrink-0',
-            !isExpanded ? 'justify-center px-2' : 'justify-between px-4'
-          )}
-        >
+        <div className="flex items-center h-[65px] px-3.5 border-b border-slate-200 dark:border-white/[0.06] shrink-0 justify-between">
           <div
-            className={clsx(
-              'flex items-center min-w-0 overflow-hidden cursor-pointer',
-              !isExpanded && 'justify-center'
-            )}
+            className="flex items-center min-w-0 cursor-pointer overflow-hidden"
             onClick={() => handleNavClick('command')}
             title="PurvaSaarthi Command Center"
           >
-            <Logo size="sm" withText={isExpanded} />
+            <div className="w-[38px] h-[38px] shrink-0 flex items-center justify-center rounded-xl bg-white/5 dark:bg-white/5 p-1">
+              <img
+                src="/logo.svg"
+                alt="PurvaSaarthi Logo"
+                className="w-full h-full object-contain drop-shadow-md"
+              />
+            </div>
+            <div
+              className={clsx(
+                'ml-3 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                isExpanded
+                  ? 'opacity-100 max-w-[140px] translate-x-0'
+                  : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+              )}
+            >
+              <div className="text-slate-900 dark:text-white font-bold text-[15px] leading-tight font-sans tracking-wide">
+                PurvaSaarthi
+              </div>
+              <div className="text-slate-500 dark:text-slate-400 font-medium text-[10px] leading-tight mt-0.5">
+                NER Logistics Intelligence
+              </div>
+            </div>
           </div>
 
-          {isExpanded && (
+          <div
+            className={clsx(
+              'transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] shrink-0 overflow-hidden',
+              isExpanded
+                ? 'opacity-100 max-w-[40px]'
+                : 'opacity-0 max-w-0 pointer-events-none'
+            )}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSidebar();
                 setIsHovered(false);
               }}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer shrink-0"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
               title={sidebarCollapsed ? 'Pin Sidebar Open' : 'Collapse Sidebar'}
               aria-label={sidebarCollapsed ? 'Pin Sidebar Open' : 'Collapse Sidebar'}
             >
@@ -111,16 +128,20 @@ export function Sidebar() {
                 <PanelLeftClose size={18} />
               )}
             </button>
-          )}
+          </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 px-2.5 py-4 space-y-1 overflow-y-auto overflow-x-hidden">
-          {isExpanded && (
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2.5 pb-1 transition-opacity animate-fade-in">
-              Command Modules
-            </div>
-          )}
+        <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto overflow-x-hidden">
+          <div
+            className={clsx(
+              'text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+              isExpanded ? 'opacity-100 max-h-6' : 'opacity-0 max-h-0 pointer-events-none'
+            )}
+          >
+            Command Modules
+          </div>
+
           {navItems.map((item) => {
             const isActive = activeView === item.id;
             return (
@@ -129,8 +150,7 @@ export function Sidebar() {
                 onClick={() => handleNavClick(item.id)}
                 title={!isExpanded ? item.label : undefined}
                 className={clsx(
-                  'w-full flex items-center rounded-xl text-sm font-medium transition-all duration-150 relative text-left cursor-pointer group',
-                  !isExpanded ? 'justify-center p-2.5' : 'gap-3 px-3 py-2',
+                  'w-full flex items-center h-10 px-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative text-left cursor-pointer group',
                   isActive
                     ? 'bg-orange-50 text-orange-600 dark:bg-white/[0.08] dark:text-white font-semibold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:text-slate-900 dark:hover:text-slate-200'
@@ -141,172 +161,174 @@ export function Sidebar() {
                 )}
                 <span
                   className={clsx(
-                    'shrink-0 transition-transform group-hover:scale-105',
+                    'w-5 h-5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105',
                     isActive ? 'text-orange-500 dark:text-orange-400' : ''
                   )}
                 >
                   {item.icon}
                 </span>
-                {isExpanded && (
-                  <span className="truncate flex-1 animate-fade-in">{item.label}</span>
-                )}
-                {item.id === 'alerts' && unreadCount > 0 && (
-                  !isExpanded ? (
-                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white dark:ring-[#090f1c]" />
-                  ) : (
-                    <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-fade-in">
+
+                <div
+                  className={clsx(
+                    'flex items-center justify-between flex-1 min-w-0 ml-3 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                    isExpanded
+                      ? 'opacity-100 max-w-[180px] translate-x-0'
+                      : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+                  )}
+                >
+                  <span className="truncate">{item.label}</span>
+                  {item.id === 'alerts' && unreadCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shrink-0">
                       {unreadCount}
                     </span>
-                  )
+                  )}
+                </div>
+
+                {/* Collapsed Alert Red Dot */}
+                {!isExpanded && item.id === 'alerts' && unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white dark:ring-[#090f1c]" />
                 )}
               </button>
             );
           })}
 
           {/* Mobile Portals */}
-          <div
-            className={clsx(
-              'pt-3 pb-1 border-t border-slate-100 dark:border-white/[0.04] mt-2',
-              !isExpanded && 'flex flex-col items-center gap-1'
-            )}
-          >
-            {isExpanded && (
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2.5 pb-1 animate-fade-in">
-                Mobile PWA Portals
-              </div>
-            )}
+          <div className="pt-3 pb-1 border-t border-slate-100 dark:border-white/[0.04] mt-2 space-y-1">
+            <div
+              className={clsx(
+                'text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                isExpanded ? 'opacity-100 max-h-6' : 'opacity-0 max-h-0 pointer-events-none'
+              )}
+            >
+              Mobile PWA Portals
+            </div>
+
             <button
               onClick={() => handlePwaClick('User')}
               title={!isExpanded ? 'User / Consignee PWA' : undefined}
-              className={clsx(
-                'w-full flex items-center rounded-xl text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors cursor-pointer text-left',
-                !isExpanded ? 'justify-center p-2.5' : 'gap-3 px-3 py-2'
-              )}
+              className="w-full flex items-center h-10 px-2.5 rounded-xl text-xs font-semibold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors cursor-pointer text-left group"
             >
-              <User size={17} className="shrink-0" />
-              {isExpanded && <span className="truncate animate-fade-in">User / Consignee PWA</span>}
+              <span className="w-5 h-5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                <User size={17} />
+              </span>
+              <div
+                className={clsx(
+                  'ml-3 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                  isExpanded
+                    ? 'opacity-100 max-w-[180px] translate-x-0'
+                    : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+                )}
+              >
+                <span className="truncate">User / Consignee PWA</span>
+              </div>
             </button>
+
             <button
               onClick={() => handlePwaClick('Truck Driver')}
               title={!isExpanded ? 'Driver Navigation PWA' : undefined}
-              className={clsx(
-                'w-full flex items-center rounded-xl text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors cursor-pointer text-left',
-                !isExpanded ? 'justify-center p-2.5' : 'gap-3 px-3 py-2'
-              )}
+              className="w-full flex items-center h-10 px-2.5 rounded-xl text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 transition-colors cursor-pointer text-left group"
             >
-              <Truck size={17} className="shrink-0" />
-              {isExpanded && <span className="truncate animate-fade-in">Driver Navigation PWA</span>}
+              <span className="w-5 h-5 flex items-center justify-center shrink-0 transition-transform group-hover:scale-105">
+                <Truck size={17} />
+              </span>
+              <div
+                className={clsx(
+                  'ml-3 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                  isExpanded
+                    ? 'opacity-100 max-w-[180px] translate-x-0'
+                    : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+                )}
+              >
+                <span className="truncate">Driver Navigation PWA</span>
+              </div>
             </button>
           </div>
         </nav>
 
         {/* Emergency Toggle */}
-        <div className="px-2.5 pb-2.5 shrink-0">
-          {!isExpanded ? (
-            <button
-              onClick={toggleEmergency}
-              title={`Emergency Mode: ${emergencyMode ? 'ACTIVE' : 'OFF'}`}
-              className={clsx(
-                'w-full flex items-center justify-center p-2.5 rounded-xl border transition-all duration-300 cursor-pointer',
-                emergencyMode
-                  ? 'bg-red-500 text-white border-red-400 shadow-md animate-pulse'
-                  : 'bg-slate-50 border-slate-200 text-slate-500 dark:bg-white/[0.03] dark:border-white/[0.06] hover:text-slate-900 dark:hover:text-slate-200'
-              )}
-            >
-              <AlertTriangle size={18} />
-            </button>
-          ) : (
-            <button
-              onClick={toggleEmergency}
-              className={clsx(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-300 cursor-pointer animate-fade-in',
-                emergencyMode
-                  ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400'
-                  : 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-white/[0.03] dark:border-white/[0.06] dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              )}
-            >
+        <div className="px-3 pb-3 shrink-0">
+          <button
+            onClick={toggleEmergency}
+            title={!isExpanded ? `Emergency Mode: ${emergencyMode ? 'ACTIVE' : 'OFF'}` : undefined}
+            className={clsx(
+              'w-full flex items-center h-11 px-2.5 rounded-xl border transition-all duration-300 cursor-pointer',
+              emergencyMode
+                ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-400 shadow-xs'
+                : 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-white/[0.03] dark:border-white/[0.06] dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            )}
+          >
+            <span className="w-5 h-5 flex items-center justify-center shrink-0">
               <AlertTriangle
-                size={16}
-                className={emergencyMode ? 'text-red-500 dark:text-red-400' : 'text-slate-500'}
+                size={17}
+                className={emergencyMode ? 'text-red-500 dark:text-red-400 animate-pulse' : 'text-slate-500'}
               />
-              <div className="flex-1 text-left min-w-0">
-                <div className="text-xs font-semibold truncate">Emergency Mode</div>
-                <div className="text-[10px] opacity-75">{emergencyMode ? 'ACTIVE' : 'OFF'}</div>
+            </span>
+
+            <div
+              className={clsx(
+                'flex items-center justify-between flex-1 min-w-0 ml-3 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                isExpanded
+                  ? 'opacity-100 max-w-[180px] translate-x-0'
+                  : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+              )}
+            >
+              <div className="text-left min-w-0">
+                <div className="text-xs font-semibold truncate leading-tight">Emergency Mode</div>
+                <div className="text-[10px] opacity-75 leading-tight">{emergencyMode ? 'ACTIVE' : 'OFF'}</div>
               </div>
-              {/* Toggle switch */}
               <div
                 className={clsx(
-                  'relative w-8 h-4.5 rounded-full transition-colors duration-300 shrink-0',
+                  'relative w-7 h-4 rounded-full transition-colors duration-300 shrink-0 ml-2',
                   emergencyMode ? 'bg-red-500' : 'bg-slate-300 dark:bg-white/15'
                 )}
               >
                 <div
                   className={clsx(
-                    'absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full shadow transition-transform duration-300',
+                    'absolute top-0.5 w-3 h-3 bg-white rounded-full shadow transition-transform duration-300',
                     emergencyMode ? 'translate-x-3.5' : 'translate-x-0.5'
                   )}
                 />
               </div>
-            </button>
-          )}
+            </div>
+          </button>
         </div>
 
-        {/* User / Logout pill */}
-        <div className="px-2.5 pb-3.5 border-t border-slate-200 dark:border-white/[0.06] pt-3 shrink-0">
-          {!isExpanded ? (
-            <div className="flex flex-col items-center gap-2">
-              <div
-                className={clsx(
-                  'w-8 h-8 rounded-full flex items-center justify-center shadow-xs text-white shrink-0 cursor-pointer',
-                  userRole === 'Truck Driver'
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
-                    : userRole === 'User'
-                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                    : 'bg-gradient-to-br from-orange-400 to-red-500'
-                )}
-                title={`${userRole} (Command Authority)`}
-              >
-                {userRole === 'Truck Driver' ? (
-                  <Truck size={15} />
-                ) : userRole === 'User' ? (
-                  <User size={15} />
-                ) : (
-                  <Shield size={15} />
-                )}
-              </div>
-              <button
-                onClick={logout}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-colors cursor-pointer"
-                title="Logout"
-              >
-                <LogOut size={15} />
-              </button>
+        {/* User Profile / Logout pill */}
+        <div className="px-3 pb-3.5 border-t border-slate-200 dark:border-white/[0.06] pt-3 shrink-0">
+          <div className="flex items-center h-10 px-2 rounded-xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent">
+            <div
+              className={clsx(
+                'w-7 h-7 rounded-full flex items-center justify-center shadow-xs text-white shrink-0 cursor-pointer',
+                userRole === 'Truck Driver'
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
+                  : userRole === 'User'
+                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                  : 'bg-gradient-to-br from-orange-400 to-red-500'
+              )}
+              title={`${userRole} (Command Authority)`}
+            >
+              {userRole === 'Truck Driver' ? (
+                <Truck size={14} />
+              ) : userRole === 'User' ? (
+                <User size={14} />
+              ) : (
+                <Shield size={14} />
+              )}
             </div>
-          ) : (
-            <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent animate-fade-in">
-              <div
-                className={clsx(
-                  'w-7 h-7 rounded-full flex items-center justify-center shadow-xs text-white shrink-0',
-                  userRole === 'Truck Driver'
-                    ? 'bg-gradient-to-br from-emerald-500 to-teal-600'
-                    : userRole === 'User'
-                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                    : 'bg-gradient-to-br from-orange-400 to-red-500'
-                )}
-              >
-                {userRole === 'Truck Driver' ? (
-                  <Truck size={14} />
-                ) : userRole === 'User' ? (
-                  <User size={14} />
-                ) : (
-                  <Shield size={14} />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-slate-900 dark:text-white text-xs font-semibold truncate">
+
+            <div
+              className={clsx(
+                'flex items-center justify-between flex-1 min-w-0 ml-2.5 transition-all duration-300 ease-[cubic-bezier(0.2,0,0,1)] overflow-hidden whitespace-nowrap',
+                isExpanded
+                  ? 'opacity-100 max-w-[180px] translate-x-0'
+                  : 'opacity-0 max-w-0 -translate-x-3 pointer-events-none'
+              )}
+            >
+              <div className="flex-1 min-w-0 pr-1">
+                <div className="text-slate-900 dark:text-white text-xs font-semibold truncate leading-tight">
                   {userRole}
                 </div>
-                <div className="text-slate-500 dark:text-slate-400 text-[10px] truncate">
+                <div className="text-slate-500 dark:text-slate-400 text-[10px] truncate leading-tight">
                   {userRole === 'Truck Driver'
                     ? 'Assigned: TRK-204'
                     : userRole === 'User'
@@ -316,13 +338,13 @@ export function Sidebar() {
               </div>
               <button
                 onClick={logout}
-                className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors p-1 cursor-pointer"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors cursor-pointer shrink-0"
                 title="Logout"
               >
                 <LogOut size={14} />
               </button>
             </div>
-          )}
+          </div>
         </div>
       </aside>
     </div>
