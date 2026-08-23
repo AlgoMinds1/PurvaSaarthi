@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Shield, Truck, Building2, AlertTriangle, ArrowRight, Radio } from 'lucide-react';
+import { Shield, Truck, Building2, AlertTriangle, ArrowRight, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
 
@@ -11,7 +11,7 @@ const roles = [
 ];
 
 export default function LoginPage() {
-  const { login } = useAppStore();
+  const { login, theme, toggleTheme } = useAppStore();
   const [selectedRole, setSelectedRole] = useState('Admin');
   const [loading, setLoading] = useState(false);
 
@@ -20,33 +20,53 @@ export default function LoginPage() {
     setTimeout(() => {
       login(selectedRole);
       setLoading(false);
-    }, 900);
+    }, 700);
   };
 
   return (
-    <div className="min-h-screen bg-[#070d16] flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+
+      {/* Top right theme toggle */}
+      <div className="absolute top-6 right-6 z-20">
+        <button
+          onClick={toggleTheme}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-md hover:scale-105 transition-all"
+        >
+          {theme === 'dark' ? (
+            <>
+              <Sun size={14} className="text-amber-400" />
+              <span>Light Mode</span>
+            </>
+          ) : (
+            <>
+              <Moon size={14} className="text-indigo-600" />
+              <span>Dark Mode</span>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Background gradient blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-orange-600/[0.06] rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-red-600/[0.05] rounded-full blur-[100px]" />
-        <div className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-blue-600/[0.04] rounded-full blur-[80px]" />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-orange-500/[0.08] dark:bg-orange-600/[0.06] rounded-full blur-[100px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-red-500/[0.06] dark:bg-red-600/[0.05] rounded-full blur-[100px]" />
+        <div className="absolute top-1/3 right-1/3 w-[300px] h-[300px] bg-blue-500/[0.05] dark:bg-blue-600/[0.04] rounded-full blur-[80px]" />
         {/* Grid lines */}
-        <div className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.03]"
+          style={{ backgroundImage: 'linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)', backgroundSize: '40px 40px' }}
         />
       </div>
 
-      <div className="relative w-full max-w-md px-4">
+      <div className="relative w-full max-w-md px-4 py-8">
 
         {/* Brand */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-            <svg viewBox="0 0 40 40" fill="none" className="w-full h-full drop-shadow-2xl">
+            <svg viewBox="0 0 40 40" fill="none" className="w-full h-full drop-shadow-xl">
               <path d="M20 4L34 12V28L20 36L6 28V12L20 4Z"
-                fill="url(#loginGrad)" stroke="rgba(255,255,255,0.15)" strokeWidth="1"/>
-              <path d="M20 10L28 14.5V23.5L20 28L12 23.5V14.5L20 10Z" fill="rgba(255,255,255,0.1)"/>
-              <circle cx="20" cy="19" r="4" fill="white" fillOpacity="0.9"/>
+                fill="url(#loginGrad)" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
+              <path d="M20 10L28 14.5V23.5L20 28L12 23.5V14.5L20 10Z" fill="rgba(255,255,255,0.15)"/>
+              <circle cx="20" cy="19" r="4" fill="white" fillOpacity="0.95"/>
               <defs>
                 <linearGradient id="loginGrad" x1="6" y1="4" x2="34" y2="36">
                   <stop offset="0%" stopColor="#f97316"/>
@@ -55,42 +75,42 @@ export default function LoginPage() {
               </defs>
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">RouteMind</h1>
-          <p className="text-slate-500 text-sm mt-1.5 leading-relaxed">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">RouteMind</h1>
+          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1.5 leading-relaxed font-medium">
             NER Logistics Resilience & Cascade Intelligence
           </p>
         </div>
 
         {/* Login card */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-7 backdrop-blur-sm">
+        <div className="bg-white/90 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08] rounded-2xl p-7 shadow-xl dark:shadow-2xl backdrop-blur-md">
 
           <div className="mb-5">
-            <h2 className="text-white font-semibold text-lg">Sign In</h2>
-            <p className="text-slate-500 text-sm mt-0.5">Access the Operations Platform</p>
+            <h2 className="text-slate-900 dark:text-white font-semibold text-lg">Sign In</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Access the Operations Platform</p>
           </div>
 
           <div className="space-y-4 mb-5">
             <div>
-              <label className="block text-slate-400 text-xs font-medium mb-1.5">Email Address</label>
+              <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1.5">Email Address</label>
               <input
                 type="email"
                 defaultValue="admin@ner.gov.in"
-                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/[0.07] transition-all"
+                className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
               />
             </div>
             <div>
-              <label className="block text-slate-400 text-xs font-medium mb-1.5">Password</label>
+              <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-1.5">Password</label>
               <input
                 type="password"
                 defaultValue="password"
-                className="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/50 focus:bg-white/[0.07] transition-all"
+                className="w-full bg-slate-50 dark:bg-white/[0.05] border border-slate-300 dark:border-white/[0.08] rounded-lg px-4 py-2.5 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
               />
             </div>
           </div>
 
           {/* Role selector */}
           <div className="mb-6">
-            <label className="block text-slate-400 text-xs font-medium mb-2">Access Role</label>
+            <label className="block text-slate-700 dark:text-slate-400 text-xs font-semibold mb-2">Access Role</label>
             <div className="grid grid-cols-2 gap-2">
               {roles.map((role) => (
                 <button
@@ -99,16 +119,16 @@ export default function LoginPage() {
                   className={clsx(
                     'flex items-center gap-2 px-3 py-2.5 rounded-lg border text-left transition-all duration-150',
                     selectedRole === role.id
-                      ? 'bg-orange-500/10 border-orange-500/30 text-orange-300'
-                      : 'bg-white/[0.03] border-white/[0.06] text-slate-400 hover:border-white/20 hover:text-slate-300'
+                      ? 'bg-orange-50 border-orange-300 text-orange-700 dark:bg-orange-500/10 dark:border-orange-500/30 dark:text-orange-300 shadow-sm'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 dark:bg-white/[0.03] dark:border-white/[0.06] dark:text-slate-400 hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-slate-200'
                   )}
                 >
-                  <span className={selectedRole === role.id ? 'text-orange-400' : 'text-slate-500'}>
+                  <span className={selectedRole === role.id ? 'text-orange-600 dark:text-orange-400' : 'text-slate-500'}>
                     {role.icon}
                   </span>
                   <div>
                     <div className="text-xs font-semibold leading-tight">{role.id}</div>
-                    <div className="text-[10px] opacity-60 leading-tight mt-0.5">{role.desc}</div>
+                    <div className="text-[10px] opacity-75 leading-tight mt-0.5">{role.desc}</div>
                   </div>
                 </button>
               ))}
@@ -118,7 +138,7 @@ export default function LoginPage() {
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white transition-all duration-200 disabled:opacity-60"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-60 cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #f97316, #ef4444)' }}
           >
             {loading ? (
@@ -133,19 +153,19 @@ export default function LoginPage() {
         </div>
 
         {/* Footer stats */}
-        <div className="mt-5 text-center">
-          <div className="flex items-center justify-center gap-1.5 mb-2">
+        <div className="mt-6 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
             <span className="pulse-dot green" />
-            <span className="text-green-400 text-xs font-medium">All systems operational</span>
+            <span className="text-emerald-700 dark:text-green-400 text-xs font-semibold">All systems operational</span>
           </div>
-          <div className="flex items-center justify-center gap-3 text-slate-600 text-xs">
+          <div className="flex items-center justify-center gap-3 text-slate-500 dark:text-slate-500 text-xs">
             <span>24 Roads Monitored</span>
             <span>•</span>
             <span>18 Active Vehicles</span>
             <span>•</span>
             <span>12 Districts</span>
           </div>
-          <p className="text-slate-700 text-[10px] mt-3">
+          <p className="text-slate-400 dark:text-slate-600 text-[10px] mt-3">
             RouteMind MVP — Hackathon Prototype • NER Logistics Intelligence
           </p>
         </div>

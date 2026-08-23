@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import {
-  TrendingUp, Truck, Package, Building2,
-  AlertTriangle, Bell, ArrowRight, GitBranch
+  ArrowRight, GitBranch
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../store/useAppStore';
-import { shipments, districts, vehicles, roads } from '../data/mockData';
-import { riskLabel } from '../lib/utils';
+import { shipments, roads, vehicles } from '../data/mockData';
 import L from 'leaflet';
 import { statusColor } from '../lib/utils';
 
@@ -21,29 +19,29 @@ function KpiCard({
     <button
       onClick={onClick}
       className={clsx(
-        'glass-card p-5 text-left flex items-start gap-4 hover:bg-white/[0.05] transition-all duration-200 group cursor-pointer',
-        critical && 'border-orange-500/20 bg-orange-500/[0.04] hover:bg-orange-500/[0.07]'
+        'glass-card p-4.5 text-left flex items-start gap-3.5 hover:bg-slate-50/80 dark:hover:bg-white/[0.05] transition-all duration-200 group cursor-pointer border border-slate-200/80 dark:border-white/[0.07]',
+        critical && 'border-orange-300 dark:border-orange-500/20 bg-orange-50/50 dark:bg-orange-500/[0.04]'
       )}
     >
       <div className={clsx(
-        'w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0',
-        critical ? 'bg-orange-500/15' : 'bg-white/[0.06]'
+        'w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-sm',
+        critical ? 'bg-orange-100 dark:bg-orange-500/15' : 'bg-slate-100 dark:bg-white/[0.06]'
       )}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
         <div className={clsx(
-          'text-2xl font-bold leading-none mb-1',
-          critical ? 'gradient-text-orange' : 'text-white'
+          'text-2xl font-bold leading-none mb-1.5',
+          critical ? 'gradient-text-orange' : 'text-slate-900 dark:text-white'
         )}>
           {value}
         </div>
-        <div className="text-slate-400 text-xs font-medium">{label}</div>
+        <div className="text-slate-600 dark:text-slate-400 text-xs font-medium">{label}</div>
       </div>
       {trend && (
         <div className={clsx(
-          'text-xs font-semibold px-2 py-1 rounded-md shrink-0',
-          trendUp ? 'bg-red-500/10 text-red-400' : 'bg-slate-500/10 text-slate-400'
+          'text-xs font-semibold px-2 py-0.5 rounded-md shrink-0',
+          trendUp ? 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400' : 'bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400'
         )}>
           {trend}
         </div>
@@ -61,29 +59,29 @@ function IntelCard({
   time: string; onAction?: () => void; actionLabel?: string;
 }) {
   const colors = {
-    EMERGENCY: 'border-red-500/25 bg-red-500/[0.05]',
-    CRITICAL: 'border-orange-500/25 bg-orange-500/[0.05]',
-    HIGH: 'border-yellow-500/20 bg-yellow-500/[0.04]',
+    EMERGENCY: 'border-red-200 bg-red-50/60 dark:border-red-500/25 dark:bg-red-500/[0.05]',
+    CRITICAL: 'border-orange-200 bg-orange-50/60 dark:border-orange-500/25 dark:bg-orange-500/[0.05]',
+    HIGH: 'border-yellow-200 bg-yellow-50/60 dark:border-yellow-500/20 dark:bg-yellow-500/[0.04]',
   };
   const badgeColors = {
-    EMERGENCY: 'bg-red-500/20 text-red-400 border border-red-500/30',
-    CRITICAL: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-    HIGH: 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20',
+    EMERGENCY: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-500/20 dark:text-red-400 dark:border-red-500/30',
+    CRITICAL: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-500/20 dark:text-orange-400 dark:border-orange-500/30',
+    HIGH: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-500/15 dark:text-yellow-400 dark:border-yellow-500/20',
   };
   return (
-    <div className={clsx('rounded-xl border p-4 animate-fade-up', colors[severity])}>
+    <div className={clsx('rounded-xl border p-4 animate-fade-up shadow-sm', colors[severity])}>
       <div className="flex items-start justify-between gap-2 mb-2.5">
-        <span className={clsx('text-[10px] font-bold px-2 py-1 rounded', badgeColors[severity])}>
+        <span className={clsx('text-[10px] font-bold px-2 py-0.5 rounded border', badgeColors[severity])}>
           {severity}
         </span>
-        <span className="text-slate-500 text-[11px] font-mono">{time}</span>
+        <span className="text-slate-500 dark:text-slate-400 text-[11px] font-mono">{time}</span>
       </div>
-      <div className="text-white text-sm font-semibold mb-3 leading-snug">{title}</div>
+      <div className="text-slate-900 dark:text-white text-sm font-semibold mb-3 leading-snug">{title}</div>
       <div className="space-y-1.5 mb-3">{children}</div>
       {onAction && (
         <button
           onClick={onAction}
-          className="text-xs font-semibold text-orange-400 hover:text-orange-300 flex items-center gap-1 transition-colors"
+          className="text-xs font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors cursor-pointer"
         >
           {actionLabel ?? 'View Details'} <ArrowRight size={12} />
         </button>
@@ -95,8 +93,8 @@ function IntelCard({
 function IntelRow({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
     <div className="flex items-center justify-between text-xs">
-      <span className="text-slate-400">{label}</span>
-      <span className={clsx('font-semibold', color ?? 'text-slate-200')}>{value}</span>
+      <span className="text-slate-600 dark:text-slate-400">{label}</span>
+      <span className={clsx('font-semibold', color ?? 'text-slate-900 dark:text-slate-200')}>{value}</span>
     </div>
   );
 }
@@ -110,27 +108,27 @@ function CascadeChain() {
     { label: 'District X', sub: '1.7 DAYS', danger: true, critical: true },
   ];
   return (
-    <div className="glass-card p-4 rounded-xl">
+    <div className="glass-card p-4 rounded-xl border border-slate-200/80 dark:border-white/[0.07]">
       <div className="flex items-center gap-2 mb-3">
-        <GitBranch size={14} className="text-orange-400" />
-        <span className="text-xs font-bold text-slate-300 tracking-wide">CASCADE IMPACT CHAIN</span>
+        <GitBranch size={14} className="text-orange-500 dark:text-orange-400" />
+        <span className="text-xs font-bold text-slate-800 dark:text-slate-300 tracking-wide">CASCADE IMPACT CHAIN</span>
       </div>
-      <div className="flex items-center gap-1 flex-wrap">
+      <div className="flex items-center gap-1.5 flex-wrap">
         {steps.map((s, i) => (
-          <div key={s.label} className="flex items-center gap-1">
+          <div key={s.label} className="flex items-center gap-1.5">
             <div className={clsx(
-              'px-2.5 py-1.5 rounded-lg border text-center',
+              'px-2.5 py-1.5 rounded-lg border text-center shadow-xs',
               s.critical
-                ? 'bg-red-500/15 border-red-500/30'
-                : 'bg-orange-500/10 border-orange-500/20'
+                ? 'bg-red-50 border-red-200 dark:bg-red-500/15 dark:border-red-500/30'
+                : 'bg-orange-50 border-orange-200 dark:bg-orange-500/10 dark:border-orange-500/20'
             )}>
-              <div className={clsx('text-[11px] font-bold', s.critical ? 'text-red-400' : 'text-orange-300')}>
+              <div className={clsx('text-[11px] font-bold', s.critical ? 'text-red-700 dark:text-red-400' : 'text-orange-700 dark:text-orange-300')}>
                 {s.label}
               </div>
-              <div className="text-[9px] text-slate-500 mt-0.5">{s.sub}</div>
+              <div className="text-[9px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium">{s.sub}</div>
             </div>
             {i < steps.length - 1 && (
-              <span className="text-orange-600 text-xs font-bold">→</span>
+              <span className="text-orange-500 dark:text-orange-400 text-xs font-bold">→</span>
             )}
           </div>
         ))}
@@ -164,25 +162,25 @@ function MiniMap() {
         weight: r.status === 'BLOCKED' ? 4 : 3,
         opacity: 0.85,
         dashArray: r.status === 'UNKNOWN' ? '6,4' : undefined,
-      }).bindPopup(`<div style="font-family:Inter,sans-serif"><b>${r.name}</b><br/>Status: <b style="color:${statusColor(r.status)}">${r.status}</b><br/>Risk: ${r.riskScore}%</div>`)
+      }).bindPopup(`<div style="font-family:Inter,sans-serif;font-size:12px"><b>${r.name}</b><br/>Status: <b style="color:${statusColor(r.status)}">${r.status}</b><br/>Risk: ${r.riskScore}%</div>`)
         .addTo(map);
     });
     // Draw vehicles
     vehicles.forEach((v) => {
       const truckIcon = L.divIcon({
         className: 'truck-icon-custom',
-        html: `<div style="font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))">🚛</div>`,
+        html: `<div style="font-size:20px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">🚛</div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 14],
       });
       L.marker(v.currentLocation, { icon: truckIcon })
-        .bindPopup(`<div style="font-family:Inter,sans-serif"><b>${v.id}</b><br/>${v.driverName}<br/>${v.destination}</div>`)
+        .bindPopup(`<div style="font-family:Inter,sans-serif;font-size:12px"><b>${v.id}</b><br/>${v.driverName}<br/>${v.destination}</div>`)
         .addTo(map);
     });
     mapInstance.current = map;
   }, []);
 
-  return <div ref={mapRef} className="w-full h-full rounded-lg" />;
+  return <div ref={mapRef} className="w-full h-full rounded-b-xl" />;
 }
 
 // ── STATS STRIP ───────────────────────────────────────────────────────────────
@@ -198,11 +196,11 @@ function StatsStrip() {
   return (
     <div className="grid grid-cols-6 gap-3">
       {stats.map((s) => (
-        <div key={s.lbl} className="glass-card px-4 py-3 flex items-center gap-3">
+        <div key={s.lbl} className="glass-card px-4 py-3 flex items-center gap-3 border border-slate-200/80 dark:border-white/[0.07]">
           <span className="text-xl">{s.icon}</span>
           <div>
-            <div className="text-white font-bold text-sm">{s.val}</div>
-            <div className="text-slate-500 text-[10px]">{s.lbl}</div>
+            <div className="text-slate-900 dark:text-white font-bold text-sm">{s.val}</div>
+            <div className="text-slate-500 dark:text-slate-400 text-[10px]">{s.lbl}</div>
           </div>
         </div>
       ))}
@@ -217,7 +215,7 @@ export default function CommandCenter() {
   const unreadCritical = shipments.filter(s => s.status === 'AT_RISK').length;
 
   return (
-    <div className="flex flex-col gap-5 h-full overflow-y-auto p-6">
+    <div className="flex flex-col gap-5 h-full overflow-y-auto p-6 transition-colors duration-200">
 
       {/* KPI Grid */}
       <div className="grid grid-cols-6 gap-3">
@@ -233,12 +231,12 @@ export default function CommandCenter() {
       <div className="grid grid-cols-[1fr_380px] gap-5 flex-1 min-h-0" style={{ minHeight: '420px' }}>
 
         {/* Mini Map */}
-        <div className="glass-card overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-            <span className="text-sm font-semibold text-white">🗺️ Regional Status Map</span>
+        <div className="glass-card overflow-hidden flex flex-col border border-slate-200/80 dark:border-white/[0.07]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">🗺️ Regional Status Map</span>
             <button
               onClick={() => setView('map')}
-              className="text-xs text-orange-400 hover:text-orange-300 flex items-center gap-1 transition-colors"
+              className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center gap-1 transition-colors font-medium cursor-pointer"
             >
               Full Map <ArrowRight size={12} />
             </button>
@@ -247,7 +245,7 @@ export default function CommandCenter() {
             <MiniMap />
           </div>
           {/* Legend */}
-          <div className="flex items-center gap-4 px-4 py-2 border-t border-white/[0.05] text-[10px] text-slate-400">
+          <div className="flex items-center gap-4 px-4 py-2 border-t border-slate-200 dark:border-white/[0.05] text-[10px] text-slate-600 dark:text-slate-400 bg-white/50 dark:bg-transparent">
             {[['#22c55e', 'Open'], ['#eab308', 'Degraded'], ['#f97316', 'High Risk'], ['#ef4444', 'Blocked'], ['#6b7280', 'Unknown']].map(([c, l]) => (
               <span key={l} className="flex items-center gap-1">
                 <span className="inline-block w-6 h-1.5 rounded-full" style={{ background: c }} />
@@ -260,8 +258,8 @@ export default function CommandCenter() {
         {/* Critical Intelligence */}
         <div className="flex flex-col gap-3 overflow-y-auto">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">🧠 Critical Intelligence</span>
-            <span className="flex items-center gap-1.5 text-[10px] text-green-400 font-semibold">
+            <span className="text-sm font-semibold text-slate-900 dark:text-white">🧠 Critical Intelligence</span>
+            <span className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-green-400 font-semibold bg-emerald-50 dark:bg-transparent px-2 py-0.5 rounded-full border border-emerald-200 dark:border-transparent">
               <span className="pulse-dot green" /> LIVE
             </span>
           </div>
@@ -273,10 +271,10 @@ export default function CommandCenter() {
             onAction={openRerouteModal}
             actionLabel="Reroute Now"
           >
-            <IntelRow label="Route Risk" value="91%" color="text-red-400" />
+            <IntelRow label="Route Risk" value="91%" color="text-red-600 dark:text-red-400" />
             <IntelRow label="Current Stock" value="1.7 days" />
-            <IntelRow label="Predicted Delay" value="+11 hours" color="text-orange-400" />
-            <IntelRow label="Last Safe Action" value="Before 4:30 PM" color="text-yellow-400" />
+            <IntelRow label="Predicted Delay" value="+11 hours" color="text-orange-600 dark:text-orange-400" />
+            <IntelRow label="Last Safe Action" value="Before 4:30 PM" color="text-yellow-700 dark:text-yellow-400" />
           </IntelCard>
 
           <IntelCard
@@ -286,7 +284,7 @@ export default function CommandCenter() {
             onAction={() => setView('districts')}
             actionLabel="View District"
           >
-            <IntelRow label="Connectivity" value="72%" color="text-orange-400" />
+            <IntelRow label="Connectivity" value="72%" color="text-orange-600 dark:text-orange-400" />
             <IntelRow label="Alt. Routes" value="2 available" />
             <IntelRow label="Supply Coverage" value="2.8 days" />
           </IntelCard>
@@ -299,8 +297,8 @@ export default function CommandCenter() {
             actionLabel="Road Details"
           >
             <IntelRow label="Rainfall" value="87mm forecast" />
-            <IntelRow label="Terrain Slope" value="32°" color="text-orange-400" />
-            <IntelRow label="Confidence" value="89%" color="text-green-400" />
+            <IntelRow label="Terrain Slope" value="32°" color="text-orange-600 dark:text-orange-400" />
+            <IntelRow label="Confidence" value="89%" color="text-emerald-600 dark:text-green-400" />
           </IntelCard>
 
           <CascadeChain />

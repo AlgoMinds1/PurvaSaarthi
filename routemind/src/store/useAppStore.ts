@@ -11,7 +11,14 @@ export type AppView =
   | 'alerts'
   | 'vehicles';
 
+export type ThemeMode = 'dark' | 'light';
+
 interface AppState {
+  // Theme
+  theme: ThemeMode;
+  toggleTheme: () => void;
+  setTheme: (t: ThemeMode) => void;
+
   // Auth
   isLoggedIn: boolean;
   userRole: string;
@@ -41,7 +48,45 @@ interface AppState {
   closeRerouteModal: () => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
+const getInitialTheme = (): ThemeMode => {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('routemind-theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+  }
+  return 'light'; // Default to light or dual theme
+};
+
+export const useAppStore = create<AppState>((set) => ({
+  theme: getInitialTheme(),
+  toggleTheme: () =>
+    set((s) => {
+      const nextTheme = s.theme === 'dark' ? 'light' : 'dark';
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('routemind-theme', nextTheme);
+        if (nextTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.classList.remove('light');
+        } else {
+          document.documentElement.classList.add('light');
+          document.documentElement.classList.remove('dark');
+        }
+      }
+      return { theme: nextTheme };
+    }),
+  setTheme: (theme) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('routemind-theme', theme);
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    set({ theme });
+  },
+
   isLoggedIn: false,
   userRole: 'Admin',
   login: (role) => set({ isLoggedIn: true, userRole: role }),

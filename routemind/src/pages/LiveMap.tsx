@@ -40,33 +40,32 @@ export default function LiveMap() {
         opacity: 0.9,
         dashArray: r.status === 'UNKNOWN' ? '8,5' : r.status === 'DEGRADED' ? '12,4' : undefined,
       }).bindPopup(
-        `<div style="font-family:Inter,sans-serif;min-width:220px">
+        `<div style="min-width:220px">
           <div style="font-weight:700;font-size:13px;margin-bottom:8px">${r.name}</div>
           <div style="display:grid;gap:4px;font-size:12px">
             <div style="display:flex;justify-content:space-between">
-              <span style="color:#94a3b8">Status</span>
+              <span style="opacity:0.7">Status</span>
               <span style="font-weight:600;color:${statusColor(r.status)}">${r.status.replace('_',' ')}</span>
             </div>
             <div style="display:flex;justify-content:space-between">
-              <span style="color:#94a3b8">Risk Score</span>
+              <span style="opacity:0.7">Risk Score</span>
               <span style="font-weight:600;color:#f97316">${r.riskScore}%</span>
             </div>
             <div style="display:flex;justify-content:space-between">
-              <span style="color:#94a3b8">Confidence</span>
-              <span style="color:#22c55e">${r.confidence}%</span>
+              <span style="opacity:0.7">Confidence</span>
+              <span style="color:#22c55e;font-weight:600">${r.confidence}%</span>
             </div>
             <div style="display:flex;justify-content:space-between">
-              <span style="color:#94a3b8">Rainfall</span>
+              <span style="opacity:0.7">Rainfall</span>
               <span>${r.rainfallForecast}mm forecast</span>
             </div>
             <div style="display:flex;justify-content:space-between">
-              <span style="color:#94a3b8">Updated</span>
+              <span style="opacity:0.7">Updated</span>
               <span>${r.lastVerified}</span>
             </div>
-            <div style="color:#64748b;font-size:11px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.1)">Source: ${r.source}</div>
+            <div style="opacity:0.6;font-size:11px;margin-top:4px;padding-top:4px;border-top:1px solid rgba(128,128,128,0.2)">Source: ${r.source}</div>
           </div>
-        </div>`,
-        { className: 'custom-popup' }
+        </div>`
       ).addTo(roadsGroup);
     });
 
@@ -75,19 +74,19 @@ export default function LiveMap() {
     bridges.forEach((b) => {
       const bridgeIcon = L.divIcon({
         className: 'truck-icon-custom',
-        html: `<div style="font-size:22px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));cursor:pointer" title="${b.name}">🌉</div>`,
+        html: `<div style="font-size:22px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));cursor:pointer" title="${b.name}">🌉</div>`,
         iconSize: [28, 28], iconAnchor: [14, 14],
       });
       L.marker(b.latlng, { icon: bridgeIcon })
         .bindPopup(
-          `<div style="font-family:Inter,sans-serif;min-width:200px">
+          `<div style="min-width:200px">
             <div style="font-weight:700;font-size:13px;margin-bottom:6px">${b.name}</div>
-            ${b.isSPOF ? '<div style="background:#ef444420;color:#ef4444;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:8px">⚠ SINGLE POINT OF FAILURE</div>' : ''}
+            ${b.isSPOF ? '<div style="background:#ef444420;color:#dc2626;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:8px">⚠ SINGLE POINT OF FAILURE</div>' : ''}
             <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Status</span><span style="color:${statusColor(b.status)};font-weight:600">${b.status}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Criticality</span><span style="color:#f97316;font-weight:600">${b.criticalityScore}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Load Capacity</span><span>${b.loadCapacity}</span></div>
-              ${b.isSPOF ? `<div style="color:#ef4444;font-size:11px;margin-top:4px">Failure affects: ${b.affectedDistricts.join(', ')}</div>` : ''}
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Status</span><span style="color:${statusColor(b.status)};font-weight:600">${b.status}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Criticality</span><span style="color:#f97316;font-weight:600">${b.criticalityScore}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Load Capacity</span><span>${b.loadCapacity}</span></div>
+              ${b.isSPOF ? `<div style="color:#dc2626;font-size:11px;margin-top:4px;font-weight:500">Failure affects: ${b.affectedDistricts.join(', ')}</div>` : ''}
             </div>
           </div>`
         ).addTo(bridgesGroup);
@@ -100,27 +99,28 @@ export default function LiveMap() {
       const distIcon = L.divIcon({
         className: 'truck-icon-custom',
         html: `<div style="
-          background:${riskColor}22;
-          border:2px solid ${riskColor}55;
+          background:${riskColor}28;
+          border:2px solid ${riskColor};
           border-radius:50%;
           width:48px;height:48px;
           display:flex;align-items:center;justify-content:center;
-          font-size:10px;font-weight:700;color:${riskColor};
+          font-size:11px;font-weight:800;color:${riskColor};
           backdrop-filter:blur(4px);
           cursor:pointer;
+          box-shadow:0 2px 8px rgba(0,0,0,0.15);
         ">${d.isolationRisk}%</div>`,
         iconSize: [48, 48], iconAnchor: [24, 24],
       });
       L.marker(d.latlng, { icon: distIcon })
         .bindPopup(
-          `<div style="font-family:Inter,sans-serif;min-width:210px">
+          `<div style="min-width:210px">
             <div style="font-weight:700;font-size:13px;margin-bottom:8px">${d.name}</div>
             <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Connectivity</span><span style="font-weight:600">${d.connectivity}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Isolation Risk</span><span style="font-weight:600;color:${riskColor}">${d.isolationRisk}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Alt. Routes</span><span>${d.alternativeRoutes}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Supply (days)</span><span>${d.supplyDays}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Weather Risk</span><span style="color:#f97316">${d.weatherRisk}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Connectivity</span><span style="font-weight:600">${d.connectivity}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Isolation Risk</span><span style="font-weight:600;color:${riskColor}">${d.isolationRisk}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Alt. Routes</span><span>${d.alternativeRoutes}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Supply (days)</span><span>${d.supplyDays}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Weather Risk</span><span style="color:#f97316;font-weight:600">${d.weatherRisk}</span></div>
             </div>
           </div>`
         ).addTo(districtsGroup);
@@ -133,31 +133,32 @@ export default function LiveMap() {
       const truckIcon = L.divIcon({
         className: 'truck-icon-custom',
         html: `<div style="position:relative;cursor:pointer">
-          <div style="font-size:24px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.6))">🚛</div>
+          <div style="font-size:24px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4))">🚛</div>
           <div style="
             position:absolute;top:-8px;right:-8px;
             background:${riskC};color:white;
             border-radius:50%;width:16px;height:16px;
-            font-size:8px;font-weight:700;
+            font-size:8px;font-weight:800;
             display:flex;align-items:center;justify-content:center;
-            border:1.5px solid #090f1c;
+            border:1.5px solid #ffffff;
+            box-shadow:0 1px 3px rgba(0,0,0,0.3);
           ">${Math.round(v.routeRisk)}</div>
         </div>`,
         iconSize: [36, 36], iconAnchor: [18, 18],
       });
       const marker = L.marker(v.currentLocation, { icon: truckIcon })
         .bindPopup(
-          `<div style="font-family:Inter,sans-serif;min-width:210px">
+          `<div style="min-width:210px">
             <div style="font-weight:700;font-size:13px;margin-bottom:8px">Vehicle ${v.id}</div>
             <div style="font-size:12px;display:grid;gap:4px">
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Driver</span><span>${v.driverName}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Destination</span><span>${v.destination}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Route Risk</span><span style="font-weight:600;color:${riskC}">${v.routeRisk}%</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">ETA</span><span>${v.eta}</span></div>
-              <div style="display:flex;justify-content:space-between"><span style="color:#94a3b8">Delay</span><span style="color:#f97316">${v.delayMinutes > 0 ? '+' + v.delayMinutes + ' min' : 'On time'}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Driver</span><span style="font-weight:500">${v.driverName}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Destination</span><span style="font-weight:500">${v.destination}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Route Risk</span><span style="font-weight:700;color:${riskC}">${v.routeRisk}%</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">ETA</span><span style="font-weight:500">${v.eta}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Delay</span><span style="color:#f97316;font-weight:600">${v.delayMinutes > 0 ? '+' + v.delayMinutes + ' min' : 'On time'}</span></div>
               <div style="display:flex;justify-content:space-between">
-                <span style="color:#94a3b8">GPS Status</span>
-                <span style="color:${v.telemetryFresh ? '#22c55e' : '#f97316'}">${v.telemetryFresh ? '● Fresh — ' + v.lastPingAt : '⚠ TELEMETRY UNAVAILABLE'}</span>
+                <span style="opacity:0.7">GPS Status</span>
+                <span style="color:${v.telemetryFresh ? '#16a34a' : '#f97316'};font-weight:600">${v.telemetryFresh ? '● Fresh — ' + v.lastPingAt : '⚠ TELEMETRY UNAVAILABLE'}</span>
               </div>
             </div>
           </div>`
@@ -197,13 +198,13 @@ export default function LiveMap() {
   ];
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex h-full min-h-0 transition-colors duration-200">
       {/* Controls */}
-      <div className="w-52 shrink-0 bg-[#090f1c] border-r border-white/[0.06] flex flex-col overflow-y-auto">
-        <div className="px-4 py-3 border-b border-white/[0.06]">
-          <h3 className="text-white text-sm font-semibold">Map Layers</h3>
+      <div className="w-52 shrink-0 bg-white dark:bg-[#090f1c] border-r border-slate-200 dark:border-white/[0.06] flex flex-col overflow-y-auto">
+        <div className="px-4 py-3 border-b border-slate-200 dark:border-white/[0.06]">
+          <h3 className="text-slate-900 dark:text-white text-sm font-semibold">Map Layers</h3>
         </div>
-        <div className="p-4 space-y-2">
+        <div className="p-4 space-y-2.5">
           {layerDefs.map((l) => (
             <label key={l.id} className="flex items-center gap-3 cursor-pointer group">
               <input
@@ -214,11 +215,11 @@ export default function LiveMap() {
               />
               <div className={clsx(
                 'w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all',
-                layers[l.id] ? 'bg-orange-500 border-orange-500' : 'border-white/20 bg-transparent'
+                layers[l.id] ? 'bg-orange-500 border-orange-500' : 'border-slate-300 dark:border-white/20 bg-transparent'
               )}>
                 {layers[l.id] && <span className="text-white text-[10px] font-bold">✓</span>}
               </div>
-              <span className="text-xs text-slate-400 group-hover:text-slate-200 transition-colors">
+              <span className="text-xs text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors font-medium">
                 {l.icon} {l.label}
               </span>
             </label>
@@ -226,8 +227,8 @@ export default function LiveMap() {
         </div>
 
         {/* Legend */}
-        <div className="px-4 py-3 border-t border-white/[0.06]">
-          <div className="text-xs font-semibold text-slate-400 mb-3">Road Status</div>
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-white/[0.06]">
+          <div className="text-xs font-semibold text-slate-700 dark:text-slate-400 mb-3">Road Status</div>
           {[
             { color: '#22c55e', label: 'Open' },
             { color: '#eab308', label: 'Degraded' },
@@ -236,28 +237,28 @@ export default function LiveMap() {
             { color: '#6b7280', label: 'Unknown / Stale' },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-2 mb-1.5">
-              <div className="w-8 h-1.5 rounded-full" style={{ background: item.color }} />
-              <span className="text-xs text-slate-500">{item.label}</span>
+              <div className="w-7 h-1.5 rounded-full" style={{ background: item.color }} />
+              <span className="text-xs text-slate-600 dark:text-slate-400">{item.label}</span>
             </div>
           ))}
         </div>
 
         {/* Active vehicles list */}
-        <div className="px-4 py-3 border-t border-white/[0.06] flex-1">
-          <div className="text-xs font-semibold text-slate-400 mb-3">Active Vehicles</div>
+        <div className="px-4 py-3 border-t border-slate-200 dark:border-white/[0.06] flex-1">
+          <div className="text-xs font-semibold text-slate-700 dark:text-slate-400 mb-3">Active Vehicles</div>
           <div className="space-y-2">
             {vehicles.map((v) => (
-              <div key={v.id} className="text-xs">
+              <div key={v.id} className="text-xs p-2 rounded-lg bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-transparent">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">🚛 {v.id}</span>
+                  <span className="text-slate-900 dark:text-white font-semibold">🚛 {v.id}</span>
                   <span className={clsx(
                     'text-[10px] font-bold',
-                    v.routeRisk > 80 ? 'text-red-400' : v.routeRisk > 60 ? 'text-orange-400' : 'text-green-400'
+                    v.routeRisk > 80 ? 'text-red-600 dark:text-red-400' : v.routeRisk > 60 ? 'text-orange-600 dark:text-orange-400' : 'text-emerald-600 dark:text-green-400'
                   )}>{v.routeRisk}%</span>
                 </div>
-                <div className="text-slate-500 text-[10px]">{v.destination}</div>
+                <div className="text-slate-500 dark:text-slate-400 text-[10px] mt-0.5">{v.destination}</div>
                 {!v.telemetryFresh && (
-                  <div className="text-orange-400 text-[9px] font-semibold">⚠ TELEMETRY UNAVAILABLE</div>
+                  <div className="text-orange-600 dark:text-orange-400 text-[9px] font-bold mt-1">⚠ TELEMETRY UNAVAILABLE</div>
                 )}
               </div>
             ))}
