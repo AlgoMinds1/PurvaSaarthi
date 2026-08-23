@@ -43,23 +43,33 @@ export function Sidebar() {
       <div
         className={clsx(
           'flex items-center border-b border-slate-200 dark:border-white/[0.06] h-[65px] transition-all',
-          sidebarCollapsed ? 'justify-center px-2 flex-col gap-1' : 'justify-between px-4'
+          sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-4'
         )}
       >
-        <div className="flex items-center min-w-0 overflow-hidden">
-          <Logo size="sm" withText={!sidebarCollapsed} />
-        </div>
-        <button
-          onClick={toggleSidebar}
-          className={clsx(
-            'p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer',
-            sidebarCollapsed && 'hidden'
-          )}
-          title={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-          aria-label={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          <PanelLeftClose size={18} />
-        </button>
+        {!sidebarCollapsed ? (
+          <>
+            <div className="flex items-center min-w-0 overflow-hidden">
+              <Logo size="sm" withText />
+            </div>
+            <button
+              onClick={toggleSidebar}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer shrink-0"
+              title="Collapse Sidebar"
+              aria-label="Collapse Sidebar"
+            >
+              <PanelLeftClose size={18} />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-xl text-slate-500 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-white/[0.08] transition-all cursor-pointer flex items-center justify-center group"
+            title="Expand Sidebar"
+            aria-label="Expand Sidebar"
+          >
+            <PanelLeftOpen size={20} className="group-hover:scale-110 transition-transform text-orange-500" />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}

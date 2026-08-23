@@ -1,9 +1,9 @@
-import { Bell, Sun, Moon, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Bell, Sun, Moon } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../../store/useAppStore';
 
 export function Topbar() {
-  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme, sidebarCollapsed, toggleSidebar } = useAppStore();
+  const { activeView, emergencyMode, unreadCount, setView, theme, toggleTheme } = useAppStore();
 
   const titles: Record<string, { title: string; subtitle: string }> = {
     command:   { title: 'Command Center',       subtitle: 'Regional Logistics Operations Overview' },
@@ -19,26 +19,15 @@ export function Topbar() {
 
   return (
     <header className={clsx(
-      'flex items-center justify-between px-5 py-3 border-b shrink-0 transition-colors duration-300',
+      'flex items-center justify-between px-6 py-3 border-b shrink-0 transition-colors duration-300',
       emergencyMode
         ? 'bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-500/20'
         : 'bg-white dark:bg-[#090f1c] border-slate-200 dark:border-white/[0.06]'
     )}>
 
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
-          title={sidebarCollapsed ? 'Expand Sidebar (Toggle)' : 'Collapse Sidebar (Toggle)'}
-          aria-label={sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
-        >
-          {sidebarCollapsed ? <PanelLeftOpen size={19} className="text-orange-500" /> : <PanelLeftClose size={19} />}
-        </button>
-
-        <div>
-          <h2 className="text-slate-900 dark:text-white font-semibold text-[15px] leading-tight">{title}</h2>
-          <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{subtitle}</p>
-        </div>
+      <div>
+        <h2 className="text-slate-900 dark:text-white font-semibold text-[15px] leading-tight">{title}</h2>
+        <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{subtitle}</p>
       </div>
 
       <div className="flex items-center gap-2.5">
