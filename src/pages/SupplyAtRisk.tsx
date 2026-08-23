@@ -76,26 +76,55 @@ function StockGauge({ days, maxDays = 7 }: { days: number; maxDays?: number }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
-          <TrendingDown size={13} className={isCritical ? 'text-red-500 animate-pulse' : 'text-slate-400'} />
-          <span>Destination Stock Reserve</span>
-        </div>
-        <div className={clsx('px-2 py-0.5 rounded-full text-[11px] font-bold border', badgeColor)}>
-          {days.toFixed(1)} Days Buffer {isCritical && '(Critical Stockout)'}
-        </div>
+        <span className="text-slate-500 dark:text-slate-400 font-medium">Warehouse Reserve</span>
+        <span className={clsx('px-2 py-0.5 rounded-full text-[11px] font-bold border', badgeColor)}>
+          {days.toFixed(1)} Days Left
+        </span>
       </div>
 
       <div className="relative w-full bg-slate-200/80 dark:bg-white/[0.07] rounded-full h-2 overflow-hidden shadow-inner">
         <div 
-          className={clsx('h-full rounded-full bg-gradient-to-r transition-all duration-500 shadow-sm', colorClass)}
+          className={clsx('h-full rounded-full bg-gradient-to-r transition-all duration-500', colorClass)}
           style={{ width: `${Math.max(pct, 6)}%` }} 
         />
       </div>
+    </div>
+  );
+}
 
-      <div className="flex justify-between text-[10px] text-slate-400 font-medium px-0.5">
-        <span>0d Stockout</span>
-        <span className="text-amber-500 font-semibold">3d Buffer Index</span>
-        <span>7d Safe Reserve</span>
+function MiniStockGauge({ days, maxDays = 7 }: { days: number; maxDays?: number }) {
+  const pct = Math.min((days / maxDays) * 100, 100);
+  const isCritical = days <= 2;
+  const isHigh = days > 2 && days <= 3.5;
+  const isModerate = days > 3.5 && days <= 5;
+
+  const colorClass = isCritical 
+    ? 'from-red-500 to-rose-600' 
+    : isHigh 
+    ? 'from-amber-500 to-orange-500' 
+    : isModerate 
+    ? 'from-yellow-400 to-amber-500' 
+    : 'from-emerald-400 to-teal-500';
+
+  const textColor = isCritical 
+    ? 'text-red-600 dark:text-red-400' 
+    : isHigh 
+    ? 'text-orange-600 dark:text-orange-400' 
+    : isModerate 
+    ? 'text-yellow-700 dark:text-yellow-400' 
+    : 'text-emerald-700 dark:text-emerald-400';
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-slate-500 dark:text-slate-400 font-medium">Stock Remaining</span>
+        <span className={clsx('font-bold', textColor)}>{days.toFixed(1)} Days</span>
+      </div>
+      <div className="relative w-full bg-slate-200/80 dark:bg-white/[0.07] rounded-full h-1.5 overflow-hidden">
+        <div 
+          className={clsx('h-full rounded-full bg-gradient-to-r transition-all duration-300', colorClass)}
+          style={{ width: `${Math.max(pct, 6)}%` }} 
+        />
       </div>
     </div>
   );
@@ -450,33 +479,31 @@ export default function SupplyAtRisk() {
           </p>
         </div>
 
-        <div className="space-y-3 flex-1 min-h-0">
+        <div className="space-y-2.5 flex-1 min-h-0">
           {supplyInventory.map((inv) => (
             <div 
               key={`${inv.districtId}-${inv.commodity}`} 
               className={clsx(
-                'p-3.5 rounded-2xl border transition-all duration-200 hover:shadow-md space-y-2 text-slate-900 dark:text-slate-100 bg-white dark:bg-[#0c1424]',
+                'p-3 rounded-xl border transition-all duration-150 hover:shadow-xs space-y-2 text-slate-900 dark:text-slate-100 bg-white dark:bg-[#0c1424]',
                 inv.risk === 'CRITICAL' 
-                  ? 'border-red-200 dark:border-red-500/20 bg-red-50/20 dark:bg-red-500/[0.02]' 
+                  ? 'border-red-300/80 dark:border-red-500/25 bg-red-50/20 dark:bg-red-500/[0.02]' 
                   : inv.risk === 'HIGH'
-                  ? 'border-orange-200 dark:border-orange-500/20'
+                  ? 'border-orange-300/70 dark:border-orange-500/20'
                   : 'border-slate-200 dark:border-white/[0.06]'
               )}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-white/[0.06] flex items-center justify-center shrink-0">
-                    <CommodityAvatar commodity={inv.commodity} size={13} />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-900 dark:text-white">
+                <div className="flex items-center gap-2 min-w-0">
+                  <CommodityAvatar commodity={inv.commodity} size={14} />
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {inv.districtName.split('—')[0].trim()}
                     </div>
                   </div>
                 </div>
 
                 <span className={clsx(
-                  'text-[10px] font-extrabold px-2 py-0.5 rounded-md border uppercase',
+                  'text-[9px] font-extrabold px-1.5 py-0.5 rounded border uppercase shrink-0',
                   inv.risk === 'CRITICAL' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/20 dark:text-red-300 dark:border-red-500/30' :
                   inv.risk === 'HIGH' ? 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-500/20 dark:text-orange-300 dark:border-orange-500/30' :
                   inv.risk === 'MEDIUM' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/30' :
@@ -486,7 +513,7 @@ export default function SupplyAtRisk() {
                 </span>
               </div>
 
-              <StockGauge days={inv.stockDays} />
+              <MiniStockGauge days={inv.stockDays} />
             </div>
           ))}
         </div>
