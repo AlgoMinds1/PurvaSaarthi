@@ -91,7 +91,7 @@ export default function DriverApp() {
     <div className="flex-1 flex flex-col bg-[var(--bg-base)] text-[var(--text-primary)] min-h-0 overflow-y-auto select-none">
 
       {/* ── DRIVER TOP TELEMETRY STATUS BAR ── */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-slate-800 px-4 py-3 shrink-0 shadow-xs dark:shadow-lg backdrop-blur-md transition-colors">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-white border-b border-slate-200/80 dark:border-slate-800 px-4 py-2.5 sm:py-3 shrink-0 shadow-xs dark:shadow-lg backdrop-blur-md transition-colors">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-md shadow-emerald-500/20">
@@ -107,6 +107,33 @@ export default function DriverApp() {
                 {vehicle.driverName} • Active Trip
               </p>
             </div>
+          </div>
+
+          {/* Desktop Navigation Tabs for Driver */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/[0.05] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
+            {[
+              { id: 'nav', label: 'Navigation', icon: <Navigation size={14} /> },
+              { id: 'reroute', label: 'AI Reroute', icon: <RotateCcw size={14} /> },
+              { id: 'checkpoints', label: 'Checkpoints', icon: <MapPin size={14} /> },
+              { id: 'laybys', label: 'Safe Shelters', icon: <Coffee size={14} /> },
+            ].map((tab) => {
+              const isActive = activeDriverTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveDriverTab(tab.id as any)}
+                  className={clsx(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+                    isActive
+                      ? 'bg-emerald-600 text-white shadow-xs font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/[0.05]'
+                  )}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2">
@@ -204,202 +231,210 @@ export default function DriverApp() {
 
       {/* ── TAB CONTENT ── */}
       {activeDriverTab === 'nav' && (
-        <div className="p-3.5 space-y-3.5 pb-20">
+        <div className="w-full max-w-6xl mx-auto p-3.5 sm:p-6 pb-24 md:pb-8">
+          <div className="md:grid md:grid-cols-12 md:gap-6 space-y-4 md:space-y-0">
 
-          {/* 1. TURN-BY-TURN INSTRUCTION CARD (HUD) */}
-          <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-xl relative overflow-hidden transition-colors">
-            <div className="flex items-start gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/30">
-                <CornerUpRight size={26} className="stroke-[2.5]" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                  <span>IN 3.2 KM</span>
-                  <span>•</span>
-                  <span>SPEED LIMIT {vehicle.speedLimit} KM/H</span>
-                </div>
-                <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug mt-0.5">
-                  {isDriverRerouted
-                    ? 'Follow NH-106 East Bypass towards Ri-Bhoi Corridor'
-                    : 'Turn Left onto NH-106 Bypass (Safe Landslide Detour)'}
-                </h1>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-                  Destination: {shipment.destinationFacility}
-                </p>
-              </div>
-            </div>
-
-            {/* Live Telemetry Gauges */}
-            <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-white/10 text-center">
-              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">SPEED</div>
-                <div className="text-base font-black text-slate-900 dark:text-white font-mono">{speed}</div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400">km/h</div>
-              </div>
-              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ELEVATION</div>
-                <div className="text-base font-black text-slate-900 dark:text-white font-mono">{vehicle.currentElevation}</div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400">meters</div>
-              </div>
-              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">GRADIENT</div>
-                <div className="text-base font-black text-orange-600 dark:text-orange-400 font-mono">{vehicle.slopeGradient}°</div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400">slope</div>
-              </div>
-              <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
-                <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ROUTE RISK</div>
-                <div className={clsx('text-base font-black font-mono', isDriverRerouted ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
-                  {isDriverRerouted ? '24%' : '91%'}
-                </div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400">{isDriverRerouted ? 'Low' : 'Critical'}</div>
-              </div>
-            </div>
-          </section>
-
-          {/* 2. LIVE LEAFLET NAVIGATION MAP */}
-          <section className="bg-white dark:bg-[#090f1c] rounded-2xl border border-slate-200 dark:border-white/[0.08] overflow-hidden shadow-md">
-            <div className="px-3.5 py-2.5 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
-                <Compass size={14} className="text-emerald-500" />
-                <span>Live Route Navigation View</span>
-              </div>
-              <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                {isDriverRerouted ? '● ACTIVE ROUTE B' : '● ROUTE A (HAZARD DETECTED)'}
-              </span>
-            </div>
-
-            <div className="h-64 w-full relative">
-              <MapContainer
-                center={vehicle.currentLocation}
-                zoom={10}
-                scrollWheelZoom={false}
-                style={{ width: '100%', height: '100%' }}
-                className="z-10"
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                />
-
-                {/* Route lines */}
-                <Polyline
-                  positions={routeAPPath}
-                  color={isDriverRerouted ? '#94a3b8' : '#ef4444'}
-                  weight={isDriverRerouted ? 3 : 5}
-                  dashArray={isDriverRerouted ? '5, 5' : undefined}
-                />
-
-                <Polyline
-                  positions={routeBPath}
-                  color={isDriverRerouted ? '#10b981' : '#3b82f6'}
-                  weight={isDriverRerouted ? 6 : 4}
-                />
-
-                {/* Driver Truck Pin */}
-                <Marker position={vehicle.currentLocation} icon={driverTruckIcon}>
-                  <Popup>
-                    <div className="text-xs font-bold">
-                      TRK-204 (You)<br />Speed: {speed} km/h
+            {/* Left Column (col-span-5): HUD, Telemetry Gauges, Cargo Manifest, Handover */}
+            <div className="md:col-span-5 space-y-4">
+              {/* 1. TURN-BY-TURN INSTRUCTION CARD (HUD) */}
+              <section className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-2xl p-4 border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-xl relative overflow-hidden transition-colors">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-500/30">
+                    <CornerUpRight size={26} className="stroke-[2.5]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span>IN 3.2 KM</span>
+                      <span>•</span>
+                      <span>SPEED LIMIT {vehicle.speedLimit} KM/H</span>
                     </div>
-                  </Popup>
-                </Marker>
-
-                {/* Danger Zone Marker */}
-                <Marker position={[25.85, 91.88]} icon={dangerIcon}>
-                  <Popup>
-                    <div className="text-xs text-red-600 font-bold">
-                      Landslide Danger Sector (Avoided on Detour)
-                    </div>
-                  </Popup>
-                </Marker>
-
-                {/* Safe Laybys Markers */}
-                {safeLaybys.map((l) => (
-                  <Marker key={l.id} position={l.latlng} icon={laybyIcon}>
-                    <Popup>
-                      <div className="text-xs font-semibold">
-                        <strong>{l.name}</strong><br />
-                        Capacity: {l.capacityTrucks} Trucks<br />
-                        Amenities: {l.amenities.join(', ')}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-
-              {/* Floating Reroute Trigger button on map */}
-              {!isDriverRerouted && (
-                <button
-                  onClick={() => setShowRerouteAlertModal(true)}
-                  className="absolute bottom-3 left-3 right-3 z-[400] py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <AlertTriangle size={15} />
-                  <span>Review AI Reroute Recommendation</span>
-                </button>
-              )}
-            </div>
-          </section>
-
-          {/* 3. TRIP SHIPMENT & CARGO STATUS */}
-          <section className="bg-white dark:bg-[#090f1c] rounded-2xl p-4 border border-slate-200 dark:border-white/[0.08] shadow-xs">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-white">Active Cargo Manifest</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300">
-                CRITICAL LIFE-SAVING
-              </span>
-            </div>
-
-            <div className="text-xs text-slate-700 dark:text-slate-300 font-semibold mb-1">
-              {shipment.commodityLabel}
-            </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
-              Shipment #{shipment.id} • Consignee: {shipment.consigneeName} ({shipment.consigneePhone})
-            </p>
-
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.06] text-xs">
-              <div>
-                <div className="text-[10px] text-slate-400 font-semibold">EXPECTED ETA</div>
-                <div className="text-sm font-black text-slate-900 dark:text-white">{shipment.expectedDeliveryTime}</div>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-slate-400 font-semibold">COLD CHAIN STATUS</div>
-                <div className="text-xs font-bold text-blue-600 dark:text-blue-400">❄️ 3.4°C SECURE</div>
-              </div>
-            </div>
-          </section>
-
-          {/* 4. TRIP ACTION: DELIVERY COMPLETION */}
-          <section className="bg-white dark:bg-[#090f1c] rounded-2xl p-4 border border-slate-200 dark:border-white/[0.08] shadow-xs text-center">
-            {deliveryConfirmed ? (
-              <div className="py-3 text-emerald-600 dark:text-emerald-400 font-bold text-sm flex flex-col items-center gap-1.5">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-                  <CheckCircle2 size={24} />
+                    <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug mt-0.5">
+                      {isDriverRerouted
+                        ? 'Follow NH-106 East Bypass towards Ri-Bhoi Corridor'
+                        : 'Turn Left onto NH-106 Bypass (Safe Landslide Detour)'}
+                    </h1>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      Destination: {shipment.destinationFacility}
+                    </p>
+                  </div>
                 </div>
-                <span>Delivery Handover Verified at Hospital</span>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
-                  District stock updated from 1.7 to 3.8 days. Alert resolved.
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={handleConfirmDelivery}
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
-              >
-                <CheckCircle2 size={16} />
-                <span>Mark Arrived & Handover Delivery at Hospital</span>
-              </button>
-            )}
-          </section>
 
+                {/* Live Telemetry Gauges */}
+                <div className="grid grid-cols-4 gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-white/10 text-center">
+                  <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">SPEED</div>
+                    <div className="text-base font-black text-slate-900 dark:text-white font-mono">{speed}</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">km/h</div>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ELEVATION</div>
+                    <div className="text-base font-black text-slate-900 dark:text-white font-mono">{vehicle.currentElevation}</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">meters</div>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">GRADIENT</div>
+                    <div className="text-base font-black text-orange-600 dark:text-orange-400 font-mono">{vehicle.slopeGradient}°</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">slope</div>
+                  </div>
+                  <div className="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-transparent p-2 rounded-xl">
+                    <div className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold">ROUTE RISK</div>
+                    <div className={clsx('text-base font-black font-mono', isDriverRerouted ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400')}>
+                      {isDriverRerouted ? '24%' : '91%'}
+                    </div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">{isDriverRerouted ? 'Low' : 'Critical'}</div>
+                  </div>
+                </div>
+              </section>
+
+              {/* 3. TRIP SHIPMENT & CARGO STATUS */}
+              <section className="bg-white dark:bg-[#090f1c] rounded-2xl p-4 border border-slate-200 dark:border-white/[0.08] shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Active Cargo Manifest</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300">
+                    CRITICAL LIFE-SAVING
+                  </span>
+                </div>
+
+                <div className="text-xs text-slate-700 dark:text-slate-300 font-semibold mb-1">
+                  {shipment.commodityLabel}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
+                  Shipment #{shipment.id} • Consignee: {shipment.consigneeName} ({shipment.consigneePhone})
+                </p>
+
+                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/[0.06] text-xs">
+                  <div>
+                    <div className="text-[10px] text-slate-400 font-semibold">EXPECTED ETA</div>
+                    <div className="text-sm font-black text-slate-900 dark:text-white">{shipment.expectedDeliveryTime}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-slate-400 font-semibold">COLD CHAIN STATUS</div>
+                    <div className="text-xs font-bold text-blue-600 dark:text-blue-400">❄️ 3.4°C SECURE</div>
+                  </div>
+                </div>
+              </section>
+
+              {/* 4. TRIP ACTION: DELIVERY COMPLETION */}
+              <section className="bg-white dark:bg-[#090f1c] rounded-2xl p-4 border border-slate-200 dark:border-white/[0.08] shadow-xs text-center">
+                {deliveryConfirmed ? (
+                  <div className="py-3 text-emerald-600 dark:text-emerald-400 font-bold text-sm flex flex-col items-center gap-1.5">
+                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
+                      <CheckCircle2 size={24} />
+                    </div>
+                    <span>Delivery Handover Verified at Hospital</span>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-normal">
+                      District stock updated from 1.7 to 3.8 days. Alert resolved.
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleConfirmDelivery}
+                    className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                  >
+                    <CheckCircle2 size={16} />
+                    <span>Mark Arrived & Handover Delivery at Hospital</span>
+                  </button>
+                )}
+              </section>
+            </div>
+
+            {/* Right Column (col-span-7): Live Navigation Map */}
+            <div className="md:col-span-7 space-y-4">
+              {/* 2. LIVE LEAFLET NAVIGATION MAP */}
+              <section className="bg-white dark:bg-[#090f1c] rounded-2xl border border-slate-200 dark:border-white/[0.08] overflow-hidden shadow-md">
+                <div className="px-3.5 py-2.5 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white">
+                    <Compass size={14} className="text-emerald-500" />
+                    <span>Live Route Navigation View</span>
+                  </div>
+                  <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                    {isDriverRerouted ? '● ACTIVE ROUTE B' : '● ROUTE A (HAZARD DETECTED)'}
+                  </span>
+                </div>
+
+                <div className="h-72 sm:h-80 md:h-[520px] w-full relative">
+                  <MapContainer
+                    center={vehicle.currentLocation}
+                    zoom={10}
+                    scrollWheelZoom={false}
+                    style={{ width: '100%', height: '100%' }}
+                    className="z-10"
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+                      url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    />
+
+                    {/* Route lines */}
+                    <Polyline
+                      positions={routeAPPath}
+                      color={isDriverRerouted ? '#94a3b8' : '#ef4444'}
+                      weight={3}
+                      dashArray={isDriverRerouted ? '5, 5' : undefined}
+                    />
+
+                    <Polyline
+                      positions={routeBPath}
+                      color={isDriverRerouted ? '#10b981' : '#3b82f6'}
+                      weight={isDriverRerouted ? 6 : 4}
+                    />
+
+                    {/* Driver Truck Pin */}
+                    <Marker position={vehicle.currentLocation} icon={driverTruckIcon}>
+                      <Popup>
+                        <div className="text-xs font-bold">
+                          TRK-204 (You)<br />Speed: {speed} km/h
+                        </div>
+                      </Popup>
+                    </Marker>
+
+                    {/* Danger Zone Marker */}
+                    <Marker position={[25.85, 91.88]} icon={dangerIcon}>
+                      <Popup>
+                        <div className="text-xs text-red-600 font-bold">
+                          Landslide Danger Sector (Avoided on Detour)
+                        </div>
+                      </Popup>
+                    </Marker>
+
+                    {/* Safe Laybys Markers */}
+                    {safeLaybys.map((l) => (
+                      <Marker key={l.id} position={l.latlng} icon={laybyIcon}>
+                        <Popup>
+                          <div className="text-xs font-semibold">
+                            <strong>{l.name}</strong><br />
+                            Capacity: {l.capacityTrucks} Trucks<br />
+                            Amenities: {l.amenities.join(', ')}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    ))}
+                  </MapContainer>
+
+                  {/* Floating Reroute Trigger button on map */}
+                  {!isDriverRerouted && (
+                    <button
+                      onClick={() => setShowRerouteAlertModal(true)}
+                      className="absolute bottom-3 left-3 right-3 z-[400] py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <AlertTriangle size={15} />
+                      <span>Review AI Reroute Recommendation</span>
+                    </button>
+                  )}
+                </div>
+              </section>
+            </div>
+
+          </div>
         </div>
       )}
 
       {/* ── REROUTE DETAILS TAB ── */}
       {activeDriverTab === 'reroute' && (
-        <div className="p-4 space-y-4 pb-20">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-4 pb-24 md:pb-8">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">AI Dynamic Reroute Comparison</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Real-time pgRouting single point of failure calculation</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">AI Dynamic Reroute Comparison</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time pgRouting single point of failure calculation</p>
           </div>
 
           {/* Current vs Alternative Route Cards */}
@@ -461,10 +496,10 @@ export default function DriverApp() {
 
       {/* ── CHECKPOINTS TAB ── */}
       {activeDriverTab === 'checkpoints' && (
-        <div className="p-4 space-y-3 pb-20">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Trip Checkpoints & Geofences</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Real-time driver transit progression log</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Trip Checkpoints & Geofences</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time driver transit progression log</p>
           </div>
 
           <div className="space-y-3">
@@ -501,13 +536,13 @@ export default function DriverApp() {
 
       {/* ── SAFE LAYBYS TAB ── */}
       {activeDriverTab === 'laybys' && (
-        <div className="p-4 space-y-3 pb-20">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Safe Laybys & Emergency Shelters</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Designated disaster-time freight staging locations on this route</p>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Safe Laybys & Emergency Shelters</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Designated disaster-time freight staging locations on this route</p>
           </div>
 
-          <div className="space-y-3">
+          <div className="grid sm:grid-cols-2 gap-3">
             {safeLaybys.map((layby) => (
               <div
                 key={layby.id}
@@ -541,8 +576,8 @@ export default function DriverApp() {
         </div>
       )}
 
-      {/* ── DRIVER BOTTOM NAVIGATION BAR ── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 px-3 py-2 flex items-center justify-around select-none text-slate-700 dark:text-white transition-colors">
+      {/* ── DRIVER BOTTOM NAVIGATION BAR (MOBILE ONLY) ── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-slate-800 px-3 py-2 flex items-center justify-around select-none text-slate-700 dark:text-white transition-colors md:hidden">
         {[
           { id: 'nav', label: 'Navigation', icon: <Navigation size={18} /> },
           { id: 'reroute', label: 'AI Reroute', icon: <RotateCcw size={18} /> },

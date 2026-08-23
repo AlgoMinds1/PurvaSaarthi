@@ -201,6 +201,33 @@ export default function UserDeliveryTracker() {
             </span>
           </div>
 
+          {/* Desktop Navigation Tabs */}
+          <div className="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/[0.05] p-1 rounded-xl border border-slate-200 dark:border-white/[0.08]">
+            {[
+              { id: 'track', label: 'Live Track', icon: <Package size={14} /> },
+              { id: 'orders', label: 'My Orders', icon: <Layers size={14} /> },
+              { id: 'hazards', label: 'Hazards', icon: <AlertTriangle size={14} /> },
+              { id: 'sos', label: 'SOS Desk', icon: <Phone size={14} /> },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={clsx(
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer',
+                    isActive
+                      ? 'bg-orange-500 text-white shadow-xs font-bold'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-white/[0.05]'
+                  )}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           {/* Quick Actions: + Create, Language & RM Profile Avatar */}
           <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             <button
@@ -240,326 +267,334 @@ export default function UserDeliveryTracker() {
 
       </header>
 
-      {/* ── TAB 1: LIVE TRACKING (CLEAN, MINIMAL, SVG-FIRST) ── */}
+      {/* ── TAB 1: LIVE TRACKING (RESPONSIVE GRID) ── */}
       {activeTab === 'track' && (
-        <div className="p-3.5 space-y-3.5 pb-24">
+        <div className="w-full max-w-6xl mx-auto p-3.5 sm:p-6 pb-24 md:pb-8">
+          <div className="md:grid md:grid-cols-12 md:gap-6 space-y-4 md:space-y-0">
 
-          {/* 1. HERO ORDER STATUS CARD */}
-          <div className="rounded-2xl p-4 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-lg relative overflow-hidden transition-colors">
-            {/* Background ambient lighting */}
-            <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
+            {/* Left Column (col-span-5): Hero Order Status Card, Selector Chips, Cargo Manifest */}
+            <div className="md:col-span-5 space-y-4">
+              {/* 1. HERO ORDER STATUS CARD */}
+              <div className="rounded-2xl p-4 bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-white border border-slate-200/90 dark:border-slate-800 shadow-sm dark:shadow-lg relative overflow-hidden transition-colors">
+                {/* Background ambient lighting */}
+                <div className="absolute top-0 right-0 w-36 h-36 bg-orange-500/5 dark:bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
 
-            {/* Header: Commodity title + Status badge */}
-            <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-1">
-                  <span>#{currentShipment.trackingNumber}</span>
-                  <span>•</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-                    LIVE
+                {/* Header: Commodity title + Status badge */}
+                <div className="flex items-start justify-between gap-2 mb-3 relative z-10">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-mono mb-1">
+                      <span>#{currentShipment.trackingNumber}</span>
+                      <span>•</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                        LIVE
+                      </span>
+                    </div>
+                    <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-tight truncate">
+                      {currentShipment.commodityLabel}
+                    </h2>
+                  </div>
+
+                  {/* Waybill QR button */}
+                  <button
+                    onClick={() => setShowWaybillModal(true)}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white text-[10px] font-bold border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer transition-colors"
+                    title="View Waybill & Pass"
+                  >
+                    <QrCode size={12} />
+                    <span>Pass</span>
+                  </button>
+                </div>
+
+                {/* Route Progress Visual Bar */}
+                <div className="mb-3.5 relative z-10">
+                  <div className="flex items-center justify-between text-[10px] text-slate-600 dark:text-slate-400 font-semibold mb-1.5">
+                    <span className="flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-blue-500" />
+                      {currentShipment.origin.replace(' Central Depot', '')}
+                    </span>
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                      {currentShipment.destinationFacility.split('&')[0]}
+                    </span>
+                  </div>
+                  <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-transparent">
+                    <div
+                      className="h-full bg-gradient-to-r from-blue-500 via-orange-500 to-emerald-500 rounded-full transition-all duration-500"
+                      style={{ width: currentShipment.status === 'ON_TIME' ? '72%' : '56%' }}
+                    />
+                  </div>
+                </div>
+
+                {/* 3 Core Metric SVGs Grid */}
+                <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/[0.08] text-center relative z-10">
+                  <div>
+                    <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                      <Clock size={11} className="text-emerald-600 dark:text-emerald-400" />
+                      <span>ETA</span>
+                    </div>
+                    <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">{currentShipment.expectedDeliveryTime}</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400 font-mono">Today</div>
+                  </div>
+
+                  <div className="border-x border-slate-200 dark:border-white/10 px-1">
+                    <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                      <ShieldCheck size={11} className="text-orange-600 dark:text-orange-400" />
+                      <span>CORRIDOR</span>
+                    </div>
+                    <div className="text-xs font-black text-slate-900 dark:text-white truncate">
+                      {isDriverRerouted || currentShipment.routeRisk < 30 ? 'NH-106 (Safe)' : 'NH-27'}
+                    </div>
+                    <div className="text-[8px] text-orange-600 dark:text-orange-300 font-bold">
+                      {isDriverRerouted || currentShipment.routeRisk < 30 ? 'Detour Active' : 'Monitored'}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
+                      <Zap size={11} className="text-amber-600 dark:text-amber-400" />
+                      <span>PRIORITY</span>
+                    </div>
+                    <div className="text-xs font-black text-amber-600 dark:text-amber-300">{currentShipment.priority}/100</div>
+                    <div className="text-[8px] text-slate-500 dark:text-slate-400">Stock {currentShipment.stockDaysRemaining}d</div>
+                  </div>
+                </div>
+
+                {/* Quick Actions Row */}
+                <div className="flex items-center gap-2 mt-3 relative z-10 pt-2 border-t border-slate-100 dark:border-white/10">
+                  <a
+                    href={`tel:${currentVehicle?.driverPhone || '+919845211094'}`}
+                    className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                  >
+                    <Phone size={13} />
+                    <span>Call Driver ({currentVehicle?.driverName?.split(' ')[0] || 'Driver'})</span>
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      navigator.clipboard?.writeText?.(window.location.href);
+                      showToast('🔗 Live Tracking link copied!');
+                    }}
+                    className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent text-[11px] font-bold transition-all shrink-0 cursor-pointer"
+                    title="Share Tracking"
+                  >
+                    <Share2 size={13} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Horizontal Order Quick Selector Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                {shipmentsList.map((s) => {
+                  const isSelected = s.id === currentShipment.id;
+                  const icon = COMMODITY_ICONS[s.commodity] || '📦';
+                  return (
+                    <button
+                      key={s.id}
+                      onClick={() => {
+                        setSelectedShipmentId(s.id);
+                        if (activeTab !== 'track') setActiveTab('track');
+                      }}
+                      className={clsx(
+                        'px-2.5 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer flex items-center gap-1.5 border shadow-2xs',
+                        isSelected
+                          ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-[#0b1322] dark:text-slate-300 dark:border-white/[0.08] dark:hover:bg-white/[0.05]'
+                      )}
+                    >
+                      <span>{icon}</span>
+                      <span>{s.id}</span>
+                      <span className={clsx(
+                        'w-1.5 h-1.5 rounded-full',
+                        isSelected ? 'bg-white' : s.status === 'ON_TIME' ? 'bg-emerald-500' : s.status === 'AT_RISK' ? 'bg-amber-500' : 'bg-red-500'
+                      )} />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 4. CARGO MANIFEST (CLEAN ACCORDION SUMMARY) */}
+              <div className="bg-white dark:bg-[#0b1322] rounded-2xl p-3.5 border border-slate-200 dark:border-white/[0.08] shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Package size={13} className="text-blue-500" />
+                    <span>Cargo Items ({currentShipment.items.length})</span>
+                  </span>
+                  {currentShipment.items.some((i) => i.tempControlled) && (
+                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
+                      <ThermometerSnowflake size={10} />
+                      <span>Cold Chain</span>
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-1.5">
+                  {currentShipment.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] flex items-center justify-between text-xs"
+                    >
+                      <div className="min-w-0 pr-2">
+                        <div className="font-bold text-slate-900 dark:text-white truncate text-[11px]">{item.name}</div>
+                        <div className="text-[9px] text-slate-400">Batch #{item.batchNumber || 'NER-STD'}</div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">{item.quantity}</div>
+                        {item.tempRange && <div className="text-[9px] text-blue-500 font-semibold">{item.tempRange}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column (col-span-7): Live Corridor Map, Milestones */}
+            <div className="md:col-span-7 space-y-4">
+              {/* 2. LIVE CORRIDOR MAP (CLEAN EMBED) */}
+              <div className="bg-white dark:bg-[#0b1322] rounded-2xl border border-slate-200 dark:border-white/[0.08] overflow-hidden shadow-xs">
+                <div className="px-3 py-2 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02]">
+                  <div className="flex items-center gap-1.5">
+                    <Compass size={14} className="text-orange-500" />
+                    <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">Live Highway Corridor</span>
+                  </div>
+                  
+                  <button
+                    onClick={() => setMapExpanded(!mapExpanded)}
+                    className="text-[10px] font-bold text-orange-600 dark:text-orange-400 flex items-center gap-0.5 cursor-pointer"
+                  >
+                    <span>{mapExpanded ? 'Shrink' : 'Expand'}</span>
+                    <ChevronDown size={12} className={clsx('transition-transform', mapExpanded && 'rotate-180')} />
+                  </button>
+                </div>
+
+                <div className={clsx('w-full relative transition-all duration-300', mapExpanded ? 'h-80 md:h-[450px]' : 'h-48 md:h-[320px]')}>
+                  <MapContainer
+                    center={currentVehicle?.currentLocation || [25.96, 91.88]}
+                    zoom={9}
+                    scrollWheelZoom={false}
+                    style={{ width: '100%', height: '100%' }}
+                    className="z-10"
+                  >
+                    <TileLayer
+                      attribution='&copy; CARTO'
+                      url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    />
+
+                    {/* Primary route */}
+                    <Polyline
+                      positions={routeAPPath}
+                      color="#ef4444"
+                      weight={3.5}
+                      dashArray="5, 5"
+                      opacity={0.7}
+                    />
+
+                    {/* Safe Detour route */}
+                    <Polyline
+                      positions={routeBPath}
+                      color="#10b981"
+                      weight={4.5}
+                      opacity={0.9}
+                    />
+
+                    {/* Origin */}
+                    <Marker position={[26.14, 91.74]} icon={originIcon}>
+                      <Popup><span className="text-xs font-bold">Guwahati Hub</span></Popup>
+                    </Marker>
+
+                    {/* Destination */}
+                    <Marker position={[25.57, 91.88]} icon={destIcon}>
+                      <Popup><span className="text-xs font-bold">{currentShipment.destinationFacility}</span></Popup>
+                    </Marker>
+
+                    {/* Hazard point */}
+                    <Marker position={[25.85, 91.88]} icon={hazardIcon}>
+                      <Popup><span className="text-xs font-bold text-red-600">Landslide Alert (NH-27)</span></Popup>
+                    </Marker>
+
+                    {/* Vehicle */}
+                    {currentVehicle && (
+                      <Marker position={currentVehicle.currentLocation} icon={truckIcon}>
+                        <Popup>
+                          <span className="text-xs font-bold">{currentVehicle.id} • {currentVehicle.driverName}</span>
+                        </Popup>
+                      </Marker>
+                    )}
+                  </MapContainer>
+
+                  {/* Floating mini status badge on map */}
+                  <div className="absolute bottom-2 left-2 right-2 z-[400] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.1] flex items-center justify-between text-[9px] font-bold text-slate-700 dark:text-slate-300 shadow-sm">
+                    <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheck size={12} />
+                      <span>Detour Active (NH-106)</span>
+                    </span>
+                    <span className="font-mono text-slate-500 dark:text-slate-400">
+                      Speed: <strong className="text-slate-900 dark:text-white">{currentVehicle?.currentSpeed || 44} km/h</strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. ORDER MILESTONES (MINIMAL SVG STEPPER) */}
+              <div className="bg-white dark:bg-[#0b1322] rounded-2xl p-3.5 border border-slate-200 dark:border-white/[0.08] shadow-xs">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <RefreshCw size={13} className="text-orange-500 animate-spin" style={{ animationDuration: '8s' }} />
+                    <span>Tracking Milestones</span>
+                  </h3>
+                  <span className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    Active Step
                   </span>
                 </div>
-                <h2 className="text-sm font-extrabold text-slate-900 dark:text-white leading-tight truncate">
-                  {currentShipment.commodityLabel}
-                </h2>
-              </div>
 
-              {/* Waybill QR button */}
-              <button
-                onClick={() => setShowWaybillModal(true)}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-800 dark:text-white text-[10px] font-bold border border-slate-200 dark:border-white/10 shrink-0 cursor-pointer transition-colors"
-                title="View Waybill & Pass"
-              >
-                <QrCode size={12} />
-                <span>Pass</span>
-              </button>
-            </div>
+                <div className="space-y-3 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-white/[0.08]">
+                  {currentShipment.milestones.map((m) => {
+                    const isDone = m.status === 'completed';
+                    const isCurrent = m.status === 'current';
 
-            {/* Route Progress Visual Bar */}
-            <div className="mb-3.5 relative z-10">
-              <div className="flex items-center justify-between text-[10px] text-slate-600 dark:text-slate-400 font-semibold mb-1.5">
-                <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  {currentShipment.origin.replace(' Central Depot', '')}
-                </span>
-                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-                  {currentShipment.destinationFacility.split('&')[0]}
-                </span>
-              </div>
-              <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200/60 dark:border-transparent">
-                <div
-                  className="h-full bg-gradient-to-r from-blue-500 via-orange-500 to-emerald-500 rounded-full transition-all duration-500"
-                  style={{ width: currentShipment.status === 'ON_TIME' ? '72%' : '56%' }}
-                />
-              </div>
-            </div>
-
-            {/* 3 Core Metric SVGs Grid */}
-            <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.05] border border-slate-200/80 dark:border-white/[0.08] text-center relative z-10">
-              <div>
-                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
-                  <Clock size={11} className="text-emerald-600 dark:text-emerald-400" />
-                  <span>ETA</span>
-                </div>
-                <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">{currentShipment.expectedDeliveryTime}</div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400 font-mono">Today</div>
-              </div>
-
-              <div className="border-x border-slate-200 dark:border-white/10 px-1">
-                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
-                  <ShieldCheck size={11} className="text-orange-600 dark:text-orange-400" />
-                  <span>CORRIDOR</span>
-                </div>
-                <div className="text-xs font-black text-slate-900 dark:text-white truncate">
-                  {isDriverRerouted || currentShipment.routeRisk < 30 ? 'NH-106 (Safe)' : 'NH-27'}
-                </div>
-                <div className="text-[8px] text-orange-600 dark:text-orange-300 font-bold">
-                  {isDriverRerouted || currentShipment.routeRisk < 30 ? 'Detour Active' : 'Monitored'}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-center gap-1 text-slate-500 dark:text-slate-400 text-[9px] font-bold mb-0.5">
-                  <Zap size={11} className="text-amber-600 dark:text-amber-400" />
-                  <span>PRIORITY</span>
-                </div>
-                <div className="text-xs font-black text-amber-600 dark:text-amber-300">{currentShipment.priority}/100</div>
-                <div className="text-[8px] text-slate-500 dark:text-slate-400">Stock {currentShipment.stockDaysRemaining}d</div>
-              </div>
-            </div>
-
-            {/* Quick Actions Row */}
-            <div className="flex items-center gap-2 mt-3 relative z-10 pt-2 border-t border-slate-100 dark:border-white/10">
-              <a
-                href={`tel:${currentVehicle?.driverPhone || '+919845211094'}`}
-                className="flex-1 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-xs"
-              >
-                <Phone size={13} />
-                <span>Call Driver ({currentVehicle?.driverName?.split(' ')[0] || 'Driver'})</span>
-              </a>
-
-              <button
-                onClick={() => {
-                  navigator.clipboard?.writeText?.(window.location.href);
-                  showToast('🔗 Live Tracking link copied!');
-                }}
-                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-white/10 dark:hover:bg-white/20 text-slate-700 dark:text-white border border-slate-200 dark:border-transparent text-[11px] font-bold transition-all shrink-0 cursor-pointer"
-                title="Share Tracking"
-              >
-                <Share2 size={13} />
-              </button>
-            </div>
-          </div>
-
-          {/* Horizontal Order Quick Selector Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-            {shipmentsList.map((s) => {
-              const isSelected = s.id === currentShipment.id;
-              const icon = COMMODITY_ICONS[s.commodity] || '📦';
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => {
-                    setSelectedShipmentId(s.id);
-                    if (activeTab !== 'track') setActiveTab('track');
-                  }}
-                  className={clsx(
-                    'px-2.5 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer flex items-center gap-1.5 border shadow-2xs',
-                    isSelected
-                      ? 'bg-orange-500 text-white border-orange-500 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 dark:bg-[#0b1322] dark:text-slate-300 dark:border-white/[0.08] dark:hover:bg-white/[0.05]'
-                  )}
-                >
-                  <span>{icon}</span>
-                  <span>{s.id}</span>
-                  <span className={clsx(
-                    'w-1.5 h-1.5 rounded-full',
-                    isSelected ? 'bg-white' : s.status === 'ON_TIME' ? 'bg-emerald-500' : s.status === 'AT_RISK' ? 'bg-amber-500' : 'bg-red-500'
-                  )} />
-                </button>
-              );
-            })}
-          </div>
-
-          {/* 2. LIVE CORRIDOR MAP (CLEAN EMBED) */}
-          <div className="bg-white dark:bg-[#0b1322] rounded-2xl border border-slate-200 dark:border-white/[0.08] overflow-hidden shadow-xs">
-            <div className="px-3 py-2 border-b border-slate-100 dark:border-white/[0.06] flex items-center justify-between bg-slate-50/70 dark:bg-white/[0.02]">
-              <div className="flex items-center gap-1.5">
-                <Compass size={14} className="text-orange-500" />
-                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200">Live Highway Corridor</span>
-              </div>
-              
-              <button
-                onClick={() => setMapExpanded(!mapExpanded)}
-                className="text-[10px] font-bold text-orange-600 dark:text-orange-400 flex items-center gap-0.5 cursor-pointer"
-              >
-                <span>{mapExpanded ? 'Shrink' : 'Expand'}</span>
-                <ChevronDown size={12} className={clsx('transition-transform', mapExpanded && 'rotate-180')} />
-              </button>
-            </div>
-
-            <div className={clsx('w-full relative transition-all duration-300', mapExpanded ? 'h-72' : 'h-44')}>
-              <MapContainer
-                center={currentVehicle?.currentLocation || [25.96, 91.88]}
-                zoom={9}
-                scrollWheelZoom={false}
-                style={{ width: '100%', height: '100%' }}
-                className="z-10"
-              >
-                <TileLayer
-                  attribution='&copy; CARTO'
-                  url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                />
-
-                {/* Primary route */}
-                <Polyline
-                  positions={routeAPPath}
-                  color="#ef4444"
-                  weight={3.5}
-                  dashArray="5, 5"
-                  opacity={0.7}
-                />
-
-                {/* Safe Detour route */}
-                <Polyline
-                  positions={routeBPath}
-                  color="#10b981"
-                  weight={4.5}
-                  opacity={0.9}
-                />
-
-                {/* Origin */}
-                <Marker position={[26.14, 91.74]} icon={originIcon}>
-                  <Popup><span className="text-xs font-bold">Guwahati Hub</span></Popup>
-                </Marker>
-
-                {/* Destination */}
-                <Marker position={[25.57, 91.88]} icon={destIcon}>
-                  <Popup><span className="text-xs font-bold">{currentShipment.destinationFacility}</span></Popup>
-                </Marker>
-
-                {/* Hazard point */}
-                <Marker position={[25.85, 91.88]} icon={hazardIcon}>
-                  <Popup><span className="text-xs font-bold text-red-600">Landslide Alert (NH-27)</span></Popup>
-                </Marker>
-
-                {/* Vehicle */}
-                {currentVehicle && (
-                  <Marker position={currentVehicle.currentLocation} icon={truckIcon}>
-                    <Popup>
-                      <span className="text-xs font-bold">{currentVehicle.id} • {currentVehicle.driverName}</span>
-                    </Popup>
-                  </Marker>
-                )}
-              </MapContainer>
-
-              {/* Floating mini status badge on map */}
-              <div className="absolute bottom-2 left-2 right-2 z-[400] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.1] flex items-center justify-between text-[9px] font-bold text-slate-700 dark:text-slate-300 shadow-sm">
-                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                  <ShieldCheck size={12} />
-                  <span>Detour Active (NH-106)</span>
-                </span>
-                <span className="font-mono text-slate-500 dark:text-slate-400">
-                  Speed: <strong className="text-slate-900 dark:text-white">{currentVehicle?.currentSpeed || 44} km/h</strong>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. ORDER MILESTONES (MINIMAL SVG STEPPER) */}
-          <div className="bg-white dark:bg-[#0b1322] rounded-2xl p-3.5 border border-slate-200 dark:border-white/[0.08] shadow-xs">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <RefreshCw size={13} className="text-orange-500 animate-spin" style={{ animationDuration: '8s' }} />
-                <span>Tracking Milestones</span>
-              </h3>
-              <span className="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                Active Step
-              </span>
-            </div>
-
-            <div className="space-y-3 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-white/[0.08]">
-              {currentShipment.milestones.map((m) => {
-                const isDone = m.status === 'completed';
-                const isCurrent = m.status === 'current';
-
-                return (
-                  <div key={m.id} className="relative flex items-start gap-2.5 pl-0.5">
-                    {/* SVG Step Circle */}
-                    <div className={clsx(
-                      'w-5 h-5 rounded-full flex items-center justify-center shrink-0 z-10 text-[10px] font-bold shadow-xs',
-                      isDone
-                        ? 'bg-emerald-500 text-white'
-                        : isCurrent
-                        ? 'bg-orange-500 text-white ring-3 ring-orange-500/25'
-                        : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400'
-                    )}>
-                      {isDone ? <Check size={11} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-current" />}
-                    </div>
-
-                    {/* Step Info */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className={clsx(
-                          'text-[11px] font-bold truncate',
-                          isCurrent ? 'text-orange-600 dark:text-orange-400' : 'text-slate-800 dark:text-slate-200'
+                    return (
+                      <div key={m.id} className="relative flex items-start gap-2.5 pl-0.5">
+                        {/* SVG Step Circle */}
+                        <div className={clsx(
+                          'w-5 h-5 rounded-full flex items-center justify-center shrink-0 z-10 text-[10px] font-bold shadow-xs',
+                          isDone
+                            ? 'bg-emerald-500 text-white'
+                            : isCurrent
+                            ? 'bg-orange-500 text-white ring-3 ring-orange-500/25'
+                            : 'bg-slate-100 dark:bg-white/[0.06] text-slate-400'
                         )}>
-                          {m.title}
-                        </span>
-                        <span className="text-[9px] font-mono text-slate-400 shrink-0">{m.timestamp}</span>
+                          {isDone ? <Check size={11} strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-current" />}
+                        </div>
+
+                        {/* Step Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={clsx(
+                              'text-[11px] font-bold truncate',
+                              isCurrent ? 'text-orange-600 dark:text-orange-400' : 'text-slate-800 dark:text-slate-200'
+                            )}>
+                              {m.title}
+                            </span>
+                            <span className="text-[9px] font-mono text-slate-400 shrink-0">{m.timestamp}</span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
+                            {m.description}
+                          </p>
+                        </div>
                       </div>
-                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
-                        {m.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4. CARGO MANIFEST (CLEAN ACCORDION SUMMARY) */}
-          <div className="bg-white dark:bg-[#0b1322] rounded-2xl p-3.5 border border-slate-200 dark:border-white/[0.08] shadow-xs">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                <Package size={13} className="text-blue-500" />
-                <span>Cargo Items ({currentShipment.items.length})</span>
-              </span>
-              {currentShipment.items.some((i) => i.tempControlled) && (
-                <span className="text-[9px] font-bold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-500/10 px-1.5 py-0.5 rounded-md flex items-center gap-0.5">
-                  <ThermometerSnowflake size={10} />
-                  <span>Cold Chain</span>
-                </span>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              {currentShipment.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/[0.05] flex items-center justify-between text-xs"
-                >
-                  <div className="min-w-0 pr-2">
-                    <div className="font-bold text-slate-900 dark:text-white truncate text-[11px]">{item.name}</div>
-                    <div className="text-[9px] text-slate-400">Batch #{item.batchNumber || 'NER-STD'}</div>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="font-bold text-slate-800 dark:text-slate-200 text-[11px]">{item.quantity}</div>
-                    {item.tempRange && <div className="text-[9px] text-blue-500 font-semibold">{item.tempRange}</div>}
-                  </div>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
             </div>
-          </div>
 
+          </div>
         </div>
       )}
 
       {/* ── TAB 2: MY ORDERS / ALL SHIPMENTS (CLEAN LIST WITH + PLACE ORDER CTA) ── */}
       {activeTab === 'orders' && (
-        <div className="p-3.5 space-y-3 pb-24">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xs font-black text-slate-900 dark:text-white">Your Requisitions & Orders</h2>
@@ -654,20 +689,20 @@ export default function UserDeliveryTracker() {
 
       {/* ── TAB 3: HAZARDS & TERRAIN ── */}
       {activeTab === 'hazards' && (
-        <div className="p-3.5 space-y-3 pb-24 text-xs">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-3 pb-24 md:pb-8 text-xs">
           <div>
-            <h2 className="text-xs font-black text-slate-900 dark:text-white">Corridor Road Hazards</h2>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">Real-time hill terrain resilience intelligence</p>
+            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Corridor Road Hazards</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">Real-time hill terrain resilience intelligence</p>
           </div>
 
-          <div className="space-y-2">
+          <div className="grid sm:grid-cols-2 gap-3">
             {roads.map((r) => (
               <div
                 key={r.id}
-                className="p-3 rounded-2xl bg-white dark:bg-[#0b1322] border border-slate-200 dark:border-white/[0.08] shadow-xs"
+                className="p-3.5 rounded-2xl bg-white dark:bg-[#0b1322] border border-slate-200 dark:border-white/[0.08] shadow-xs"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="font-bold text-slate-900 dark:text-white text-xs">{r.name.split('—')[0]}</span>
+                  <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">{r.name.split('—')[0]}</span>
                   <span className={clsx(
                     'text-[9px] font-bold px-2 py-0.5 rounded-full',
                     r.status === 'BLOCKED' ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400' :
@@ -683,7 +718,7 @@ export default function UserDeliveryTracker() {
                   <div>Rain: <strong className="text-slate-900 dark:text-white">{r.rainfallForecast}mm</strong></div>
                 </div>
 
-                <div className="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-white/[0.02] p-1.5 rounded-lg">
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-white/[0.02] p-2 rounded-lg">
                   {r.reasons[0]}
                 </div>
               </div>
@@ -694,40 +729,40 @@ export default function UserDeliveryTracker() {
 
       {/* ── TAB 4: SOS EMERGENCY DESK ── */}
       {activeTab === 'sos' && (
-        <div className="p-3.5 space-y-3 pb-24 text-xs">
+        <div className="w-full max-w-4xl mx-auto p-3.5 sm:p-6 space-y-4 pb-24 md:pb-8 text-xs">
           <div>
-            <h2 className="text-xs font-black text-slate-900 dark:text-white">Emergency Logistics Lifeline</h2>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400">24x7 North East Disaster Desk & Support</p>
+            <h2 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">Emergency Logistics Lifeline</h2>
+            <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">24x7 North East Disaster Desk & Support</p>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 space-y-2">
-            <div className="flex items-center gap-1.5 font-bold text-red-700 dark:text-red-400 text-xs">
-              <AlertOctagon size={15} />
+          <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 space-y-2.5">
+            <div className="flex items-center gap-2 font-bold text-red-700 dark:text-red-400 text-xs sm:text-sm">
+              <AlertOctagon size={16} />
               <span>Critical Stock-Out / Highway Isolation SOS</span>
             </div>
-            <p className="text-[10px] text-red-900/80 dark:text-red-200/90 leading-tight">
+            <p className="text-[11px] text-red-900/80 dark:text-red-200/90 leading-relaxed">
               If ICU stock is below 12 hours or arterial roads are severed, trigger SEOC fast-track helicopter / green-corridor requisition.
             </p>
             <a
               href="tel:1070"
-              className="w-full py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm"
+              className="w-full sm:w-auto inline-flex px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs items-center justify-center gap-1.5 shadow-sm transition-all"
             >
               <Phone size={13} />
               <span>Call State Emergency Operations (1070)</span>
             </a>
           </div>
 
-          <div className="bg-white dark:bg-[#0b1322] p-3.5 rounded-2xl border border-slate-200 dark:border-white/[0.08] space-y-2">
-            <span className="font-bold text-slate-900 dark:text-white text-xs">Direct Helplines</span>
-            <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-white/5 text-[11px]">
+          <div className="bg-white dark:bg-[#0b1322] p-4 rounded-2xl border border-slate-200 dark:border-white/[0.08] space-y-2.5">
+            <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Direct Helplines</span>
+            <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5 text-xs">
               <span>NER Logistics Control</span>
               <a href="tel:18003459090" className="font-mono font-bold text-orange-600 dark:text-orange-400">1800-345-9090</a>
             </div>
-            <div className="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-white/5 text-[11px]">
+            <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-white/5 text-xs">
               <span>Health Services (DHS)</span>
               <a href="tel:03612260033" className="font-mono font-bold text-blue-600 dark:text-blue-400">0361-2260033</a>
             </div>
-            <div className="flex justify-between items-center py-1.5 text-[11px]">
+            <div className="flex justify-between items-center py-2 text-xs">
               <span>Highway Helpline</span>
               <a href="tel:1033" className="font-mono font-bold text-slate-700 dark:text-slate-300">1033</a>
             </div>
@@ -735,8 +770,8 @@ export default function UserDeliveryTracker() {
         </div>
       )}
 
-      {/* ── BOTTOM TAB NAVIGATION BAR (CLEAN & SLEEK) ── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#090f1c]/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-white/[0.08] px-3 py-1.5 flex items-center justify-around select-none">
+      {/* ── BOTTOM TAB NAVIGATION BAR (CLEAN & SLEEK - MOBILE ONLY) ── */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-[#090f1c]/95 backdrop-blur-lg border-t border-slate-200/80 dark:border-white/[0.08] px-3 py-1.5 flex items-center justify-around select-none md:hidden">
         {[
           { id: 'track', label: 'Live Track', icon: <Package size={17} /> },
           { id: 'orders', label: 'My Orders', icon: <Layers size={17} /> },
