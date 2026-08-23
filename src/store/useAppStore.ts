@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Alert } from '../types';
-import { alerts as initialAlerts } from '../data/mockData';
+import { alerts as initialAlerts, shipments, vehicles, districts } from '../data/mockData';
 
 export type AppView =
   | 'command'
@@ -189,6 +189,31 @@ export const useAppStore = create<AppState>((set) => ({
   driverTripStatus: 'IN_TRANSIT',
   acceptDriverReroute: () =>
     set((s) => {
+      // Synchronize entity states across mockData objects
+      const ship = shipments.find((item) => item.id === 'SHIP-104');
+      if (ship) {
+        ship.status = 'ON_TIME';
+        ship.routeRisk = 24;
+        ship.supplyShortageRisk = 'LOW';
+        ship.eta = '06:15 PM';
+        ship.alternativeRoute = 'NH-106 Bypass (Active)';
+      }
+
+      const vehicle = vehicles.find((v) => v.id === 'TRK-204');
+      if (vehicle) {
+        vehicle.status = 'IN_TRANSIT';
+        vehicle.routeRisk = 24;
+        vehicle.routeName = 'NH-106 Shillong Bypass';
+        vehicle.isRerouted = true;
+      }
+
+      const district = districts.find((d) => d.id === 'dist-x');
+      if (district) {
+        district.isolationRisk = 24;
+        district.connectivity = 78;
+        district.status = 'ACCESSIBLE';
+      }
+
       const newAlert: Alert = {
         id: `ALT-REROUTE-${Date.now()}`,
         severity: 'INFO',

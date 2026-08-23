@@ -115,6 +115,7 @@ export default function LiveMap() {
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Criticality</span><span style="color:#f97316;font-weight:600">${b.criticalityScore}%</span></div>
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Load Capacity</span><span>${b.loadCapacity}</span></div>
               ${b.isSPOF ? `<div style="color:#dc2626;font-size:11px;margin-top:4px;font-weight:500">Failure affects: ${b.affectedDistricts.join(', ')}</div>` : ''}
+              <button onclick="window.openExplainDrawer('road', '${b.roadId}')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Risk Weights</button>
             </div>
           </div>`
         ).addTo(bridgesGroup);
@@ -149,6 +150,7 @@ export default function LiveMap() {
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Alt. Routes</span><span>${d.alternativeRoutes}</span></div>
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Supply (days)</span><span>${d.supplyDays}</span></div>
               <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Weather Risk</span><span style="color:#f97316;font-weight:600">${d.weatherRisk}</span></div>
+              <button onclick="window.openExplainDrawer('district', '${d.id}')" style="margin-top:8px;width:100%;background:#8b5cf6;color:white;border:none;padding:6px 10px;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer">Explain AI Isolation Risk</button>
             </div>
           </div>`
         ).addTo(districtsGroup);
@@ -194,14 +196,57 @@ export default function LiveMap() {
       vehicleMarkers.current[v.id] = marker;
     });
 
+    // ── INCIDENTS LAYER ──
+    const incidentsGroup = L.layerGroup().addTo(map);
+    const incidentData = [
+      { latlng: [25.75, 92.52] as [number, number], title: 'Sonapur Landslide Blockage', type: 'Landslide', severity: 'CRITICAL', reporter: 'Field Officer #42', confidence: '92%' },
+      { latlng: [25.40, 92.65] as [number, number], title: 'Jatinga Slope Mudslide', type: 'Slope Erosion', severity: 'HIGH', reporter: 'Border Roads Patrol', confidence: '88%' },
+    ];
+    incidentData.forEach((inc) => {
+      const hazardIcon = L.divIcon({
+        className: 'truck-icon-custom',
+        html: `<div style="width:28px;height:28px;background:#dc2626;border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;box-shadow:0 0 0 4px rgba(220,38,38,0.3);cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>`,
+        iconSize: [28, 28], iconAnchor: [14, 14],
+      });
+      L.marker(inc.latlng, { icon: hazardIcon })
+        .bindPopup(
+          `<div style="min-width:200px">
+            <div style="background:#ef444420;color:#dc2626;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:700;margin-bottom:6px">FIELD INCIDENT · ${inc.severity}</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:6px">${inc.title}</div>
+            <div style="font-size:12px;display:grid;gap:4px">
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Reported By</span><span>${inc.reporter}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">Confidence</span><span style="color:#16a34a;font-weight:700">${inc.confidence}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="opacity:0.7">GPS Verification</span><span style="color:#0284c7;font-weight:600">Geo-tagged</span></div>
+            </div>
+          </div>`
+        ).addTo(incidentsGroup);
+    });
+
+    // ── WEATHER LAYER ──
+    const weatherGroup = L.layerGroup();
+    const weatherHazardZones = [
+      { center: [25.75, 92.52] as [number, number], radius: 18000, label: 'Dima Hasao Heavy Precip Zone (87mm)' },
+      { center: [25.40, 92.65] as [number, number], radius: 14000, label: 'Haflong Monsoon Risk Belt' },
+    ];
+    weatherHazardZones.forEach((w) => {
+      L.circle(w.center, {
+        radius: w.radius,
+        color: '#0284c7',
+        fillColor: '#38bdf8',
+        fillOpacity: 0.25,
+        weight: 1.5,
+        dashArray: '6,4',
+      }).bindPopup(`<div style="font-size:12px"><b>Severe Weather Alert</b><br/>${w.label}</div>`).addTo(weatherGroup);
+    });
+
     // Store layer groups
     layerGroups.current = {
       roads: roadsGroup,
       bridges: bridgesGroup,
       districts: districtsGroup,
       vehicles: vehiclesGroup,
-      incidents: L.layerGroup().addTo(map),
-      weather: L.layerGroup(),
+      incidents: incidentsGroup,
+      weather: weatherGroup,
     };
 
     mapInstance.current = map;

@@ -582,9 +582,54 @@ export default function UserDeliveryTracker() {
       {/* ── HAZARDS TAB ── */}
       {activeTab === 'hazards' && (
         <div className="p-4 space-y-3 pb-20">
-          <div className="mb-2">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Active Corridor Hazards</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Live terrain, landslide and weather advisories across NER</p>
+          <div className="mb-2 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Field Intelligence & Hazards</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Live terrain, landslide and verified officer reports</p>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              Human Sensor Net
+            </span>
+          </div>
+
+          {/* Field Officer Incident Report Card */}
+          <div className="p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
+                <AlertTriangle size={14} /> Submit Geo-Tagged Field Incident
+              </span>
+              <span className="text-[9px] font-mono text-slate-400">GPS: 25.75°N, 92.52°E</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <button
+                onClick={() => {
+                  useAppStore.getState().addOfflineAction('Field Report Submitted: Sonapur Mudslide Blockage');
+                }}
+                className="py-2 px-3 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-bold text-[11px] shadow-xs cursor-pointer"
+              >
+                + Report Landslide
+              </button>
+              <button
+                onClick={() => {
+                  useAppStore.getState().addOfflineAction('Field Report Submitted: NH-106 Clear Flow');
+                }}
+                className="py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-xs cursor-pointer"
+              >
+                + Report Clear Flow
+              </button>
+            </div>
+
+            {/* Proximity / Conflict Resolution Indicator */}
+            <div className="p-2.5 rounded-lg bg-slate-900/40 border border-slate-700/50 text-[11px] space-y-1">
+              <div className="flex items-center justify-between text-amber-400 font-bold">
+                <span>Conflict Resolution Engine</span>
+                <span className="text-[9px] bg-amber-500/20 px-1.5 rounded text-amber-300">Active</span>
+              </div>
+              <p className="text-[10px] text-slate-400">
+                Reports within 200m & 30m window are merged as Corroborating Evidence (+12% Confidence). Contradictory reports flag status as <strong className="text-amber-400">UNCERTAIN</strong>.
+              </p>
+            </div>
           </div>
 
           <div className="space-y-3">
