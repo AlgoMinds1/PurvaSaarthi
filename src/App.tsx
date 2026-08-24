@@ -12,9 +12,11 @@ import SupplyAtRisk from './pages/SupplyAtRisk';
 import DistrictIntelligence from './pages/DistrictIntelligence';
 import AlertCenter from './pages/AlertCenter';
 import VehicleTracking from './pages/VehicleTracking';
+import RagCopilotPage from './pages/RagCopilotPage';
 import { RerouteModal } from './components/ui/RerouteModal';
 import { CascadeSimulator } from './components/ui/CascadeSimulator';
 import { AIExplainabilityDrawer } from './components/ui/AIExplainabilityDrawer';
+import { FloatingRagAssistant } from './components/ui/FloatingRagAssistant';
 import { MobileFrame } from './components/mobile/MobileFrame';
 import UserDeliveryTracker from './pages/mobile/UserDeliveryTracker';
 import DriverApp from './pages/mobile/DriverApp';
@@ -34,6 +36,7 @@ function AppShell() {
 
   const views: Record<string, React.ReactNode> = {
     command: <CommandCenter />,
+    copilot: <RagCopilotPage />,
     map: <LiveMap />,
     roads: <RoadIntelligence />,
     supply: <SupplyAtRisk />,
@@ -54,6 +57,7 @@ function AppShell() {
       <RerouteModal />
       <CascadeSimulator />
       <AIExplainabilityDrawer />
+      <FloatingRagAssistant />
     </div>
   );
 }

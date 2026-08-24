@@ -199,56 +199,73 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
             {/* Pillar 1 */}
-            <div className="glass-card p-7 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-5">
+            <div className="glass-card p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-4">
                 <CloudRain size={24} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2.5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
                 Multi-Hazard Disruption Forecasting
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
                 Fuses real-time precipitation forecast data, terrain slope gradient models, and historical landslide points to predict corridor vulnerability hours before blockage occurs.
               </p>
-              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-emerald-500" />
-                <span>IMD precipitation & slope angles</span>
+              <div className="mt-5 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-500" />
+                <span>IMD rainfall & slope angles</span>
               </div>
             </div>
 
             {/* Pillar 2 */}
-            <div className="glass-card p-7 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
-              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-5">
+            <div className="glass-card p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center mb-4">
                 <Building2 size={24} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2.5">
-                Single Point of Failure (SPOF) Isolation
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                Single Point of Failure (SPOF)
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
                 Connected-components graph intelligence maps how road closures cascade to isolate hospitals, food grain reserves, and fuel storage in vulnerable hill districts.
               </p>
-              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-emerald-500" />
-                <span>District stock depletion projections</span>
+              <div className="mt-5 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-500" />
+                <span>District stock depletion models</span>
               </div>
             </div>
 
             {/* Pillar 3 */}
-            <div className="glass-card p-7 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5">
+            <div className="glass-card p-6 rounded-2xl border border-slate-200 dark:border-white/[0.08] hover:border-orange-500/40 transition-all duration-300 shadow-sm flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-4">
                 <Navigation size={24} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2.5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
                 Dynamic Proactive Rerouting
               </h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
                 Calculates compliant, safe alternative routes with live GPS fleet redirection, driver SMS/multilingual dispatching, and last safe turnaround milestone tracking.
               </p>
-              <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-emerald-500" />
+              <div className="mt-5 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-emerald-500" />
                 <span>pgRouting weighted road graphs</span>
+              </div>
+            </div>
+
+            {/* Pillar 4: RAG Copilot */}
+            <div className="glass-card p-6 rounded-2xl border border-orange-200 dark:border-orange-500/20 bg-orange-500/[0.02] hover:border-orange-500/50 transition-all duration-300 shadow-sm flex flex-col">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 text-white flex items-center justify-center mb-4 shadow-sm">
+                <Sparkles size={24} />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                Grounded NER RAG Copilot
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex-1">
+                Retrieval-Augmented Generation AI assistant strictly grounded in the 8-state NER logistics corpus, real-time fleet telemetry, chokepoints, and disaster SOPs.
+              </p>
+              <div className="mt-5 pt-3 border-t border-slate-200 dark:border-white/[0.06] text-xs font-semibold text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
+                <CheckCircle2 size={13} className="text-orange-500" />
+                <span>Strict Guardrails & Zero Hallucination</span>
               </div>
             </div>
 

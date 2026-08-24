@@ -1,4 +1,4 @@
-import { Bell, Sun, Moon, LogOut } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut, Sparkles } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore } from '../../store/useAppStore';
 
@@ -7,6 +7,7 @@ export function Topbar() {
 
   const titles: Record<string, { title: string; subtitle: string }> = {
     command:   { title: 'Command Center',       subtitle: 'Regional Logistics Operations Overview' },
+    copilot:   { title: 'AI Logistics Copilot', subtitle: 'Strictly Grounded RAG Knowledge & Fleet Telemetry' },
     map:       { title: 'Live GIS Map',          subtitle: 'Real-time NER road & vehicle status' },
     roads:     { title: 'Road Intelligence',     subtitle: 'AI-powered road risk & disruption analysis' },
     supply:    { title: 'Supply at Risk',        subtitle: 'Commodity tracking & shortage prediction' },
@@ -31,6 +32,22 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center gap-2.5">
+        {/* AI Copilot Quick Button */}
+        <button
+          onClick={() => setView('copilot')}
+          className={clsx(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shadow-xs border',
+            activeView === 'copilot'
+              ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white border-transparent'
+              : 'bg-orange-50 hover:bg-orange-100 text-orange-600 dark:bg-orange-500/10 dark:hover:bg-orange-500/20 dark:text-orange-400 border-orange-200 dark:border-orange-500/20'
+          )}
+          title="Open AI Logistics Copilot (RAG)"
+        >
+          <Sparkles size={13} className="text-amber-400" />
+          <span>AI Copilot</span>
+          <span className="bg-orange-600/20 text-[9px] px-1 py-0.2 rounded font-black">RAG</span>
+        </button>
+
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}

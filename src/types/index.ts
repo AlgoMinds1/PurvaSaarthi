@@ -189,3 +189,70 @@ export interface SupplyInventory {
   risk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 }
 
+// ── RAG & AI COPILOT TYPES ──────────────────────────────────────────────────
+
+export type RagCategory =
+  | 'CORRIDOR'
+  | 'BRIDGE'
+  | 'DISTRICT'
+  | 'COMMODITY'
+  | 'DISASTER_SOP'
+  | 'SAFE_LAYBY'
+  | 'LIVE_TELEMETRY'
+  | 'REGIONAL_OVERVIEW';
+
+export interface RagKnowledgeChunk {
+  id: string;
+  title: string;
+  category: RagCategory;
+  stateOrRegion: string;
+  highwayOrCorridor?: string;
+  content: string;
+  keywords: string[];
+  sourceDocument?: string;
+  section: string;
+  authorityOrSource: string;
+  lastUpdated: string;
+}
+
+export interface RagSourceCitation {
+  id: string;
+  title: string;
+  category: RagCategory;
+  sourceDocument: string;
+  section: string;
+  similarityScore: number;
+  relevanceReason: string;
+  snippet: string;
+}
+
+export interface RagChatMessage {
+  id: string;
+  sender: 'user' | 'assistant' | 'system';
+  text: string;
+  timestamp: string;
+  citations?: RagSourceCitation[];
+  groundedInRag: boolean;
+  isOutOfDomain?: boolean;
+  modelUsed?: string;
+  processingTimeMs?: number;
+}
+
+export interface RagEngineConfig {
+  apiKey?: string;
+  provider: 'local-rag' | 'gemini' | 'openai';
+  modelName?: string;
+  strictGrounding: boolean;
+  confidenceThreshold: number;
+}
+
+export interface RagQueryResponse {
+  answer: string;
+  citations: RagSourceCitation[];
+  isOutOfDomain: boolean;
+  groundedInRag: boolean;
+  confidenceScore: number;
+  modelUsed: string;
+  processingTimeMs: number;
+}
+

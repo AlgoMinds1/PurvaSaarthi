@@ -2,15 +2,16 @@ import { useState } from 'react';
 import {
   Map, Route, Package, Building2, Bell, Truck, User,
   Shield, LogOut, AlertTriangle, LayoutDashboard,
-  PanelLeftClose, PanelLeftOpen
+  PanelLeftClose, PanelLeftOpen, Sparkles
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useAppStore, type AppView } from '../../store/useAppStore';
 
-interface NavItem { id: AppView; label: string; icon: React.ReactNode }
+interface NavItem { id: AppView; label: string; icon: React.ReactNode; badge?: string }
 
 const navItems: NavItem[] = [
   { id: 'command',   label: 'Command Center',      icon: <LayoutDashboard size={18} /> },
+  { id: 'copilot',   label: 'AI Logistics Copilot', icon: <Sparkles size={18} className="text-amber-400 animate-pulse" />, badge: 'RAG' },
   { id: 'map',       label: 'Live GIS Map',         icon: <Map size={18} /> },
   { id: 'roads',     label: 'Road Intelligence',    icon: <Route size={18} /> },
   { id: 'supply',    label: 'Supply at Risk',       icon: <Package size={18} /> },
@@ -177,6 +178,11 @@ export function Sidebar() {
                   )}
                 >
                   <span className="truncate">{item.label}</span>
+                  {item.badge && (
+                    <span className="ml-auto bg-gradient-to-r from-orange-500 to-amber-500 text-white text-[9px] font-black tracking-wider px-1.5 py-0.5 rounded-md shadow-2xs">
+                      {item.badge}
+                    </span>
+                  )}
                   {item.id === 'alerts' && unreadCount > 0 && (
                     <span className="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center shrink-0">
                       {unreadCount}

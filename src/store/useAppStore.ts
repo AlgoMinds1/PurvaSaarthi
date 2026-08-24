@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Alert, Shipment, CommodityType, CommodityItem } from '../types';
+import type { Alert, Shipment, CommodityType, CommodityItem, RagChatMessage, RagEngineConfig } from '../types';
 import { alerts as initialAlerts, shipments, vehicles, districts } from '../data/mockData';
 
 export type AppView =
@@ -9,7 +9,8 @@ export type AppView =
   | 'supply'
   | 'districts'
   | 'alerts'
-  | 'vehicles';
+  | 'vehicles'
+  | 'copilot';
 
 export type ThemeMode = 'dark' | 'light';
 
@@ -108,6 +109,17 @@ interface AppState {
   explainTarget: { type: 'road' | 'shipment' | 'district'; id: string } | null;
   openExplainabilityDrawer: (type: 'road' | 'shipment' | 'district', id: string) => void;
   closeExplainabilityDrawer: () => void;
+
+  // NER Logistics RAG-based AI Copilot
+  floatingCopilotOpen: boolean;
+  openFloatingCopilot: () => void;
+  closeFloatingCopilot: () => void;
+  toggleFloatingCopilot: () => void;
+  copilotMessages: RagChatMessage[];
+  addCopilotMessage: (msg: RagChatMessage) => void;
+  clearCopilotMessages: () => void;
+  ragConfig: RagEngineConfig;
+  setRagConfig: (cfg: Partial<RagEngineConfig>) => void;
 }
 
 const getInitialTheme = (): ThemeMode => {
@@ -424,5 +436,42 @@ export const useAppStore = create<AppState>((set) => ({
     set({ explainabilityDrawerOpen: true, explainTarget: { type, id } }),
   closeExplainabilityDrawer: () =>
     set({ explainabilityDrawerOpen: false, explainTarget: null }),
+
+  // NER Logistics RAG-based AI Copilot
+  floatingCopilotOpen: false,
+  openFloatingCopilot: () => set({ floatingCopilotOpen: true }),
+  closeFloatingCopilot: () => set({ floatingCopilotOpen: false }),
+  toggleFloatingCopilot: () => set((s) => ({ floatingCopilotOpen: !s.floatingCopilotOpen })),
+  copilotMessages: [
+    {
+      id: 'msg-welcome-01',
+      sender: 'assistant',
+      text: "👋 Welcome to **PurvaSaarthi NER Logistics AI Copilot**.\n\nI am strictly grounded in the **North Eastern Region (NER) Logistics & Transport Knowledge Base** and live platform telemetry. You can ask me about:\n- **Arterial Corridors & Chokepoints** (Siliguri Corridor, NH-27, NH-106, NH-37, NH-29, Sela Pass, etc.)\n- **Critical River Crossings & Bridges** (Bogibeel, Saraighat, Bhupen Hazarika, Umtru B-17)\n- **District Connectivity & Isolation Risk** across all 8 NER states\n- **Live Shipments & Vehicle Telemetry** (TRK-204, SHIP-104 critical medicines)\n- **Essential Commodity Resilience Guidelines & Disaster SOPs**\n\n*Note: To ensure high integrity, questions outside NER logistics and transport resilience will be declined.*",
+      timestamp: 'Just now',
+      groundedInRag: true,
+      modelUsed: 'PurvaSaarthi Grounded RAG Synthesizer',
+    },
+  ],
+  addCopilotMessage: (msg) => set((s) => ({ copilotMessages: [...s.copilotMessages, msg] })),
+  clearCopilotMessages: () => set({
+    copilotMessages: [
+      {
+        id: `msg-welcome-${Date.now()}`,
+        sender: 'assistant',
+        text: "Session cleared. What would you like to know about North Eastern Region logistics, transport corridors, or live fleet operations?",
+        timestamp: 'Just now',
+        groundedInRag: true,
+        modelUsed: 'PurvaSaarthi Grounded RAG Synthesizer',
+      }
+    ]
+  }),
+  ragConfig: {
+    provider: 'local-rag',
+    apiKey: '',
+    modelName: 'gemini-1.5-flash',
+    strictGrounding: true,
+    confidenceThreshold: 0.28,
+  },
+  setRagConfig: (cfg) => set((s) => ({ ragConfig: { ...s.ragConfig, ...cfg } })),
 }));
 
